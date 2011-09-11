@@ -1,0 +1,11 @@
+package net.mind_engine.oculus.testrunframework.utils;
+
+public class SqlUtils
+{
+    public static String escape(String text)
+    {
+        // TODO Escape sql symbols 
+        text.replace("'", "\\'");
+        return text;
+    }
+}

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<test-loaders default="classpath">
+    <test-loader name="classpath" classpath="net.mind_engine.oculus.testrunframework.test.testloader.ClasspathTestLoader">
+    </test-loader>
+</test-loaders>

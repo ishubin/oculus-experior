@@ -1,0 +1,40 @@
+10
+
+dir
+478
+svn://localhost/mind-engine/oculus/trunk/test-run-framework/test-run-framework/src/net/mind_engine/oculus/simpletestframework
+svn://localhost/mind-engine
+
+
+
+2011-05-02T19:03:05.162172Z
+434
+ishubin
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+631f93da-6f36-fa4c-a68a-f7c24237448a
+
+report
+dir
+
+suite
+dir
+
+test
+dir
+
+verification
+dir
+

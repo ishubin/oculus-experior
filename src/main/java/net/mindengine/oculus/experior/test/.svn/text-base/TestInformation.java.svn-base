@@ -1,0 +1,48 @@
+package net.mind_engine.oculus.testrunframework.test;
+
+
+public class TestInformation
+{
+    public static final int PASSED = 0;
+    public static final int FAILED = 1;
+    public static final int WARNING = 2;
+    
+    /**
+     * The exception which has occurred in test and is the reason of test failure
+     */
+	private Throwable throwable;
+	private TestDescriptor testDescriptor;
+	private int status = 0;
+    public String getTestName()
+    {
+        return testDescriptor.getTestDefinition().getName();
+    }
+    public void setThrowable(Throwable throwable)
+    {
+        this.throwable = throwable;
+    }
+    public Throwable getThrowable()
+    {
+        return throwable;
+    }
+	public void setTestDescriptor(TestDescriptor testDescriptor)
+	{
+		this.testDescriptor = testDescriptor;
+	}
+	public TestDescriptor getTestDescriptor()
+	{
+		return testDescriptor;
+	}
+	public String getTestDescription(){
+	    return testDescriptor.getTestDefinition().getDescription();
+	}
+    public void setStatus(int status)
+    {
+        this.status = status;
+    }
+    public int getStatus()
+    {
+        return status;
+    }
+    
+}

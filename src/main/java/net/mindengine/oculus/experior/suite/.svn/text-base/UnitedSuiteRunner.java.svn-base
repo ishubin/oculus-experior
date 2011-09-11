@@ -1,0 +1,64 @@
+package net.mind_engine.oculus.testrunframework.suite;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import net.mind_engine.oculus.testrunframework.test.TestDefinition;
+import net.mind_engine.oculus.testrunframework.test.TestDescriptor;
+import net.mind_engine.oculus.testrunframework.test.TestRunner;
+
+public class UnitedSuiteRunner extends SuiteRunner {
+	@Override
+	public void runSuite() {
+		/*
+		 * Creating new SuiteSession instance this session will live until all
+		 * tests have completed
+		 */
+		getSuite().setStartTime(new Date());
+		SuiteSession suiteSession = SuiteSession.createInstance();
+		suiteSession.setSuiteListener(getSuiteListener());
+		suiteSession.setSuite(getSuite());
+		if (getSuiteListener() != null) {
+			getSuiteListener().onSuiteStarted(getSuite());
+		}
+
+		List<TestDefinition> testList = getSuite().getTestsList();
+
+		if (testList != null) {
+			if (testList.size() > 0) {
+				/*
+				 * Running only the first test. 
+				 * All other test will be injected into the first one
+				 */
+				
+				List<TestDefinition> includeTests = new ArrayList<TestDefinition>();
+				TestDefinition firstTest = null;
+				for (TestDefinition test : testList) {
+					if (firstTest == null) {
+						firstTest = test;
+					}
+					else {
+						includeTests.add(test);
+					}
+				}
+
+				TestRunner testRunner = new TestRunner();
+				testRunner.setIncludeTests(includeTests);
+				firstTest.setName(getSuite().getName());
+				TestDescriptor testDescriptor = new TestDescriptor(firstTest);
+				testRunner.setTestDescriptor(testDescriptor);
+				testRunner.setTestRunListener(getTestRunListener());
+				testRunner.runTest();
+			}
+		}
+
+		if (getSuiteListener() != null) {
+			getSuiteListener().onSuiteFinished(getSuite());
+		}
+		/*
+		 * Destroying SuiteSession
+		 */
+		SuiteSession.destroyInstance();
+	}
+}

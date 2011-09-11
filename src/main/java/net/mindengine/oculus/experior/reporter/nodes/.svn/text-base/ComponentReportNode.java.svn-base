@@ -1,0 +1,23 @@
+package net.mind_engine.oculus.testrunframework.reporter.nodes;
+
+public class ComponentReportNode extends ReportNode
+{
+	/**
+     * 
+     */
+    private static final long serialVersionUID = -6717190491920772357L;
+    //This usually should be used as a classpath to automation components
+	private String path;
+
+	public String getPath()
+	{
+		return path;
+	}
+
+	public void setPath(String path)
+	{
+		this.path = path;
+	}
+	
+
+}

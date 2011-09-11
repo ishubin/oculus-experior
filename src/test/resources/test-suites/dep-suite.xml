@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suite name="Dependency suite" runnerId="1">
+
+    <test customId="345" mapping="net.mindengine.oculus.experior.test.sampletests.Test2_B">
+        <dependency name="parameterInput" prerequisiteCustomId="123" prerequisiteName="parameterOutput"/>
+    </test>
+    
+    <test customId="123" mapping="net.mindengine.oculus.experior.test.sampletests.Test2_A">
+    </test>
+    
+    
+</suite>

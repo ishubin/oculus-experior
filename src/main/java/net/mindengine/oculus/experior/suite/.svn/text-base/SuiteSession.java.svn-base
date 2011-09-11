@@ -1,0 +1,43 @@
+package net.mind_engine.oculus.testrunframework.suite;
+
+public class SuiteSession {
+	private static SuiteSession _instance = null;
+
+	private SuiteListener suiteListener;
+	private Suite suite;
+
+	private SuiteSession() {
+	}
+
+	public static SuiteSession getInstance() {
+		if (_instance == null)
+			return createInstance();
+		return _instance;
+	}
+
+	protected static SuiteSession createInstance() {
+		_instance = new SuiteSession();
+		return _instance;
+	}
+
+	protected static void destroyInstance() {
+		_instance = null;
+	}
+
+	public SuiteListener getSuiteListener() {
+		return suiteListener;
+	}
+
+	public void setSuiteListener(SuiteListener suiteListener) {
+		this.suiteListener = suiteListener;
+	}
+
+	public Suite getSuite() {
+		return suite;
+	}
+
+	public void setSuite(Suite suite) {
+		this.suite = suite;
+	}
+
+}

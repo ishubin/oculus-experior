@@ -1,0 +1,685 @@
+package net.mind_engine.oculus.testrunframework.test;
+
+import java.io.Serializable;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
+
+import net.mind_engine.oculus.testrunframework.ClassUtils;
+import net.mind_engine.oculus.testrunframework.annotations.Action;
+import net.mind_engine.oculus.testrunframework.annotations.Component;
+import net.mind_engine.oculus.testrunframework.annotations.EntryAction;
+import net.mind_engine.oculus.testrunframework.annotations.ErrorHandler;
+import net.mind_engine.oculus.testrunframework.annotations.InputParameter;
+import net.mind_engine.oculus.testrunframework.annotations.OutputParameter;
+import net.mind_engine.oculus.testrunframework.annotations.Test;
+import net.mind_engine.oculus.testrunframework.annotations.events.AfterAction;
+import net.mind_engine.oculus.testrunframework.annotations.events.AfterErrorHandler;
+import net.mind_engine.oculus.testrunframework.annotations.events.AfterRollback;
+import net.mind_engine.oculus.testrunframework.annotations.events.AfterTest;
+import net.mind_engine.oculus.testrunframework.annotations.events.BeforeAction;
+import net.mind_engine.oculus.testrunframework.annotations.events.BeforeErrorHandler;
+import net.mind_engine.oculus.testrunframework.annotations.events.BeforeRollback;
+import net.mind_engine.oculus.testrunframework.annotations.events.BeforeTest;
+import net.mind_engine.oculus.testrunframework.annotations.events.MainExceptionHandler;
+import net.mind_engine.oculus.testrunframework.annotations.events.OnEvent;
+import net.mind_engine.oculus.testrunframework.annotations.events.OnTestFailure;
+import net.mind_engine.oculus.testrunframework.exception.TestIsNotDefinedException;
+
+/**
+ * Contains all the information about the tests. This information is collected
+ * before the tests is run and used for invoking test actions, instantiating
+ * components and input parameters and etc.
+ * 
+ * @author Ivan Shubin
+ * 
+ */
+public class TestDescriptor implements Serializable {
+	private static final long serialVersionUID = 1507612517934192104L;
+
+	private TestDefinition testDefinition;
+
+	private Object testInstance;
+
+	private boolean isInformationCollected = false;
+
+	/**
+	 * Flag that shows if the test was run already or not
+	 */
+	private boolean isFinished = false;
+	private Method beforeTestMethod;
+	private Method afterTestMethod;
+	private Method beforeActionMethod;
+	private Method afterActionMethod;
+	private Method beforeErrorHandlerMethod;
+	private Method afterErrorHandlerMethod;
+	private Method beforeRollbackMethod;
+	private Method afterRollbackMethod;
+	private Method onTestFailureMethod;
+
+	private Method entryActionMethod;
+
+	private Map<String, Method> actionMethods;
+	private Map<String, Method> rollbackMethods;
+
+	private Map<String, Method> errorHandlerMethods;
+
+	private List<EventDescriptor> beforeEventDescriptors;
+	private List<EventDescriptor> afterEventDescriptors;
+
+	private Map<String, Field> inputParameters;
+	private Map<String, Method> inputParametersSetterMethods;
+	private Map<String, Method> inputParametersGetterMethods;
+
+	private Map<String, Field> componentParameters;
+	private Map<String, Method> componentParametersSetterMethods;
+	private Map<String, Method> componentParametersGetterMethods;
+
+	private Map<String, Field> outputParameters;
+	private Map<String, Method> outputParametersSetterMethods;
+	private Map<String, Method> outputParametersGetterMethods;
+	private Map<String, Object> outputParameterValues;
+
+	/**
+	 * the methods which are used by the TestRunner to pass the main exception
+	 * occurred in the test to the exception handler methods. The key is - class
+	 * of the occurred exception The value is - method of the test which will
+	 * handle this exception
+	 */
+	private Map<Class<?>, Method> mainExceptionHadlerMethods;
+
+	public TestDescriptor(TestDefinition testDefinition) {
+		this.testDefinition = testDefinition;
+	}
+
+	protected Object createTestInstance() {
+		try {
+			Class<?> testClass = testDefinition.fetchTestClass();
+			Constructor<?> constructor = testClass.getConstructor();
+			testInstance = constructor.newInstance();
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		return testInstance;
+	}
+
+	/**
+	 * Clears all the tests data except methods and fields which are used for
+	 * outpur parameters
+	 */
+	protected void clearUnusedData() {
+		beforeTestMethod = null;
+		afterTestMethod = null;
+		beforeActionMethod = null;
+		afterActionMethod = null;
+		beforeErrorHandlerMethod = null;
+		afterErrorHandlerMethod = null;
+		beforeRollbackMethod = null;
+		afterRollbackMethod = null;
+		setOnTestFailureMethod(null);
+
+		entryActionMethod = null;
+		actionMethods = null;
+		rollbackMethods = null;
+
+		errorHandlerMethods = null;
+
+		beforeEventDescriptors = null;
+		afterEventDescriptors = null;
+
+		inputParameters = null;
+		inputParametersSetterMethods = null;
+		inputParametersGetterMethods = null;
+
+		componentParameters = null;
+		componentParametersSetterMethods = null;
+		componentParametersGetterMethods = null;
+
+		mainExceptionHadlerMethods = null;
+
+	}
+
+	protected Map<String, Object> collectOutputParameterValues() {
+		try {
+			for (Map.Entry<String, Field> outputParameter : outputParameters.entrySet()) {
+				Field field = outputParameter.getValue();
+				Object value = null;
+				if (Modifier.isPublic(field.getModifiers())) {
+					value = field.get(testInstance);
+				}
+				else {
+					/*
+					 * Invoking the getter method for this field
+					 */
+					Method method = outputParametersGetterMethods.get(outputParameter.getKey());
+					value = method.invoke(testInstance);
+				}
+				/*
+				 * Setting value to map
+				 */
+				outputParameterValues.put(outputParameter.getKey(), value);
+			}
+			return outputParameterValues;
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * Creating instance of input parameters and setting its value
+	 * 
+	 * @param field
+	 *            - input parameters field
+	 * @param value
+	 *            - value of field converted to String type (Should be converted
+	 *            to fields type)
+	 * @return
+	 * @throws IllegalAccessException
+	 * @throws IllegalArgumentException
+	 * @throws NoSuchMethodException
+	 * @throws SecurityException
+	 * @throws InvocationTargetException
+	 */
+	public Object instantiateInputParameter(Field field, String value) {
+		Object endValue = ClassUtils.createParameter(field.getType(), value);
+		setTestInputParameter(field, endValue);
+		return endValue;
+	}
+
+	public void setTestInputParameter(Field field, Object value) {
+		try {
+			if (value != null) {
+				// Converting the value to be set to parameter to its type
+				String stringValue = ClassUtils.convertParameterToString(value.getClass(), value);
+				value = ClassUtils.createParameter(field.getType(), stringValue);
+			}
+			if (Modifier.isPublic(field.getModifiers())) {
+				field.set(testInstance, value);
+			}
+			else {
+				// Finding for a setter method for this field
+				Method setterMethod = getInputParametersSetterMethods().get(field.getName());
+				setterMethod.invoke(testInstance, value);
+			}
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public Object getTestInputParameterValue(Field field){
+		try{
+			if(Modifier.isPublic(field.getModifiers())){
+				return field.get(testInstance);
+			}
+			else{
+				Method getterMethod = getInputParametersGetterMethods().get(field.getName());
+				return getterMethod.invoke(testInstance);
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public Object getTestOutputParameterValue(Field field){
+		try{
+			if(Modifier.isPublic(field.getModifiers())){
+				return field.get(testInstance);
+			}
+			else{
+				Method getterMethod = getOutputParametersGetterMethods().get(field.getName());
+				return getterMethod.invoke(testInstance);
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	
+	public void collectTestInformation() {
+		actionMethods = new HashMap<String, Method>();
+		rollbackMethods = new HashMap<String, Method>();
+
+		errorHandlerMethods = new HashMap<String, Method>();
+
+		beforeEventDescriptors = new ArrayList<EventDescriptor>();
+		afterEventDescriptors = new ArrayList<EventDescriptor>();
+
+		inputParameters = new HashMap<String, Field>();
+		inputParametersSetterMethods = new HashMap<String, Method>();
+		inputParametersGetterMethods = new HashMap<String, Method>();
+
+		componentParameters = new HashMap<String, Field>();
+		componentParametersSetterMethods = new HashMap<String, Method>();
+		componentParametersGetterMethods = new HashMap<String, Method>();
+
+		outputParameters = new HashMap<String, Field>();
+		outputParametersSetterMethods = new HashMap<String, Method>();
+		outputParametersGetterMethods = new HashMap<String, Method>();
+		outputParameterValues = new HashMap<String, Object>();
+
+		mainExceptionHadlerMethods = new HashMap<Class<?>, Method>();
+
+		Class<?> testClass = testDefinition.fetchTestClass();
+		collectTestInformation(testClass);
+	}
+
+	/**
+	 * Collecting all tests methods (action, error handlers, rollback methods
+	 * and event handlers)
+	 * 
+	 * @param testClass
+	 *            - class of test
+	 * @throws NoSuchMethodException
+	 * @throws SecurityException
+	 * @throws TestIsNotDefinedException
+	 */
+	public void collectTestInformation(Class<?> testClass) {
+		collectFields(testClass);
+		collectMethods(testClass);
+
+		// Fetching name and projectId from test annotation
+		Test testAnnotation = testClass.getAnnotation(Test.class);
+		if (testAnnotation != null) {
+			if (testDefinition.getName() == null || testDefinition.getName().isEmpty()) {
+				testDefinition.setName(testAnnotation.name());
+			}
+			if (testDefinition.getProjectId() == null || testDefinition.getProjectId().isEmpty()) {
+				testDefinition.setProjectId(testAnnotation.projectId());
+			}
+		}
+
+		if (testDefinition.getName() == null || testDefinition.getName().isEmpty()) {
+			testDefinition.setName(testClass.getSimpleName());
+		}
+
+		isInformationCollected = true;
+	}
+
+	public void collectMethods(Class<?> testClass) {
+		Method[] methods = testClass.getMethods();
+
+		for (Method method : methods) {
+			if (Modifier.isPublic(method.getModifiers())) {
+				Annotation[] annotations = method.getAnnotations();
+
+				for (Annotation annotation : annotations) {
+					if (annotation instanceof EntryAction) {
+						entryActionMethod = method;
+					}
+					else if (annotation instanceof Action) {
+						actionMethods.put(method.getName(), method);
+
+						/*
+						 * Fetching the rollback handler for action
+						 */
+						Action actionAnnotation = (Action) annotation;
+						if (!actionAnnotation.rollback().isEmpty()) {
+							try {
+								Method rollbackMethod = testClass.getMethod(actionAnnotation.rollback());
+
+								rollbackMethods.put(method.getName(), rollbackMethod);
+							}
+							catch (Exception e) {
+								throw new RuntimeException(e);
+							}
+						}
+					}
+					else if (annotation instanceof ErrorHandler) {
+						errorHandlerMethods.put(method.getName(), method);
+					}
+					else if (annotation instanceof BeforeTest) {
+						beforeTestMethod = method;
+					}
+					else if (annotation instanceof AfterTest) {
+						afterTestMethod = method;
+					}
+					else if (annotation instanceof BeforeAction) {
+						beforeActionMethod = method;
+					}
+					else if (annotation instanceof AfterAction) {
+						afterActionMethod = method;
+					}
+					else if (annotation instanceof BeforeErrorHandler) {
+						beforeErrorHandlerMethod = method;
+					}
+					else if (annotation instanceof AfterErrorHandler) {
+						afterErrorHandlerMethod = method;
+					}
+					else if (annotation instanceof BeforeRollback) {
+						beforeRollbackMethod = method;
+					}
+					else if (annotation instanceof AfterRollback) {
+						afterRollbackMethod = method;
+					}
+					else if (annotation instanceof OnTestFailure) {
+						setOnTestFailureMethod(method);
+					}
+					else if (annotation instanceof OnEvent) {
+						OnEvent onEvent = (OnEvent) annotation;
+						if (onEvent.before() != null && !onEvent.before().isEmpty()) {
+							EventDescriptor eventDescriptor = new EventDescriptor();
+							eventDescriptor.setActionPattern(Pattern.compile(onEvent.before()));
+							eventDescriptor.setMethod(method);
+							beforeEventDescriptors.add(eventDescriptor);
+						}
+						if (onEvent.after() != null && !onEvent.after().isEmpty()) {
+							EventDescriptor eventDescriptor = new EventDescriptor();
+							eventDescriptor.setActionPattern(Pattern.compile(onEvent.after()));
+							eventDescriptor.setMethod(method);
+							afterEventDescriptors.add(eventDescriptor);
+						}
+					}
+					else if (annotation instanceof MainExceptionHandler) {
+						MainExceptionHandler mainExceptionHandler = (MainExceptionHandler) annotation;
+						mainExceptionHadlerMethods.put(mainExceptionHandler.exception(), method);
+					}
+				}
+			}
+		}
+	}
+
+	public TestDependency getDependency(String parameterName) {
+		for (TestDependency testDependency : testDefinition.getDependencies()) {
+			if (parameterName.equals(testDependency.getDependentParameterName()))
+				return testDependency;
+		}
+		return null;
+	}
+
+	public void collectFields(Class<?> testClass) {
+		try {
+			Field[] fields = testClass.getDeclaredFields();
+
+			// Collecting all input, output, component parameters
+			for (Field field : fields) {
+				Annotation[] annotations = field.getAnnotations();
+
+				if (annotations.length > 0) {
+					for (Annotation annotation : annotations) {
+						boolean isPublic = Modifier.isPublic(field.getModifiers());
+						if (annotation instanceof InputParameter) {
+							inputParameters.put(field.getName(), field);
+
+							if (!isPublic) {
+								inputParametersSetterMethods.put(field.getName(), ClassUtils.getSetterMethod(field));
+								inputParametersGetterMethods.put(field.getName(), ClassUtils.getGetterMethod(field));
+							}
+						}
+						else if (annotation instanceof OutputParameter) {
+							outputParameters.put(field.getName(), field);
+							if (!isPublic) {
+								outputParametersSetterMethods.put(field.getName(), ClassUtils.getSetterMethod(field));
+								outputParametersGetterMethods.put(field.getName(), ClassUtils.getGetterMethod(field));
+							}
+						}
+						else if (annotation instanceof Component) {
+							componentParameters.put(field.getName(), field);
+							if (!isPublic) {
+								componentParametersSetterMethods.put(field.getName(), ClassUtils.getSetterMethod(field));
+								componentParametersGetterMethods.put(field.getName(), ClassUtils.getGetterMethod(field));
+							}
+						}
+					}
+				}
+			}
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public Method getBeforeTestMethod() {
+		return beforeTestMethod;
+	}
+
+	public void setBeforeTestMethod(Method beforeTestMethod) {
+		this.beforeTestMethod = beforeTestMethod;
+	}
+
+	public Method getAfterTestMethod() {
+		return afterTestMethod;
+	}
+
+	public void setAfterTestMethod(Method afterTestMethod) {
+		this.afterTestMethod = afterTestMethod;
+	}
+
+	public Method getBeforeActionMethod() {
+		return beforeActionMethod;
+	}
+
+	public void setBeforeActionMethod(Method beforeActionMethod) {
+		this.beforeActionMethod = beforeActionMethod;
+	}
+
+	public Method getAfterActionMethod() {
+		return afterActionMethod;
+	}
+
+	public void setAfterActionMethod(Method afterActionMethod) {
+		this.afterActionMethod = afterActionMethod;
+	}
+
+	public Method getBeforeErrorHandlerMethod() {
+		return beforeErrorHandlerMethod;
+	}
+
+	public void setBeforeErrorHandlerMethod(Method beforeErrorHandlerMethod) {
+		this.beforeErrorHandlerMethod = beforeErrorHandlerMethod;
+	}
+
+	public Method getAfterErrorHandlerMethod() {
+		return afterErrorHandlerMethod;
+	}
+
+	public void setAfterErrorHandlerMethod(Method afterErrorHandlerMethod) {
+		this.afterErrorHandlerMethod = afterErrorHandlerMethod;
+	}
+
+	public Map<String, Method> getActionMethods() {
+		return actionMethods;
+	}
+
+	public Method getEntryActionMethod() {
+		return entryActionMethod;
+	}
+
+	public void setEntryActionMethod(Method entryActionMethod) {
+		this.entryActionMethod = entryActionMethod;
+	}
+
+	public Map<String, Field> getInputParameters() {
+		return inputParameters;
+	}
+
+	public void setInputParameters(Map<String, Field> inputParameters) {
+		this.inputParameters = inputParameters;
+	}
+
+	public Map<String, Method> getInputParametersSetterMethods() {
+		return inputParametersSetterMethods;
+	}
+
+	public void setInputParametersSetterMethods(Map<String, Method> inputParametersSetterMethods) {
+		this.inputParametersSetterMethods = inputParametersSetterMethods;
+	}
+
+	public Map<String, Method> getInputParametersGetterMethods() {
+		return inputParametersGetterMethods;
+	}
+
+	public void setInputParametersGetterMethods(Map<String, Method> inputParametersGetterMethods) {
+		this.inputParametersGetterMethods = inputParametersGetterMethods;
+	}
+
+	public Map<String, Field> getOutputParameters() {
+		return outputParameters;
+	}
+
+	public void setOutputParameters(Map<String, Field> outputParameters) {
+		this.outputParameters = outputParameters;
+	}
+
+	public Map<String, Method> getOutputParametersSetterMethods() {
+		return outputParametersSetterMethods;
+	}
+
+	public void setOutputParametersSetterMethods(Map<String, Method> outputParametersSetterMethods) {
+		this.outputParametersSetterMethods = outputParametersSetterMethods;
+	}
+
+	public Map<String, Method> getOutputParametersGetterMethods() {
+		return outputParametersGetterMethods;
+	}
+
+	public void setOutputParametersGetterMethods(Map<String, Method> outputParametersGetterMethods) {
+		this.outputParametersGetterMethods = outputParametersGetterMethods;
+	}
+
+	public void setActionMethods(Map<String, Method> actionMethods) {
+		this.actionMethods = actionMethods;
+	}
+
+	public Map<String, Method> getErrorHandlerMethods() {
+		return errorHandlerMethods;
+	}
+
+	public void setErrorHandlerMethods(Map<String, Method> errorHandlerMethods) {
+		this.errorHandlerMethods = errorHandlerMethods;
+	}
+
+	public Map<String, Field> getComponentParameters() {
+		return componentParameters;
+	}
+
+	public void setComponentParameters(Map<String, Field> componentParameters) {
+		this.componentParameters = componentParameters;
+	}
+
+	public Map<String, Method> getComponentParametersSetterMethods() {
+		return componentParametersSetterMethods;
+	}
+
+	public void setComponentParametersSetterMethods(Map<String, Method> componentParametersSetterMethods) {
+		this.componentParametersSetterMethods = componentParametersSetterMethods;
+	}
+
+	public Map<String, Method> getComponentParametersGetterMethods() {
+		return componentParametersGetterMethods;
+	}
+
+	public void setComponentParametersGetterMethods(Map<String, Method> componentParametersGetterMethods) {
+		this.componentParametersGetterMethods = componentParametersGetterMethods;
+	}
+
+	public void setTestInstance(Object testInstance) {
+		this.testInstance = testInstance;
+	}
+
+	public Object getTestInstance() {
+		return testInstance;
+	}
+
+	public List<EventDescriptor> getBeforeEventDescriptors() {
+		return beforeEventDescriptors;
+	}
+
+	public void setBeforeEventDescriptors(List<EventDescriptor> beforeEventDescriptors) {
+		this.beforeEventDescriptors = beforeEventDescriptors;
+	}
+
+	public List<EventDescriptor> getAfterEventDescriptors() {
+		return afterEventDescriptors;
+	}
+
+	public void setAfterEventDescriptors(List<EventDescriptor> afterEventDescriptors) {
+		this.afterEventDescriptors = afterEventDescriptors;
+	}
+
+	public void setInformationCollected(boolean isInformationCollected) {
+		this.isInformationCollected = isInformationCollected;
+	}
+
+	public boolean isInformationCollected() {
+		return isInformationCollected;
+	}
+
+	public void setOutputParameterValues(Map<String, Object> outputParameterValues) {
+		this.outputParameterValues = outputParameterValues;
+	}
+
+	public Map<String, Object> getOutputParameterValues() {
+		return outputParameterValues;
+	}
+
+	public void setFinished(boolean isFinished) {
+		this.isFinished = isFinished;
+	}
+
+	public boolean isFinished() {
+		return isFinished;
+	}
+
+	public void setTestDefinition(TestDefinition testDefinition) {
+		this.testDefinition = testDefinition;
+	}
+
+	public TestDefinition getTestDefinition() {
+		return testDefinition;
+	}
+
+	public void setMainExceptionHadlerMethods(Map<Class<?>, Method> mainExceptionHadlerMethods) {
+		this.mainExceptionHadlerMethods = mainExceptionHadlerMethods;
+	}
+
+	public Map<Class<?>, Method> getMainExceptionHadlerMethods() {
+		return mainExceptionHadlerMethods;
+	}
+
+	public Map<String, Method> getRollbackMethods() {
+		return rollbackMethods;
+	}
+
+	public void setRollbackMethods(Map<String, Method> rollbackMethods) {
+		this.rollbackMethods = rollbackMethods;
+	}
+
+	public Method getBeforeRollbackMethod() {
+		return beforeRollbackMethod;
+	}
+
+	public void setBeforeRollbackMethod(Method beforeRollbackMethod) {
+		this.beforeRollbackMethod = beforeRollbackMethod;
+	}
+
+	public Method getAfterRollbackMethod() {
+		return afterRollbackMethod;
+	}
+
+	public void setAfterRollbackMethod(Method afterRollbackMethod) {
+		this.afterRollbackMethod = afterRollbackMethod;
+	}
+
+	public void setOnTestFailureMethod(Method onTestFailureMethod) {
+		this.onTestFailureMethod = onTestFailureMethod;
+	}
+
+	public Method getOnTestFailureMethod() {
+		return onTestFailureMethod;
+	}
+}

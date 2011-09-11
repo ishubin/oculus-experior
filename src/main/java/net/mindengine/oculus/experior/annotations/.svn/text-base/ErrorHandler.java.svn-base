@@ -1,0 +1,23 @@
+package net.mind_engine.oculus.testrunframework.annotations;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface ErrorHandler
+{
+	String name() default "";
+	
+	/**
+	 * The name of method of next error handler. 
+	 * It will be invoked after the current error handler is done
+	 * @return
+	 */
+	String next() default "";
+	
+	boolean report() default true;
+	
+}

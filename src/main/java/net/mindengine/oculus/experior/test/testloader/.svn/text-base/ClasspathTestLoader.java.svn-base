@@ -1,0 +1,16 @@
+package net.mind_engine.oculus.testrunframework.test.testloader;
+
+/**
+ * The default test loader.
+ * Uses the classpath as a mapping for the test
+ * @author ishubin
+ *
+ */
+public class ClasspathTestLoader implements TestLoader{
+
+    @Override
+    public Class<?> loadTestClass(String path) throws ClassNotFoundException {
+        return Class.forName(path);
+    }
+
+}

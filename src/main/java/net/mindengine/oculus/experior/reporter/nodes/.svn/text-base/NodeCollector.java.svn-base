@@ -1,0 +1,32 @@
+package net.mind_engine.oculus.testrunframework.reporter.nodes;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class NodeCollector
+{
+    private List<ReportNode> nodes = new ArrayList<ReportNode>();
+    private NodeComparator nodeComparator;
+    
+    public void addNode(ReportNode reportNode)
+    {
+        nodes.add(reportNode);
+    }
+    public void setNodeComparator(NodeComparator nodeComparator)
+    {
+        this.nodeComparator = nodeComparator;
+    }
+    public NodeComparator getNodeComparator()
+    {
+        return nodeComparator;
+    }
+    public void setNodes(List<ReportNode> nodes)
+    {
+        this.nodes = nodes;
+    }
+    public List<ReportNode> getNodes()
+    {
+        return nodes;
+    }
+
+}

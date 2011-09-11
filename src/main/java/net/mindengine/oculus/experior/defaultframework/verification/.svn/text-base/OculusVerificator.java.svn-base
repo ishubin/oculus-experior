@@ -1,0 +1,90 @@
+package net.mind_engine.oculus.simpletestframework.verification;
+
+import net.mind_engine.oculus.testrunframework.reporter.Report;
+import net.mind_engine.oculus.testrunframework.reporter.ReportDesign;
+import net.mind_engine.oculus.testrunframework.reporter.ReportLogo;
+
+public class OculusVerificator {
+	private Report report;
+	
+	/**
+	 * Name of the entity which is being verified
+	 */
+	private String entityName;
+	
+	public OculusVerificator(Report report) {
+		super();
+		this.report = report;
+	}
+	
+	public OculusVerificator(Report report, String entityName) {
+		super();
+		this.report = report;
+		this.entityName = entityName;
+	}
+	
+	@Deprecated
+	public boolean validateEquals(String parameterName, Object expectedValue,
+			Object realValue) {
+		boolean bPassed = false;
+
+		if (expectedValue == null) {
+			if (realValue == null)
+				bPassed = true;
+		} else {
+			if (expectedValue.equals(realValue))
+				bPassed = true;
+		}
+
+		String text = ReportDesign.bold(parameterName) + " validation: "
+				+ ReportDesign.breakline() + "Expected = "
+				+ ReportDesign.string(expectedValue.toString())
+				+ ReportDesign.breakline() + "Real = "
+				+ ReportDesign.string(realValue.toString());
+
+		if (bPassed) {
+			report.info(text, null, ReportLogo.VALIDATION_PASSED);
+		} else
+			report.error(text, null, ReportLogo.VALIDATION_FAILED);
+
+		return bPassed;
+	}
+
+	@Deprecated
+	public boolean validateContains(String parameterName, String seekText,
+			String realText) {
+		boolean bPassed = false;
+		if (realText != null) {
+			bPassed = realText.contains(seekText);
+			if (bPassed) {
+				report.info(
+						ReportDesign.bold(parameterName) + " contains text "
+								+ ReportDesign.shortString(seekText), seekText,
+						ReportLogo.VALIDATION_PASSED);
+			} else
+				report.error(
+						ReportDesign.bold(parameterName)
+								+ " doesn't contain text "
+								+ ReportDesign.shortString(seekText), seekText,
+						ReportLogo.VALIDATION_FAILED);
+		} else
+			report.error(ReportDesign.bold(parameterName) + " is null");
+		return bPassed;
+	}
+
+	public void setReport(Report report) {
+		this.report = report;
+	}
+
+	public Report getReport() {
+		return report;
+	}
+
+	public void setEntityName(String entityName) {
+	    this.entityName = entityName;
+    }
+
+	public String getEntityName() {
+	    return entityName;
+    }
+}

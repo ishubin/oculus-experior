@@ -1,0 +1,32 @@
+package net.mind_engine.oculus.testrunframework.db.mappers;
+
+import net.mind_engine.oculus.testrunframework.db.ProjectBean;
+import net.mind_engine.oculus.testrunframework.db.SuiteRunBean;
+import net.mind_engine.oculus.testrunframework.db.TestBean;
+import net.mind_engine.oculus.testrunframework.db.TestRunBean;
+
+import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+
+public class MapperFactory
+{
+	public static ParameterizedRowMapper<Object> getRowMapper(Class<?> clazz)
+	{
+		if(clazz.equals(SuiteRunBean.class))
+		{
+			return new SuiteRunMapper();
+		}
+		else if(clazz.equals(TestRunBean.class))
+		{
+			return new TestRunMapper();
+		}
+		else if(clazz.equals(ProjectBean.class))
+		{
+			return new ProjectMapper();
+		}
+		else if(clazz.equals(TestBean.class))
+		{
+			return new TestMapper();
+		}
+		else return null;
+	}
+}

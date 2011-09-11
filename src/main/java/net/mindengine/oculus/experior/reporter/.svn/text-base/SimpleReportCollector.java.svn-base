@@ -1,0 +1,65 @@
+package net.mind_engine.oculus.testrunframework.reporter;
+
+import net.mind_engine.oculus.testrunframework.reporter.nodes.ReportNode;
+import net.mind_engine.oculus.testrunframework.reporter.nodes.TextReportNode;
+
+
+
+public class SimpleReportCollector implements ReportCollector
+{
+	private ReportNode rootNode;
+	
+	@Override
+	public void clearReport()
+	{
+	    rootNode = new TextReportNode();
+	}
+	/**
+	 * Used to define the current node in a list where all the new nodes will be added
+	 */
+	private ReportNode nodeCaret;
+	
+	public SimpleReportCollector()
+	{
+	    rootNode  = new TextReportNode();
+	    nodeCaret = rootNode;
+	    nodeCaret.setParent(null);
+	}
+	@Override
+	public void addNode(ReportNode node)
+	{
+	    System.out.println(node.toString());
+		nodeCaret.getChildren().add(node);
+		node.setParent(nodeCaret);
+	}
+	
+	@Override
+	public void gotoNode(ReportNode node)
+	{
+		nodeCaret = node;
+		
+	}
+	
+	@Override
+	public void gotoRoot()
+	{
+		nodeCaret = rootNode;
+	}
+	
+	@Override
+	public ReportNode getCaret()
+	{
+	    return nodeCaret;
+	}
+
+    @Override
+    public void goUp()
+    {
+        if(nodeCaret.getParent()!=null)
+        {
+            nodeCaret = nodeCaret.getParent();
+        }
+    }
+	
+	
+}

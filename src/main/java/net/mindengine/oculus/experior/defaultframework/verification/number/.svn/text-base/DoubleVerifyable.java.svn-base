@@ -1,0 +1,13 @@
+package net.mind_engine.oculus.simpletestframework.verification.number;
+
+/**
+ * Used to obtain the real data in order to compare it later with the expected
+ * result
+ * 
+ * @author ishubin
+ * 
+ */
+public interface DoubleVerifyable {
+
+	public Double getValueForValidation();
+}

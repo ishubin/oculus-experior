@@ -1,0 +1,7 @@
+package net.mind_engine.oculus.testrunframework.suite;
+
+public interface SuiteListener
+{
+    public void onSuiteStarted(Suite suite);
+    public void onSuiteFinished(Suite suite);
+}

@@ -1,0 +1,10 @@
+package net.mind_engine.oculus.testrunframework.db;
+
+public class SimpleDAO
+{
+	protected OculusSimpleJdbcDaoSupport daoSupport;
+	public SimpleDAO(OculusSimpleJdbcDaoSupport daoSupport)
+	{
+		this.daoSupport = daoSupport;
+	}
+}

@@ -1,0 +1,101 @@
+package net.mind_engine.oculus.testrunframework.suite;
+
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+
+import net.mind_engine.oculus.testrunframework.SuiteInterruptListener;
+import net.mind_engine.oculus.testrunframework.TestRunListener;
+import net.mind_engine.oculus.testrunframework.test.TestDefinition;
+import net.mind_engine.oculus.testrunframework.test.TestRunner;
+
+public class SuiteRunner {
+	private Suite suite;
+	private SuiteListener suiteListener;
+	private TestRunListener testRunListener;
+	private SuiteInterruptListener suiteInterruptListener;
+
+	public void runSuite() {
+		/*
+		 * Creating new SuiteSession instance this session will live until all
+		 * tests have completed
+		 */
+		suite.setStartTime(new Date());
+		SuiteSession suiteSession = SuiteSession.createInstance();
+		suiteSession.setSuiteListener(suiteListener);
+		suiteSession.setSuite(suite);
+		if (suiteListener != null) {
+			suiteListener.onSuiteStarted(suite);
+		}
+
+		boolean bProceedSuite = true;
+		boolean bProceedTest = true;
+		List<TestDefinition> testList = suite.getTestsList();
+
+		if (testList != null) {
+			Iterator<TestDefinition> iterator = testList.iterator();
+
+			while (iterator.hasNext() && bProceedSuite) {
+				TestDefinition test = iterator.next();
+
+				if (suiteInterruptListener != null) {
+					bProceedTest = suiteInterruptListener.proceedTest(test);
+					bProceedSuite = suiteInterruptListener.proceedSuite();
+				}
+				if (bProceedTest && bProceedSuite) {
+					try {
+						test.setSuite(suite);
+						TestRunner.runTest(test, testRunListener, null);
+					}
+					catch (Throwable e) {
+						e.printStackTrace();
+					}
+				}
+				else {
+					System.out.println("**************\nSuiteRunner was Interrupted\n***********************");
+				}
+			}
+		}
+
+		if (suiteListener != null) {
+			suiteListener.onSuiteFinished(suite);
+		}
+		/*
+		 * Destroying SuiteSession
+		 */
+		SuiteSession.destroyInstance();
+	}
+
+	public void setSuite(Suite suite) {
+		this.suite = suite;
+	}
+
+	public Suite getSuite() {
+		return suite;
+	}
+
+	public void setSuiteListener(SuiteListener suiteListener) {
+		this.suiteListener = suiteListener;
+	}
+
+	public SuiteListener getSuiteListener() {
+		return suiteListener;
+	}
+
+	public void setTestRunListener(TestRunListener testRunListener) {
+		this.testRunListener = testRunListener;
+	}
+
+	public TestRunListener getTestRunListener() {
+		return testRunListener;
+	}
+
+	public void setSuiteInterruptListener(SuiteInterruptListener suiteInterruptListener) {
+		this.suiteInterruptListener = suiteInterruptListener;
+	}
+
+	public SuiteInterruptListener getSuiteInterruptListener() {
+		return suiteInterruptListener;
+	}
+
+}

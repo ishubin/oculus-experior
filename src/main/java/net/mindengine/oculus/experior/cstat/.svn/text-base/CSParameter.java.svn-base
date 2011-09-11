@@ -1,0 +1,47 @@
+package net.mind_engine.oculus.testrunframework.cstat;
+
+import java.util.Collection;
+import java.util.LinkedList;
+
+public class CSParameter {
+    private String shortName;
+    private String value;
+    
+    public CSParameter() {
+    }
+    
+    public CSParameter(String shortName, String value) {
+        super();
+        this.shortName = shortName;
+        this.value = value;
+    }
+
+    public String getShortName() {
+        return shortName;
+    }
+    public void setShortName(String shortName) {
+        this.shortName = shortName;
+    }
+    public String getValue() {
+        return value;
+    }
+    public void setValue(String value) {
+        this.value = value;
+    }
+    
+    
+    /**
+     * Converts array to collection
+     * @param array
+     * @return
+     */
+    public static Collection<CSParameter> toCollection(CSParameter[]array){
+        if(array==null)return null;
+        
+        Collection<CSParameter> ps = new LinkedList<CSParameter>();
+        for(CSParameter p : array){
+            ps.add(p);
+        }
+        return ps;
+    }
+}

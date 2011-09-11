@@ -1,0 +1,8 @@
+package net.mind_engine.oculus.testrunframework.performance;
+
+import net.mind_engine.oculus.testrunframework.chart.Chart;
+
+public interface DataCollector
+{
+    public Chart getChart();
+}
