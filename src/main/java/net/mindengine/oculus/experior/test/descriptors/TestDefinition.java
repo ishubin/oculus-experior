@@ -42,6 +42,8 @@ public class TestDefinition implements Serializable {
      */
     private Long customId;
 
+    //TODO Injected tests definition
+    
     /**
      * Contains the path to the test. By default is used as a classpath. Format:
      * "loaderName:path"

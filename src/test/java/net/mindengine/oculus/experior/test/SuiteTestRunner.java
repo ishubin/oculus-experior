@@ -78,6 +78,9 @@ public class SuiteTestRunner {
         Assert.assertEquals(true, (boolean) test.paramBoolean);
         Assert.assertEquals(56, (int) test.getParamInt());
         
+        //Veryfying that Temp fields were set to null
+        Assert.assertNull(test.tempComponent);
+        
         //Verifying testSession. It should be null as all test data should be cleared after the test is completed
         Assert.assertNull(testRunner.getTestSession());
 

@@ -156,19 +156,19 @@ public abstract class OculusTest {
 
                 // Setting test status to testInformation so it could be fetched
                 // by test-run-manager system
-                testInformation.setStatus(TestInformation.FAILED);
+                testInformation.setStatus(TestInformation.STATUS_FAILED);
             } else if (reportNode.hasWarn()) {
                 testRunBean.setStatus("WARNING");
 
                 // Setting test status to testInformation so it could be fetched
                 // by test-run-manager system
-                testInformation.setStatus(TestInformation.WARNING);
+                testInformation.setStatus(TestInformation.STATUS_WARNING);
             } else {
                 testRunBean.setStatus("PASSED");
 
                 // Setting test status to testInformation so it could be fetched
                 // by test-run-manager system
-                testInformation.setStatus(TestInformation.PASSED);
+                testInformation.setStatus(TestInformation.STATUS_PASSED);
             }
 
             // Obtaining the projects id

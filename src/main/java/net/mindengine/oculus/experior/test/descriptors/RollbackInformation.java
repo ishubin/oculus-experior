@@ -23,6 +23,7 @@ import java.lang.reflect.Method;
 public class RollbackInformation {
     private String name;
     private Method method;
+    private TestInformation testInformation;
 
     public void setName(String name) {
         this.name = name;
@@ -38,6 +39,14 @@ public class RollbackInformation {
 
     public Method getMethod() {
         return method;
+    }
+
+    public void setTestInformation(TestInformation testInformation) {
+        this.testInformation = testInformation;
+    }
+
+    public TestInformation getTestInformation() {
+        return testInformation;
     }
 
 }

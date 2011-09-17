@@ -23,7 +23,7 @@ import java.lang.reflect.Method;
 public class ActionInformation {
     private String actionName;
     private Method actionMethod;
-    private Integer percent;
+    
     private TestInformation testInformation;    
 
     public void setActionName(String actionName) {
@@ -40,14 +40,6 @@ public class ActionInformation {
 
     public Method getActionMethod() {
         return actionMethod;
-    }
-
-    public void setPercent(Integer percent) {
-        this.percent = percent;
-    }
-
-    public Integer getPercent() {
-        return percent;
     }
 
     public void setTestInformation(TestInformation testInformation) {

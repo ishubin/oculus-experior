@@ -21,6 +21,7 @@ package net.mindengine.oculus.experior.test.sampletests;
 import net.mindengine.oculus.experior.annotations.Action;
 import net.mindengine.oculus.experior.annotations.EntryAction;
 import net.mindengine.oculus.experior.annotations.InputParameter;
+import net.mindengine.oculus.experior.annotations.Temp;
 import net.mindengine.oculus.experior.annotations.Test;
 
 @Test(name="Test 1", projectId="Unknown Project")
@@ -39,6 +40,8 @@ public class Test1 extends BaseTest{
     @InputParameter(defaultValue="56")
     private Integer paramInt;
     
+    @Temp
+    public String tempComponent = "temp component"; 
     
     @EntryAction
     @Action(name="Action 1", next="action2")

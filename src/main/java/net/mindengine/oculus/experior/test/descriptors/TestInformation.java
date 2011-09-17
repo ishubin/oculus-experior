@@ -18,12 +18,21 @@
  ******************************************************************************/
 package net.mindengine.oculus.experior.test.descriptors;
 
+import java.util.Collection;
+
 import net.mindengine.oculus.experior.test.TestRunner;
 
 public class TestInformation {
-    public static final int PASSED = 0;
-    public static final int FAILED = 1;
-    public static final int WARNING = 2;
+    public static final int STATUS_UNKOWN = 0;
+    public static final int STATUS_PASSED = 1;
+    public static final int STATUS_FAILED = 2;
+    public static final int STATUS_WARNING = 3;
+
+    public static final int PHASE_NOT_LAUNCHED = 0;
+    public static final int PHASE_INITIATION = 1;
+    public static final int PHASE_RUNNING = 2;
+    public static final int PHASE_CLEANUP = 3;
+    public static final int PHASE_DONE = 4;
 
     /**
      * The exception which has occurred in test and is the reason of test
@@ -31,7 +40,28 @@ public class TestInformation {
      */
     private Throwable failureCause;
     private TestRunner testRunner;
-    private int status = 0;
+    private int status = STATUS_PASSED;
+    
+    
+    /**
+     * Specifies the current phase in which the test is in. Will be used for the
+     * grid to display detailed information about whole suite run
+     */
+    private int phase = PHASE_NOT_LAUNCHED;
+
+    /**
+     * Sequence of action names which will be run during test execution
+     */
+    private Collection<String> estimatedActions;
+
+    /**
+     * Number of action in a sequence described above which is running right
+     * now. When the test is finished the runningActionNumber will be the same
+     * as the total amount of actions. Note that all events, error-handlers,
+     * rollbacks are not counted here. error-handlers are meant to be a part of
+     * specific actions and rollbacks are meant to be part of test cleanup
+     */
+    private int runningActionNumber;
 
     public String getTestName() {
         return testRunner.getTestDefinition().getName();
@@ -44,7 +74,7 @@ public class TestInformation {
     public Throwable getFailureCause() {
         return failureCause;
     }
-    
+
     public void setStatus(int status) {
         this.status = status;
     }
@@ -59,6 +89,30 @@ public class TestInformation {
 
     public TestRunner getTestRunner() {
         return testRunner;
+    }
+
+    public int getPhase() {
+        return phase;
+    }
+
+    public void setPhase(int phase) {
+        this.phase = phase;
+    }
+
+    public Collection<String> getEstimatedActions() {
+        return estimatedActions;
+    }
+
+    public void setEstimatedActions(Collection<String> estimatedActions) {
+        this.estimatedActions = estimatedActions;
+    }
+
+    public int getRunningActionNumber() {
+        return runningActionNumber;
+    }
+
+    public void setRunningActionNumber(int runningActionNumber) {
+        this.runningActionNumber = runningActionNumber;
     }
 
 }
