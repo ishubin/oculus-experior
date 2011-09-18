@@ -24,6 +24,7 @@ import java.util.Iterator;
 
 import junit.framework.Assert;
 
+import net.mindengine.oculus.experior.ExperiorConfig;
 import net.mindengine.oculus.experior.annotations.events.AfterAction;
 import net.mindengine.oculus.experior.annotations.events.AfterTest;
 import net.mindengine.oculus.experior.annotations.events.BeforeAction;
@@ -65,7 +66,8 @@ public class SuiteTestRunner {
 
         TestRunner testRunner = new TestRunner();
         TestDefinition td = testDefinition(Test1.class);
-        testRunner.setTestDescriptor(TestDescriptor.create(td));
+        testRunner.setTestDescriptor(TestDescriptor.create(td, ExperiorConfig.getInstance().getTestRunnerConfiguration()));
+        testRunner.setConfiguration(ExperiorConfig.getInstance().getTestRunnerConfiguration());
         testRunner.setTestDefinition(td);
         testRunner.runTest();
 
@@ -108,10 +110,15 @@ public class SuiteTestRunner {
             throw new RuntimeException(e);
         }
         SuiteRunner sr = new SuiteRunner();
+        sr.setTestRunnerConfiguration(ExperiorConfig.getInstance().getTestRunnerConfiguration());
         sr.setSuite(suite);
         sr.runSuite();
         
-        Assert.assertEquals("test out value", Test2_B.parameterInputValue);
+        
+        Assert.assertEquals(2, Test2_B.parameterInputValuesSequence.size());
+        Iterator<String> it = Test2_B.parameterInputValuesSequence.iterator();
+        Assert.assertEquals("some value", it.next());
+        Assert.assertEquals("test out value", it.next());
     }
     
     

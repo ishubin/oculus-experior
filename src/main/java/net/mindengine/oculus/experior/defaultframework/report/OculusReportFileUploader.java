@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.mindengine.oculus.experior.Config;
+import net.mindengine.oculus.experior.ExperiorConfig;
 
 public class OculusReportFileUploader {
     private String url;
@@ -172,8 +172,8 @@ public class OculusReportFileUploader {
     }
 
     public static OculusReportFileUploader getStandardFileUploader() {
-        Config config = Config.getInstance();
-        return new OculusReportFileUploader(config.get(Config.OCULUS_URL) + "/report/upload-file");
+        ExperiorConfig config = ExperiorConfig.getInstance();
+        return new OculusReportFileUploader(config.get(ExperiorConfig.OCULUS_URL) + "/report/upload-file");
     }
 
     public static void main(String[] args) throws Exception {

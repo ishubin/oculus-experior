@@ -19,6 +19,7 @@
 package net.mindengine.oculus.experior.test;
 
 import junit.framework.Assert;
+import net.mindengine.oculus.experior.ExperiorConfig;
 import net.mindengine.oculus.experior.annotations.Action;
 import net.mindengine.oculus.experior.annotations.EntryAction;
 import net.mindengine.oculus.experior.annotations.InputParameter;
@@ -73,7 +74,7 @@ public class SuiteTestDescriptor {
         TestDefinition testDefinition = new TestDefinition();
         testDefinition.setMapping("classpath:" + Test1_Extended.class.getName());
 
-        TestDescriptor testDescriptor = TestDescriptor.create(testDefinition);
+        TestDescriptor testDescriptor = TestDescriptor.create(testDefinition, ExperiorConfig.getInstance().getTestRunnerConfiguration());
         FieldDescriptor fieldDescriptor = getFieldDescriptor(testDescriptor, InputParameter.class, "paramString");
         Assert.assertNotNull(fieldDescriptor);
         Assert.assertEquals("paramString", fieldDescriptor.getName());

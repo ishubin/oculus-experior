@@ -19,23 +19,16 @@
 package net.mindengine.oculus.experior.test;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Stack;
 
-import net.mindengine.oculus.experior.ClassUtils;
 import net.mindengine.oculus.experior.TestRunListener;
 import net.mindengine.oculus.experior.annotations.Action;
 import net.mindengine.oculus.experior.annotations.ErrorHandler;
-import net.mindengine.oculus.experior.annotations.InputParameter;
-import net.mindengine.oculus.experior.annotations.OutputParameter;
 import net.mindengine.oculus.experior.annotations.RollbackHandler;
-import net.mindengine.oculus.experior.annotations.Temp;
 import net.mindengine.oculus.experior.annotations.events.AfterAction;
 import net.mindengine.oculus.experior.annotations.events.AfterErrorHandler;
 import net.mindengine.oculus.experior.annotations.events.AfterRollback;
@@ -48,20 +41,15 @@ import net.mindengine.oculus.experior.annotations.events.OnException;
 import net.mindengine.oculus.experior.annotations.events.OnTestFailure;
 import net.mindengine.oculus.experior.exception.TestConfigurationException;
 import net.mindengine.oculus.experior.exception.TestInterruptedException;
-import net.mindengine.oculus.experior.suite.Suite;
 import net.mindengine.oculus.experior.suite.SuiteRunner;
 import net.mindengine.oculus.experior.test.descriptors.ActionInformation;
 import net.mindengine.oculus.experior.test.descriptors.ErrorInformation;
 import net.mindengine.oculus.experior.test.descriptors.EventDescriptor;
 import net.mindengine.oculus.experior.test.descriptors.EventDescriptorsContainer;
-import net.mindengine.oculus.experior.test.descriptors.FieldDescriptor;
-import net.mindengine.oculus.experior.test.descriptors.FieldDescriptorsContainer;
 import net.mindengine.oculus.experior.test.descriptors.RollbackInformation;
 import net.mindengine.oculus.experior.test.descriptors.TestDefinition;
-import net.mindengine.oculus.experior.test.descriptors.TestDependency;
 import net.mindengine.oculus.experior.test.descriptors.TestDescriptor;
 import net.mindengine.oculus.experior.test.descriptors.TestInformation;
-import net.mindengine.oculus.experior.test.descriptors.TestParameter;
 
 public class TestRunner {
     private TestDescriptor testDescriptor;
@@ -72,6 +60,8 @@ public class TestRunner {
     private TestRunListener testRunListener;
     private Collection<TestDescriptor> includeTests;
     private SuiteRunner suiteRunner;
+    private TestRunnerConfiguration configuration;
+    private Collection<TestRunner> injectedTestRunners;
 
     // Used to store events which should be invoked when the test is finished
     private Collection<EventDescriptor> rollbackSequence;
@@ -100,62 +90,40 @@ public class TestRunner {
         instantiateTestComponents();
         try {
             executeTestFlow();
+            collectOutputParameters();
         } catch (TestConfigurationException e) {
             throw e;
         } catch (TestInterruptedException e) {
             throw e;
         } finally {
             collectOutputParameters();
-            clearTestData();
-        }
-        
-        // TODO Components, DataProviders and DataSources
-        // TODO Injected tests running. May update the TestDefinition to support
-        // this feature
-    }
-
-    protected void collectOutputParameters() {
-        if (suiteRunner != null) {
-            Suite suite = suiteRunner.getSuite();
-            if (suite != null) {
-                if (suite.getTestsOutputParameters() == null) {
-                    suite.setTestsOutputParameters(new HashMap<Long, Map<String, Object>>());
-                }
-
-                // Fetching values for all test output parameters
-                Map<String, FieldDescriptor> fieldDescriptors = testDescriptor.getFieldDescriptors(OutputParameter.class);
-                if (fieldDescriptors != null) {
-                    for (FieldDescriptor fieldDescriptor : fieldDescriptors.values()) {
-                        Field field = fieldDescriptor.getField();
-                        try {
-                            Object fieldValue = ClassUtils.getFieldValue(field, testInstance);
-                            Map<String, Object> testOutputMap = suite.getTestsOutputParameters().get(testDefinition.getCustomId());
-                            if (testOutputMap == null) {
-                                testOutputMap = new HashMap<String, Object>();
-                                suite.getTestsOutputParameters().put(testDefinition.getCustomId(), testOutputMap);
-                            }
-                            testOutputMap.put(field.getName(), fieldValue);
-
-                        } catch (Exception e) {
-                        }
-                    }
+            cleanup();
+            
+            
+            // TODO Injected tests running should be updated a bit when TestDefinition class will support this feature
+            
+            //Executing injected test runners
+            if(injectedTestRunners!=null) {
+                for(TestRunner testRunner : injectedTestRunners) {
+                    testRunner.setParent(this);
+                    testRunner.runTest();
                 }
             }
         }
     }
 
-    protected void clearTestData() {
-        testSession = null;
-        Map<String, FieldDescriptor> tempFieldsMap = testDescriptor.getFieldDescriptors(Temp.class);
-        if(tempFieldsMap!=null) {
-            for (FieldDescriptor fieldDescriptor : tempFieldsMap.values()) {
-                try {
-                    ClassUtils.setFieldValue(fieldDescriptor.getField(), testInstance, null);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
+    protected void collectOutputParameters() throws TestConfigurationException {
+        if(configuration.getParameterResolver()==null) {
+            throw new TestConfigurationException("ParameterResolver is not specified");
         }
+        configuration.getParameterResolver().storeTestParameters(this);
+    }
+
+    protected void cleanup() throws TestConfigurationException {
+        if(configuration.getCleanupResolver()==null) {
+            throw new TestConfigurationException("CleanupResolver is not specified");
+        }
+        configuration.getCleanupResolver().cleanup(this);
     }
 
     protected void preparation() throws TestConfigurationException {
@@ -165,10 +133,13 @@ public class TestRunner {
         if (testDescriptor == null) {
             throw new TestConfigurationException("TestDescriptor wasn't provided");
         }
-
+        if(configuration==null) {
+            throw new TestConfigurationException("TestRunnerConfiguration is not provided");
+        }
+        
         testSession = TestSession.create(this);
         if (!testDescriptor.isInformationCollected()) {
-            testDescriptor.collectTestInformation(testDefinition);
+            testDescriptor.collectTestInformation(testDefinition, configuration);
         }
 
         rollbackSequence = new Stack<EventDescriptor>();
@@ -190,93 +161,20 @@ public class TestRunner {
      * @throws TestConfigurationException
      */
     protected void instantiateTestInputParameters() throws TestConfigurationException {
-        FieldDescriptorsContainer fdc = testDescriptor.getFieldContainer().get(InputParameter.class);
-        if (fdc != null) {
-            for (Map.Entry<String, FieldDescriptor> inputParameter : fdc.getDescriptors().entrySet()) {
-                Field field = inputParameter.getValue().getField();
-                Object value = null;
-                /*
-                 * Searching for parameter dependency. If it exists then the
-                 * parameter will be instantiated with this dependency
-                 */
-                TestDependency dependency = testDefinition.getDependency(inputParameter.getKey());
-                Suite suite = null;
-                if (suiteRunner != null) {
-                    suite = suiteRunner.getSuite();
-                }
-                if (dependency != null && suite != null) {
-                    /*
-                     * Fetching parameter value from prerequisite test output
-                     * parameter in the same suite
-                     */
-                    TestDefinition prerequisiteTestDefinition = suite.getTestsMap().get(dependency.getPrerequisiteTestId());
-                    if (prerequisiteTestDefinition == null)
-                        throw new TestConfigurationException("The test with id = " + dependency.getPrerequisiteTestId() + " doesn't exist in suite");
-
-                    Object dependentValue = null;
-                    boolean bParameterFound = false;
-                    if (suite.getTestsOutputParameters().containsKey(dependency.getPrerequisiteTestId())) {
-                        Map<String, Object> testParameters = suite.getTestsOutputParameters().get(dependency.getPrerequisiteTestId());
-                        if (testParameters.containsKey(dependency.getPrerequisiteParameterName())) {
-                            dependentValue = testParameters.get(dependency.getPrerequisiteParameterName());
-                            bParameterFound = true;
-                        }
-                    }
-                    if (!bParameterFound) {
-                        if (suite.getTestsInputParameters().containsKey(testDefinition.getCustomId())) {
-                            Map<String, Object> testParameters = suite.getTestsInputParameters().get(testDefinition.getCustomId());
-                            if (testParameters.containsKey(dependency.getPrerequisiteParameterName())) {
-                                dependentValue = testParameters.get(dependency.getPrerequisiteParameterName());
-                            }
-                        }
-                    }
-                    value = dependentValue;
-                    try {
-                        ClassUtils.setFieldValue(field, testInstance, dependentValue);
-                    } catch (Exception e) {
-                        throw new TestConfigurationException("Couldn't instantiate input parameter: " + inputParameter.getKey(), e);
-                    }
-                } else {
-                    /*
-                     * Fetching test parameter from test definition
-                     */
-                    TestParameter testParameter = testDefinition.getParameters().get(inputParameter.getKey());
-                    if (testParameter != null) {
-                        try {
-                            value = ClassUtils.setFieldValueFromString(field, testInstance, testParameter.getValue());
-                        } catch (Exception e) {
-                            throw new TestConfigurationException("Couldn't instantiate input parameter: " + inputParameter.getKey(), e);
-                        }
-                    } else {
-                        /*
-                         * Searching for a default value for a parameter if it
-                         * wasn't set in test run
-                         */
-                        InputParameter inputParameterAnnotation = field.getAnnotation(InputParameter.class);
-
-                        try {
-                            value = ClassUtils.setFieldValueFromString(field, testInstance, inputParameterAnnotation.defaultValue());
-                        } catch (Exception e) {
-                            throw new TestConfigurationException("Couldn't instantiate input parameter: " + inputParameter.getKey(), e);
-                        }
-                    }
-                }
-                /*
-                 * Putting test input parameter value to suite input parameters
-                 * storage
-                 */
-                if (suite != null) {
-                    if (!suite.getTestsInputParameters().containsKey(testDefinition.getCustomId())) {
-                        suite.getTestsInputParameters().put(testDefinition.getCustomId(), new HashMap<String, Object>());
-                    }
-                    suite.getTestsInputParameters().get(testDefinition.getCustomId()).put(inputParameter.getKey(), value);
-                }
-            }
+        if(configuration.getParameterResolver()==null) {
+            throw new TestConfigurationException("ParameterResolver is not specified");
         }
+        configuration.getParameterResolver().instantiateTestInputParameters(this);
     }
 
     protected void instantiateTestComponents() throws TestConfigurationException {
-        // TODO implement components
+        if(configuration.getDataProviderResolver()==null) {
+            throw new TestConfigurationException("DataProviderResolver is not specified");
+        }
+        if(configuration.getDataDependencyResolver()==null) {
+            throw new TestConfigurationException("DataDependencyResolver is not specified");
+        }
+        configuration.getDataProviderResolver().resolveDataProviders(this, configuration.getDataDependencyResolver());
     }
 
     protected void executeTestFlow() throws TestConfigurationException, TestInterruptedException {
@@ -615,5 +513,21 @@ public class TestRunner {
 
     public SuiteRunner getSuiteRunner() {
         return suiteRunner;
+    }
+
+    public void setConfiguration(TestRunnerConfiguration configuration) {
+        this.configuration = configuration;
+    }
+
+    public TestRunnerConfiguration getConfiguration() {
+        return configuration;
+    }
+
+    public void setInjectedTestRunners(Collection<TestRunner> injectedTestRunners) {
+        this.injectedTestRunners = injectedTestRunners;
+    }
+
+    public Collection<TestRunner> getInjectedTestRunners() {
+        return injectedTestRunners;
     }
 }

@@ -40,7 +40,7 @@ public class UnitedSuiteRunner extends SuiteRunner {
         suiteSession.setSuiteListener(getSuiteListener());
         suiteSession.setSuite(getSuite());
         if (getSuiteListener() != null) {
-            getSuiteListener().onSuiteStarted(getSuite());
+            getSuiteListener().onSuiteStarted(this);
         }
 
         List<TestDefinition> testList = getSuite().getTestsList();
@@ -58,28 +58,27 @@ public class UnitedSuiteRunner extends SuiteRunner {
                     if (firstTestDefinition == null) {
                         firstTestDefinition = testDefinition;
                     } else {
-                        includeTests.add(TestDescriptor.create(testDefinition));
+                        includeTests.add(TestDescriptor.create(testDefinition, getTestRunnerConfiguration()));
                     }
                 }
 
                 TestRunner testRunner = new TestRunner();
                 testRunner.setIncludeTests(includeTests);
                 firstTestDefinition.setName(getSuite().getName());
-                testRunner.setTestDescriptor(TestDescriptor.create(firstTestDefinition));
+                testRunner.setTestDescriptor(TestDescriptor.create(firstTestDefinition, getTestRunnerConfiguration()));
                 testRunner.setTestDefinition(firstTestDefinition);
                 testRunner.setTestRunListener(getTestRunListener());
                 try {
                     testRunner.runTest();
                 }
                 catch (Exception e) {
-                    // TODO: handle exception thrown from TestRunner
                     e.printStackTrace();
                 }
             }
         }
 
         if (getSuiteListener() != null) {
-            getSuiteListener().onSuiteFinished(getSuite());
+            getSuiteListener().onSuiteFinished(this);
         }
         /*
          * Destroying SuiteSession

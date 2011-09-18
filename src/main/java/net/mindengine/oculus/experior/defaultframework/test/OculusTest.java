@@ -94,10 +94,10 @@ public abstract class OculusTest {
 
     @AfterTest
     public void onAfterTest(TestInformation testInformation) throws Exception {
-        OculusSimpleJdbcDaoSupport daoSupport = OculusSimpleJdbcDaoSupport.getInstance();
-        TestDefinition testDefinition = testInformation.getTestRunner().getTestDefinition();
-
+        
         if (testInformation.getTestRunner().getParent()==null) {
+            OculusSimpleJdbcDaoSupport daoSupport = OculusSimpleJdbcDaoSupport.getInstance();
+            TestDefinition testDefinition = testInformation.getTestRunner().getTestDefinition();
 
             /*
              * Collecting test run data
@@ -111,7 +111,6 @@ public abstract class OculusTest {
                 if (suite != null) {
                     testRunBean.setSuiteRunId(suite.getId());
                 }
-
             }
 
             testRunBean.setName(testInformation.getTestName());

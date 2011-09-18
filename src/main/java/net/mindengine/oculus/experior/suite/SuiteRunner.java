@@ -25,6 +25,7 @@ import java.util.List;
 import net.mindengine.oculus.experior.SuiteInterruptListener;
 import net.mindengine.oculus.experior.TestRunListener;
 import net.mindengine.oculus.experior.test.TestRunner;
+import net.mindengine.oculus.experior.test.TestRunnerConfiguration;
 import net.mindengine.oculus.experior.test.descriptors.TestDefinition;
 import net.mindengine.oculus.experior.test.descriptors.TestDescriptor;
 
@@ -33,8 +34,13 @@ public class SuiteRunner {
     private SuiteListener suiteListener;
     private TestRunListener testRunListener;
     private SuiteInterruptListener suiteInterruptListener;
+    private TestRunnerConfiguration testRunnerConfiguration;
 
     public void runSuite() {
+        
+        if(testRunnerConfiguration==null) {
+            throw new IllegalArgumentException("TestRunConfiguration is not provided");
+        }
         /*
          * Creating new SuiteSession instance this session will live until all
          * tests have completed
@@ -44,7 +50,7 @@ public class SuiteRunner {
         suiteSession.setSuiteListener(suiteListener);
         suiteSession.setSuite(suite);
         if (suiteListener != null) {
-            suiteListener.onSuiteStarted(suite);
+            suiteListener.onSuiteStarted(this);
         }
 
         boolean bProceedSuite = true;
@@ -65,10 +71,11 @@ public class SuiteRunner {
                     try {
                         testDefinition.setSuite(suite);
                         TestRunner testRunner = new TestRunner();
-                        testRunner.setTestDescriptor(TestDescriptor.create(testDefinition));
+                        testRunner.setTestDescriptor(TestDescriptor.create(testDefinition, getTestRunnerConfiguration()));
                         testRunner.setTestRunListener(testRunListener);
                         testRunner.setTestDefinition(testDefinition);
                         testRunner.setSuiteRunner(this);
+                        testRunner.setConfiguration(testRunnerConfiguration);
                         testRunner.runTest();
                     } catch (Throwable e) {
                         e.printStackTrace();
@@ -80,7 +87,7 @@ public class SuiteRunner {
         }
 
         if (suiteListener != null) {
-            suiteListener.onSuiteFinished(suite);
+            suiteListener.onSuiteFinished(this);
         }
         /*
          * Destroying SuiteSession
@@ -118,6 +125,14 @@ public class SuiteRunner {
 
     public SuiteInterruptListener getSuiteInterruptListener() {
         return suiteInterruptListener;
+    }
+
+    public void setTestRunnerConfiguration(TestRunnerConfiguration testRunnerConfiguration) {
+        this.testRunnerConfiguration = testRunnerConfiguration;
+    }
+
+    public TestRunnerConfiguration getTestRunnerConfiguration() {
+        return testRunnerConfiguration;
     }
 
 }

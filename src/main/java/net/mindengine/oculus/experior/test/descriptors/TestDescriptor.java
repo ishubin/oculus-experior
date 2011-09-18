@@ -22,27 +22,15 @@ import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import net.mindengine.oculus.experior.ClassUtils;
-import net.mindengine.oculus.experior.annotations.Action;
 import net.mindengine.oculus.experior.annotations.EntryAction;
-import net.mindengine.oculus.experior.annotations.InputParameter;
-import net.mindengine.oculus.experior.annotations.OutputParameter;
-import net.mindengine.oculus.experior.annotations.Temp;
 import net.mindengine.oculus.experior.annotations.Test;
-import net.mindengine.oculus.experior.annotations.events.AfterAction;
-import net.mindengine.oculus.experior.annotations.events.AfterErrorHandler;
-import net.mindengine.oculus.experior.annotations.events.AfterRollback;
-import net.mindengine.oculus.experior.annotations.events.AfterTest;
-import net.mindengine.oculus.experior.annotations.events.BeforeAction;
-import net.mindengine.oculus.experior.annotations.events.BeforeErrorHandler;
-import net.mindengine.oculus.experior.annotations.events.BeforeRollback;
-import net.mindengine.oculus.experior.annotations.events.BeforeTest;
-import net.mindengine.oculus.experior.annotations.events.OnException;
-import net.mindengine.oculus.experior.annotations.events.OnTestFailure;
 import net.mindengine.oculus.experior.exception.TestConfigurationException;
+import net.mindengine.oculus.experior.test.TestRunnerConfiguration;
 
 /**
  * Contains all the information about the tests. This information is collected
@@ -58,11 +46,12 @@ public class TestDescriptor implements Serializable {
     private boolean isInformationCollected = false;
     private String testName;
     private String projectId;
-    public static final Class<?>[] supportedFieldAnnotations = new Class<?>[] { InputParameter.class, OutputParameter.class, Temp.class };
+    //public static final Class<?>[] supportedFieldAnnotations = new Class<?>[] { InputParameter.class, OutputParameter.class, Temp.class };
 
-    public static final Class<?>[] supportedEventAnnotations = new Class<?>[] { EntryAction.class, Action.class, BeforeTest.class, AfterTest.class, BeforeAction.class, AfterAction.class,
-            BeforeErrorHandler.class, AfterErrorHandler.class, BeforeRollback.class, AfterRollback.class, OnException.class, OnTestFailure.class };
+    //public static final Class<?>[] supportedEventAnnotations = new Class<?>[] { EntryAction.class, Action.class, BeforeTest.class, AfterTest.class, BeforeAction.class, AfterAction.class,
+      //      BeforeErrorHandler.class, AfterErrorHandler.class, BeforeRollback.class, AfterRollback.class, OnException.class, OnTestFailure.class };
 
+    
     /**
      * Contains all test fields. Key - the annotation class of test field Value
      * - container with all fields which are marked with this annotation
@@ -74,14 +63,14 @@ public class TestDescriptor implements Serializable {
      */
     private Map<Class<?>, EventDescriptorsContainer> eventContainer = new HashMap<Class<?>, EventDescriptorsContainer>();
 
-    protected TestDescriptor(TestDefinition testDefinition) {
-        collectTestInformation(testDefinition);
+    protected TestDescriptor(TestDefinition testDefinition, TestRunnerConfiguration configuration) {
+        collectTestInformation(testDefinition, configuration);
     }
 
-    public void collectTestInformation(TestDefinition testDefinition) {
+    public void collectTestInformation(TestDefinition testDefinition, TestRunnerConfiguration configuration) {
         setInformationCollected(true);
-        fieldContainer = collectFields(testDefinition);
-        eventContainer = collectEvents(testDefinition);
+        fieldContainer = collectFields(testDefinition, configuration);
+        eventContainer = collectEvents(testDefinition, configuration);
         
         Test testAnnotation = testDefinition.getTestClass().getAnnotation(Test.class);
         if(testAnnotation!=null) {
@@ -92,6 +81,7 @@ public class TestDescriptor implements Serializable {
             testName = testDefinition.getTestClass().getName();
             projectId = "";
         }
+        //TODO change this later to TestResolver
     }
 
     /**
@@ -100,13 +90,13 @@ public class TestDescriptor implements Serializable {
      * @param testDefinition
      * @return
      */
-    public static Map<Class<?>, FieldDescriptorsContainer> collectFields(TestDefinition testDefinition) {
+    public static Map<Class<?>, FieldDescriptorsContainer> collectFields(TestDefinition testDefinition, TestRunnerConfiguration configuration) {
         Map<Class<?>, FieldDescriptorsContainer> fieldContainers = new HashMap<Class<?>, FieldDescriptorsContainer>();
 
         Class<?> testClass = testDefinition.getTestClass();
         for (Field field : ClassUtils.getAllFields(testClass)) {
             for (Annotation annotation : field.getAnnotations()) {
-                addFieldIfSupported(annotation, field, fieldContainers);
+                addFieldIfSupported(annotation, field, fieldContainers, configuration.getSupportedFieldAnnotations());
             }
         }
         return fieldContainers;
@@ -118,19 +108,20 @@ public class TestDescriptor implements Serializable {
      * @param testDefinition
      * @return
      */
-    public static Map<Class<?>, EventDescriptorsContainer> collectEvents(TestDefinition testDefinition) {
+    public static Map<Class<?>, EventDescriptorsContainer> collectEvents(TestDefinition testDefinition, TestRunnerConfiguration configuration) {
         Map<Class<?>, EventDescriptorsContainer> eventContainers = new HashMap<Class<?>, EventDescriptorsContainer>();
 
         Class<?> testClass = testDefinition.getTestClass();
         for (Method method : ClassUtils.getAllMethods(testClass)) {
             for (Annotation annotation : method.getAnnotations()) {
-                addEventIfSupported(annotation, method, eventContainers);
+                addEventIfSupported(annotation, method, eventContainers, configuration.getSupportedEventAnnotations());
             }
         }
         return eventContainers;
     }
 
     public EventDescriptor getEntryAction() throws TestConfigurationException {
+        //TODO Change this later to use ActionResolver
         if (!isInformationCollected) {
             throw new IllegalArgumentException("Test information is not collected");
         }
@@ -154,7 +145,7 @@ public class TestDescriptor implements Serializable {
      * @param field
      * @param fieldContainers
      */
-    private static void addFieldIfSupported(Annotation annotation, Field field, Map<Class<?>, FieldDescriptorsContainer> fieldContainers) {
+    private static void addFieldIfSupported(Annotation annotation, Field field, Map<Class<?>, FieldDescriptorsContainer> fieldContainers, Collection<Class<?>> supportedFieldAnnotations) {
         for (Class<?> annotationClass : supportedFieldAnnotations) {
             if (annotationClass.equals(annotation.annotationType())) {
                 FieldDescriptorsContainer fdc = fieldContainers.get(annotation.annotationType());
@@ -176,7 +167,7 @@ public class TestDescriptor implements Serializable {
      * @param field
      * @param eventContainers
      */
-    private static void addEventIfSupported(Annotation annotation, Method method, Map<Class<?>, EventDescriptorsContainer> eventContainers) {
+    private static void addEventIfSupported(Annotation annotation, Method method, Map<Class<?>, EventDescriptorsContainer> eventContainers, Collection<Class<?>> supportedEventAnnotations) {
         for (Class<?> annotationClass : supportedEventAnnotations) {
             if (annotationClass.equals(annotation.annotationType())) {
                 EventDescriptorsContainer edc = eventContainers.get(annotation.annotationType());
@@ -212,8 +203,8 @@ public class TestDescriptor implements Serializable {
         return null;
     }
 
-    public static TestDescriptor create(TestDefinition testDefinition) {
-        return new TestDescriptor(testDefinition);
+    public static TestDescriptor create(TestDefinition testDefinition, TestRunnerConfiguration configuration) {
+        return new TestDescriptor(testDefinition, configuration);
     }
 
     public void setFieldContainer(Map<Class<?>, FieldDescriptorsContainer> fieldContainer) {

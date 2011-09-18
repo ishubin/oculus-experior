@@ -21,7 +21,7 @@ package net.mindengine.oculus.experior.db;
 import java.sql.Connection;
 import java.util.List;
 
-import net.mindengine.oculus.experior.Config;
+import net.mindengine.oculus.experior.ExperiorConfig;
 import net.mindengine.oculus.experior.db.mappers.MapperFactory;
 
 import org.apache.commons.logging.Log;
@@ -37,14 +37,13 @@ public class OculusSimpleJdbcDaoSupport extends SimpleJdbcDaoSupport {
 
     private OculusSimpleJdbcDaoSupport() {
         super();
-        Config config = Config.getInstance();
-        // this.setDataSource(dataSource)
+        ExperiorConfig config = ExperiorConfig.getInstance();
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
 
-        dataSource.setDriverClassName(config.get(Config.REPORTING_DB_DRIVERCLASSNAME));
-        dataSource.setUrl(config.get(Config.REPORTING_DB_URL));
-        dataSource.setUsername(config.get(Config.REPORTING_DB_USERNAME));
-        dataSource.setPassword(config.get(Config.REPORTING_DB_PASSWORD));
+        dataSource.setDriverClassName(config.get(ExperiorConfig.REPORTING_DB_DRIVERCLASSNAME));
+        dataSource.setUrl(config.get(ExperiorConfig.REPORTING_DB_URL));
+        dataSource.setUsername(config.get(ExperiorConfig.REPORTING_DB_USERNAME));
+        dataSource.setPassword(config.get(ExperiorConfig.REPORTING_DB_PASSWORD));
         setDataSource(dataSource);
     }
 
@@ -55,7 +54,7 @@ public class OculusSimpleJdbcDaoSupport extends SimpleJdbcDaoSupport {
         return _instance;
     }
 
-    @SuppressWarnings({ "unchecked", "deprecation" })
+    @SuppressWarnings({ "unchecked"})
     public <T> List<T> query(String sql, Class<T> mapperClass, Object... args) throws Exception {
         logQuery(sql, args);
         if (args == null)

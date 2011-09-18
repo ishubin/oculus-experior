@@ -25,6 +25,7 @@ import net.mindengine.oculus.experior.db.OculusSimpleJdbcDaoSupport;
 import net.mindengine.oculus.experior.db.TestRunBean;
 import net.mindengine.oculus.experior.suite.Suite;
 import net.mindengine.oculus.experior.suite.SuiteListener;
+import net.mindengine.oculus.experior.suite.SuiteRunner;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 
@@ -36,7 +37,8 @@ import org.apache.commons.lang3.StringEscapeUtils;
  */
 public class OculusSuiteListener implements SuiteListener {
 
-    public void onSuiteStarted(Suite suite) {
+    public void onSuiteStarted(SuiteRunner suiteRunner) {
+        Suite suite = suiteRunner.getSuite();
         OculusSimpleJdbcDaoSupport daoSupport = OculusSimpleJdbcDaoSupport.getInstance();
 
         /*
@@ -63,7 +65,8 @@ public class OculusSuiteListener implements SuiteListener {
 
     }
 
-    public void onSuiteFinished(Suite suite) {
+    public void onSuiteFinished(SuiteRunner suiteRunner) {
+        Suite suite = suiteRunner.getSuite();
         OculusSimpleJdbcDaoSupport daoSupport = OculusSimpleJdbcDaoSupport.getInstance();
         try {
             daoSupport.getSuiteRunDAO().updateSuiteEndTime(suite.getId(), new Date());

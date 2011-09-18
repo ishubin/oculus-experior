@@ -27,7 +27,6 @@ public class LineChartDataSet {
     private List<LineChartDataPoint> data;
 
     public LineChartDataSet() {
-        // TODO Auto-generated constructor stub
     }
 
     public LineChartDataSet(String name, String color) {

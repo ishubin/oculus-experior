@@ -23,10 +23,10 @@ import net.mindengine.oculus.experior.db.SuiteRunBean;
 import net.mindengine.oculus.experior.db.TestBean;
 import net.mindengine.oculus.experior.db.TestRunBean;
 
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 
 public class MapperFactory {
-    public static ParameterizedRowMapper<Object> getRowMapper(Class<?> clazz) {
+    public static RowMapper<Object> getRowMapper(Class<?> clazz) {
         if (clazz.equals(SuiteRunBean.class)) {
             return new SuiteRunMapper();
         } else if (clazz.equals(TestRunBean.class)) {

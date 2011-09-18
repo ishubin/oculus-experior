@@ -21,7 +21,7 @@ package net.mindengine.oculus.experior.test;
 import java.io.File;
 import java.lang.reflect.Constructor;
 
-import net.mindengine.oculus.experior.Config;
+import net.mindengine.oculus.experior.ExperiorConfig;
 import net.mindengine.oculus.experior.SuiteInterruptListener;
 import net.mindengine.oculus.experior.TestRunListener;
 import net.mindengine.oculus.experior.suite.Suite;
@@ -50,6 +50,7 @@ public class TestLauncher {
             System.out.println("Using Default Suite Runner");
             suiteRunner = new SuiteRunner();
         }
+        suiteRunner.setTestRunnerConfiguration(ExperiorConfig.getInstance().getTestRunnerConfiguration());
         launch(suiteRunner);
     }
 
@@ -64,8 +65,8 @@ public class TestLauncher {
     public SuiteListener getSuiteListener() {
         if (suiteListener == null) {
             try {
-                Config config = Config.getInstance();
-                String className = config.get(Config.SUITE_LISTENER);
+                ExperiorConfig config = ExperiorConfig.getInstance();
+                String className = config.get(ExperiorConfig.SUITE_LISTENER);
                 Class<?> suiteListenerClass = Class.forName(className);
                 Constructor<?> constructor = suiteListenerClass.getConstructor();
                 suiteListener = (SuiteListener) constructor.newInstance();

@@ -19,7 +19,7 @@
 package net.mindengine.oculus.experior.suite;
 
 public interface SuiteListener {
-    public void onSuiteStarted(Suite suite);
+    public void onSuiteStarted(SuiteRunner suiteRunner);
 
-    public void onSuiteFinished(Suite suite);
+    public void onSuiteFinished(SuiteRunner suiteRunner);
 }

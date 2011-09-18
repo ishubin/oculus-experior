@@ -21,7 +21,7 @@ package net.mindengine.oculus.experior.defaultframework.report;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-import net.mindengine.oculus.experior.Config;
+import net.mindengine.oculus.experior.ExperiorConfig;
 import net.mindengine.oculus.experior.chart.Chart;
 
 public class OculusChartUploader {
@@ -31,7 +31,7 @@ public class OculusChartUploader {
                 + URLEncoder.encode(chart.getXAxisName(), "UTF-8") + "&xAxisType=" + URLEncoder.encode(chart.getXAxisType(), "UTF-8") + "&yAxisName="
                 + URLEncoder.encode(chart.getYAxisName(), "UTF-8") + "&yAxisType=" + URLEncoder.encode(chart.getYAxisType(), "UTF-8") + "&data=" + URLEncoder.encode(chart.getData(), "UTF-8");
 
-        String url = Config.getInstance().get(Config.OCULUS_URL) + "/chart/create";
+        String url = ExperiorConfig.getInstance().get(ExperiorConfig.OCULUS_URL) + "/chart/create";
         String text = HttpPostData.excutePost(url, params);
         chartId = Long.parseLong(text.trim());
         return chartId;
