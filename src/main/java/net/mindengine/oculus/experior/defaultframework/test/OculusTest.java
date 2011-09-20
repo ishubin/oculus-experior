@@ -227,20 +227,22 @@ public abstract class OculusTest {
          * Saving output parameter values
          */
         Map<String, FieldDescriptor> outputParametersMap = testDescriptor.getFieldDescriptors(OutputParameter.class);
-        for (Map.Entry<String, FieldDescriptor> parameter : outputParametersMap.entrySet()) {
-            Object value = null;
-            try {
-                value = ClassUtils.getFieldValue(parameter.getValue().getField(), this);
+        if(outputParametersMap!=null){
+            for (Map.Entry<String, FieldDescriptor> parameter : outputParametersMap.entrySet()) {
+                Object value = null;
+                try {
+                    value = ClassUtils.getFieldValue(parameter.getValue().getField(), this);
+                }
+                catch (Exception e) {
+                    
+                }
+                String name = parameter.getKey();
+                String strValue = null;
+                if (value != null) {
+                    strValue = ClassUtils.convertParameterToString(value.getClass(), value);
+                }
+                daoSupport.getTestRunDAO().createTestRunParameters(testRunId, name, strValue, false);
             }
-            catch (Exception e) {
-                
-            }
-            String name = parameter.getKey();
-            String strValue = null;
-            if (value != null) {
-                strValue = ClassUtils.convertParameterToString(value.getClass(), value);
-            }
-            daoSupport.getTestRunDAO().createTestRunParameters(testRunId, name, strValue, false);
         }
 
     }

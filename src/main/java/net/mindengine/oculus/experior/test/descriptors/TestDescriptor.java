@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.mindengine.oculus.experior.ClassUtils;
+import net.mindengine.oculus.experior.annotations.DataProvider;
 import net.mindengine.oculus.experior.annotations.EntryAction;
 import net.mindengine.oculus.experior.annotations.Test;
 import net.mindengine.oculus.experior.exception.TestConfigurationException;
@@ -245,6 +246,18 @@ public class TestDescriptor implements Serializable {
 
     public boolean isInformationCollected() {
         return isInformationCollected;
+    }
+
+    public Collection<EventDescriptor> getEventDescriptors(Class<DataProvider> clazz) {
+        if(eventContainer!=null) {
+            EventDescriptorsContainer edc = eventContainer.get(clazz);
+            if(edc!=null) {
+                if(edc.getDescriptors()!=null) {
+                    return edc.getDescriptors().values();
+                }
+            }
+        }
+        return null;
     }
 
 }

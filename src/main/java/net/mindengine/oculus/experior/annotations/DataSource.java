@@ -18,7 +18,7 @@ public @interface DataSource {
     String name () default "";
     
     /**
-     * Name of provider which will fetch the specified component. If "provider" is set as empty than the component will be picked by class of field
+     * Name of provider which will fetch the specified component. If "provider" is set as empty then the component will be picked by className of field
      * @return
      */
     String provider() default "";
@@ -40,5 +40,7 @@ public @interface DataSource {
      * @return
      */
     String source() default "";
+    
+    String[] tags() default {};
 
 }

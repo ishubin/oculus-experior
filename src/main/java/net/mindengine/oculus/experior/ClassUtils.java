@@ -193,5 +193,34 @@ public class ClassUtils {
         }
         return methods;
     }
+    
+    /**
+     * Returns the value of the specified field within specified object. This method doesn't work with arrays and collections
+     * @param object
+     * @param fieldPath Dot separated path to the field within an object. 
+     * @return
+     * @throws InvocationTargetException 
+     * @throws IllegalAccessException 
+     * @throws NoSuchMethodException 
+     * @throws NoSuchFieldException 
+     * @throws IllegalArgumentException 
+     * @throws SecurityException 
+     */
+    public static Object getNestedFieldValue(Object object, String fieldPath) throws SecurityException, IllegalArgumentException, NoSuchFieldException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        int id = fieldPath.indexOf(".");
+        if(id>=0){
+            String fieldName = fieldPath.substring(0, id);
+            Object nestedObject = ClassUtils.getFieldValue(fieldName, object);
+            String nestedFieldPath = fieldPath.substring(id+1);
+            return getNestedFieldValue(nestedObject, nestedFieldPath);
+        }
+        else return ClassUtils.getFieldValue(fieldPath, object);
+    }
+
+    private static Object getFieldValue(String fieldName, Object object) throws SecurityException, NoSuchFieldException, IllegalArgumentException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        Class<?>clazz = object.getClass();
+        Field field = clazz.getField(fieldName);
+        return ClassUtils.getFieldValue(field, object);
+    }
 
 }
