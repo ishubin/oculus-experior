@@ -1,23 +1,18 @@
 package net.mindengine.oculus.experior.test.resolvers.dataprovider;
 
-import java.lang.reflect.Field;
+import java.lang.annotation.Annotation;
 import java.util.Collection;
 
 public class DataSourceInformation {
 
-    private Field field;
+    private Class<?> objectType;
     private String source;
     private String type;
     private String[] tags;
+    private Annotation[] annotations;
     private Collection<DataDependency> dependencies;
     private String name;
     
-    public Field getField() {
-        return field;
-    }
-    public void setField(Field field) {
-        this.field = field;
-    }
     public String getSource() {
         return source;
     }
@@ -47,6 +42,18 @@ public class DataSourceInformation {
     }
     public String getName() {
         return name;
+    }
+    public void setAnnotations(Annotation[] annotations) {
+        this.annotations = annotations;
+    }
+    public Annotation[] getAnnotations() {
+        return annotations;
+    }
+    public void setObjectType(Class<?> objectType) {
+        this.objectType = objectType;
+    }
+    public Class<?> getObjectType() {
+        return objectType;
     }
     
 }

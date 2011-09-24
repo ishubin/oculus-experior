@@ -219,8 +219,29 @@ public class ClassUtils {
 
     private static Object getFieldValue(String fieldName, Object object) throws SecurityException, NoSuchFieldException, IllegalArgumentException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         Class<?>clazz = object.getClass();
-        Field field = clazz.getField(fieldName);
+        Field field = getField(clazz, fieldName);
         return ClassUtils.getFieldValue(field, object);
+    }
+    
+    /**
+     * Fetches field with specified name from specified class.
+     * @param clazz
+     * @param fieldName
+     * @return
+     */
+    public static Field getField(Class<?> clazz, String fieldName) {
+        Field field = null;
+        try {
+            field = clazz.getField(fieldName);
+        }
+        catch (Exception e) {
+            try {
+                field = clazz.getDeclaredField(fieldName);
+            } catch (Exception e2) {
+                throw new IllegalArgumentException("Cannot fetch field '"+fieldName+"' from "+clazz);
+            }
+        }
+        return field;
     }
 
 }

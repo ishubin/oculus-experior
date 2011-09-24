@@ -123,13 +123,14 @@ public class TestDescriptor implements Serializable {
 
     public EventDescriptor getEntryAction() throws TestConfigurationException {
         //TODO Change this later to use ActionResolver
+        
         if (!isInformationCollected) {
             throw new IllegalArgumentException("Test information is not collected");
         }
 
         EventDescriptorsContainer container = eventContainer.get(EntryAction.class);
         if (container == null)
-            throw new TestConfigurationException("Event container for EntryAction event is not available. Check you test class");
+            throw new TestConfigurationException("There is no EntryAction found in test class");
 
         if (container.getDescriptors().size() == 0) {
             throw new TestConfigurationException("There is no EntryAction found in test class");
@@ -191,7 +192,7 @@ public class TestDescriptor implements Serializable {
     }
     
     /**
-     * Searches for specified test event
+     * Searches for test event with specified annotation class and method name
      * @param type Annotation class for the event
      * @param name Name of method which handles specified event
      * @return

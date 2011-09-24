@@ -23,10 +23,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import net.mindengine.oculus.experior.test.descriptors.TestInformation;
+
 /**
  * This annotation is used for methods which subscribe for the exception which
  * cause tests failure. The subscribers method should support the
- * {@link Throwable} parameter.
+ * {@link TestInformation} argument.
  * 
  * @author Ivan Shubin
  * 

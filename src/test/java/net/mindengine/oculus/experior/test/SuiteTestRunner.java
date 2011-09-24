@@ -39,6 +39,8 @@ import net.mindengine.oculus.experior.test.descriptors.TestDescriptor;
 import net.mindengine.oculus.experior.test.sampletests.Test1;
 import net.mindengine.oculus.experior.test.sampletests.Test2_B;
 import net.mindengine.oculus.experior.test.sampletests.TestEvent;
+import net.mindengine.oculus.experior.test.sampletests.TestSampleForDataDependency;
+import net.mindengine.oculus.experior.test.sampletests.TestWithErrorInAction;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -80,7 +82,7 @@ public class SuiteTestRunner {
         Assert.assertEquals(true, (boolean) test.paramBoolean);
         Assert.assertEquals(56, (int) test.getParamInt());
         
-        //Veryfying that Temp fields were set to null
+        //Verifying that Temp fields were set to null
         Assert.assertNull(test.tempComponent);
         
         //Verifying testSession. It should be null as all test data should be cleared after the test is completed
@@ -121,10 +123,56 @@ public class SuiteTestRunner {
         Assert.assertEquals("test out value", it.next());
     }
     
+    @Test
+    public void testDefaultDataProviderResolverInTestRunner() throws TestConfigurationException, TestInterruptedException {
+        TestRunner testRunner = new TestRunner();
+        TestDefinition td = testDefinition(TestSampleForDataDependency.class);
+        testRunner.setTestDescriptor(TestDescriptor.create(td, ExperiorConfig.getInstance().getTestRunnerConfiguration()));
+        testRunner.setConfiguration(ExperiorConfig.getInstance().getTestRunnerConfiguration());
+        testRunner.setTestDefinition(td);
+        testRunner.runTest();
+        
+        TestSampleForDataDependency test = (TestSampleForDataDependency) testRunner.getTestInstance();
+        
+        Assert.assertEquals(Integer.valueOf(2), test.intField);
+        Assert.assertEquals(Integer.valueOf(3), test.intField2);
+        Assert.assertEquals(Integer.valueOf(4), test.intField3);
+        
+        Assert.assertNotNull(test.component1);
+        Assert.assertEquals(test.someStringField, test.component1.getField());
+        Assert.assertNotNull(test.component1_1);
+        Assert.assertEquals("This is a test", test.component1_1.getField());
+        Assert.assertNotNull(test.component2);
+        Assert.assertNotNull(test.component2_1);
+        Assert.assertEquals(test.component1_1, test.component2_1.getComponent1());
+    }
     
+    @Test
+    public void testErrorInsideAction() throws TestConfigurationException {
+        
+        TestRunner testRunner = new TestRunner();
+        TestDefinition td = testDefinition(TestWithErrorInAction.class);
+        testRunner.setTestDescriptor(TestDescriptor.create(td, ExperiorConfig.getInstance().getTestRunnerConfiguration()));
+        testRunner.setConfiguration(ExperiorConfig.getInstance().getTestRunnerConfiguration());
+        testRunner.setTestDefinition(td);
+        
+        TestInterruptedException exception = null;
+        try {
+            testRunner.runTest();
+        }
+        catch (TestInterruptedException e) {
+            exception = e;
+        }
+        
+        Assert.assertNotNull(exception);
+        Assert.assertEquals("java.lang.NullPointerException: Some error", exception.getMessage());
+        TestWithErrorInAction test = (TestWithErrorInAction) testRunner.getTestInstance();
+        Assert.assertEquals(test.actionNumber, (Integer)2);
+        //Checking that OnTestFailure event was invoked
+        Assert.assertNotNull(test.testInformation);
+    }
     
-    
-    public TestDefinition  testDefinition(Class<?>testClass){
+    public TestDefinition  testDefinition(Class<?>testClass) {
         TestDefinition testDefinition = new TestDefinition();
         testDefinition.setName("Basic test");
         testDefinition.setTestClass(testClass);
