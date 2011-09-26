@@ -22,7 +22,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.Stack;
 
 import net.mindengine.oculus.experior.TestRunListener;
@@ -178,52 +178,31 @@ public class TestRunner {
     }
 
     protected void executeTestFlow() throws TestConfigurationException, TestInterruptedException {
-
-      //TODO move the following into ActionResolver
-        /*
-         *  - entry action fetching
-         *  - amount of actions calculation
-         *  
-         */
-        
-        EventDescriptor entryAction = testDescriptor.getEntryAction();
-        EventDescriptorsContainer edc = testDescriptor.getEventContainer().get(Action.class);
-        if (edc == null) {
-            throw new TestConfigurationException("There no actions defined in test");
-        }
-
-        
-        /*
-         * Fetching the amount of total actions in sequence and checking that
-         * this value is not bigger than total amount if action per test
-         */
-        int max = edc.getDescriptors().size();
-        Collection<String> actionSequence = new LinkedList<String>();
-        int count = fetchNumberOfActionInSequence(entryAction.getMethod(), 0, max + 5, actionSequence);
-        if (count > max) {
-            throw new TestConfigurationException("There is indefinite loop in test actions sequence. Check the actions of " + testDefinition.getTestClass().getName());
-        }
+        if(configuration.getActionResolver()==null) throw new TestConfigurationException("ActionReslover is not specified");
+        EventDescriptor entryAction = configuration.getActionResolver().getEntryAction(testDescriptor);
+        List<String> actionSequence = configuration.getActionResolver().getActionsSequence(testDescriptor);
 
         TestInformation testInformation = new TestInformation();
         testInformation.setTestRunner(this);
         testInformation.setEstimatedActions(actionSequence);
         testInformation.setRunningActionNumber(-1);
+        
         //TODO move before-test event to TestResolver
         invokeEvents(BeforeTest.class, testInformation);
         if (testRunListener != null) {
             testRunListener.onTestStarted(testInformation);
         }
+        
         /**
          * Invoking the first action. All other actions will be run recursively
          */
         try {
-            //TODO move this to ActionResolver
-            runAction(entryAction.getMethod(), testInformation);
-        } 
+            runAction(entryAction, testInformation);
+        }
         catch (TestInterruptedException e) {
             testInformation.setFailureCause(e.getCause());
             testInformation.setStatus(TestInformation.STATUS_FAILED);
-          //TODO move the following to TestFailure Resolver
+          //TODO move the following to TestFailure TestResolver
             invokeOnExceptionEvent(e.getCause(), testInformation);
             invokeEvents(OnTestFailure.class, testInformation);
             throw e;
@@ -231,14 +210,14 @@ public class TestRunner {
         catch (TestConfigurationException e) {
             testInformation.setFailureCause(e.getCause());
             testInformation.setStatus(TestInformation.STATUS_FAILED);
-          //TODO move the following to TestFailure Resolver. same as above
+          //TODO move the following to TestFailure TestResolver. same as above
             invokeOnExceptionEvent(e.getCause(), testInformation);
             invokeEvents(OnTestFailure.class, testInformation);
             throw e;
         }
         finally {
             invokeRollbackHandlers(testInformation);
-          //TODO move aftertest event to TestResolver
+          //TODO move after-test event to TestResolver
             invokeEvents(AfterTest.class, testInformation);
             if (testRunListener != null) {
                 testRunListener.onTestFinished(testInformation);
@@ -295,48 +274,23 @@ public class TestRunner {
         }
     }
 
-    private int fetchNumberOfActionInSequence(Method method, int iteration, int max, Collection<String> actionSequence) throws TestConfigurationException {
-        Action action = method.getAnnotation(Action.class);
-        if (action == null) {
-            throw new TestConfigurationException("The method " + method.getName() + " is not marked as an action");
-        }
-
-        // Fetching name of action and storing it in actionSequence
-        if (action.name() != null && !action.name().isEmpty()) {
-            actionSequence.add(action.name());
-        } else
-            actionSequence.add(method.getName());
-
-        // Fetching next action and invoking this method recursively to obtain
-        // the rest of actions
-        String nextMethodName = action.next();
-        if (nextMethodName != null && !nextMethodName.isEmpty() && iteration < max) {
-            EventDescriptorsContainer edc = testDescriptor.getEventContainer().get(Action.class);
-            if (edc == null) {
-                throw new TestConfigurationException("There are no actions in test");
-            }
-            EventDescriptor nextAction = edc.getDescriptors().get(nextMethodName);
-            if (nextAction != null) {
-                return fetchNumberOfActionInSequence(nextAction.getMethod(), iteration + 1, max, actionSequence);
-            } else
-                throw new TestConfigurationException("Cannot find next action with name '" + nextMethodName + "'");
-        } else
-            return iteration + 1;
-    }
+    
 
     /**
      * Invokes the specified action and all events related to it and then
      * recursively invokes all next actions
      * 
-     * @param method
+     * @param actionDescriptor
      * @param testInformation
      * @throws TestConfigurationException
      * @throws TestInterruptedException
      */
-    protected void runAction(Method method, TestInformation testInformation) throws TestConfigurationException, TestInterruptedException {
+    protected void runAction(EventDescriptor actionDescriptor, TestInformation testInformation) throws TestConfigurationException, TestInterruptedException {
+      //TODO move this to ActionResolver
+        Method method = actionDescriptor.getMethod();
         Action action = method.getAnnotation(Action.class);
 
-        //Increasing the runninActionNumber variable so it would be possible to see the detailed progress of test run
+        //Increasing the runningActionNumber variable so it would be possible to see the detailed progress of test run
         testInformation.setRunningActionNumber(testInformation.getRunningActionNumber()+1);
         
         //Creating action information variable so it could be used in all events invocation
@@ -351,6 +305,7 @@ public class TestRunner {
         if (testRunListener != null) {
             testRunListener.onTestAction(actionInformation);
         }
+        
         invokeEvents(BeforeAction.class, actionInformation);
 
         // Searching for a roll-back method and adding it to roll-back stack
@@ -394,7 +349,7 @@ public class TestRunner {
             if (eventDescriptor == null) {
                 throw new TestConfigurationException("Can't find next action method with name '" + nextMethodName + "'");
             }
-            runAction(eventDescriptor.getMethod(), testInformation);
+            runAction(eventDescriptor, testInformation);
         }
     }
 

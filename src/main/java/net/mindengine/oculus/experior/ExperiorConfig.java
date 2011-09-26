@@ -29,6 +29,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import net.mindengine.oculus.experior.test.TestRunnerConfiguration;
+import net.mindengine.oculus.experior.test.resolvers.actions.ActionResolver;
 import net.mindengine.oculus.experior.test.resolvers.cleanup.CleanupResolver;
 import net.mindengine.oculus.experior.test.resolvers.dataprovider.DataDependencyResolver;
 import net.mindengine.oculus.experior.test.resolvers.dataprovider.DataProviderResolver;
@@ -47,6 +48,7 @@ public class ExperiorConfig {
     public static final String TESTRUNNER_RESOLVERS_DATAPROVIDER = "testrunner.resolvers.dataprovider";
     public static final String TESTRUNNER_RESOLVERS_PARAMETERS = "testrunner.resolvers.parameters";
     public static final String TESTRUNNER_RESOLVERS_CLEANUP = "testrunner.resolvers.cleanup";
+    public static final String TESTRUNNER_RESOLVERS_ACTIONS = "testrunner.resolvers.actions";
     public static final String TESTRUNNER_SUPPOERTEDANNOTATIONS_FIELDS = "testrunner.supportedAnnotations.fields";
     public static final String TESTRUNNER_SUPPOERTEDANNOTATIONS_EVENTS = "testrunner.supportedAnnotations.events";
     
@@ -97,6 +99,7 @@ public class ExperiorConfig {
                 testRunnerConfiguration.setDataDependencyResolver((DataDependencyResolver) createObject(getMandatoryField(TESTRUNNER_RESOLVERS_DATADEPENDENCY)));
                 testRunnerConfiguration.setDataProviderResolver((DataProviderResolver) createObject(getMandatoryField(TESTRUNNER_RESOLVERS_DATAPROVIDER)));
                 testRunnerConfiguration.setParameterResolver((ParameterResolver) createObject(getMandatoryField(TESTRUNNER_RESOLVERS_PARAMETERS)));
+                testRunnerConfiguration.setActionResolver((ActionResolver) createObject(getMandatoryField(TESTRUNNER_RESOLVERS_ACTIONS)));
                 
                 //Reading fields annotations
                 String[] fieldNames = getMandatoryField(TESTRUNNER_SUPPOERTEDANNOTATIONS_FIELDS).split(",");

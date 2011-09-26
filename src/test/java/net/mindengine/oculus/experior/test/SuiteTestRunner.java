@@ -97,6 +97,8 @@ public class SuiteTestRunner {
             TestEvent.event("action2"),
             TestEvent.event(AfterAction.class, "action2"), 
             TestEvent.event(AfterTest.class)));
+        
+        //TODO verify action sequence in testinformation
     }
     
     /**

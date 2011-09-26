@@ -3,6 +3,7 @@ package net.mindengine.oculus.experior.test;
 import java.util.Collection;
 
 import net.mindengine.oculus.experior.test.descriptors.TestDescriptor;
+import net.mindengine.oculus.experior.test.resolvers.actions.ActionResolver;
 import net.mindengine.oculus.experior.test.resolvers.cleanup.CleanupResolver;
 import net.mindengine.oculus.experior.test.resolvers.dataprovider.DataDependencyResolver;
 import net.mindengine.oculus.experior.test.resolvers.dataprovider.DataProviderResolver;
@@ -29,6 +30,7 @@ public class TestRunnerConfiguration {
     private ParameterResolver parameterResolver;
     private DataDependencyResolver dataDependencyResolver;
     private DataProviderResolver dataProviderResolver;
+    private ActionResolver actionResolver;
     
     public DataDependencyResolver getDataDependencyResolver() {
         return dataDependencyResolver;
@@ -65,6 +67,12 @@ public class TestRunnerConfiguration {
     }
     public void setSupportedEventAnnotations(Collection<Class<?>> supportedEventAnnotations) {
         this.supportedEventAnnotations = supportedEventAnnotations;
+    }
+    public void setActionResolver(ActionResolver actionResolver) {
+        this.actionResolver = actionResolver;
+    }
+    public ActionResolver getActionResolver() {
+        return actionResolver;
     }
 
 }

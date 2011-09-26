@@ -28,9 +28,7 @@ import java.util.Map;
 
 import net.mindengine.oculus.experior.ClassUtils;
 import net.mindengine.oculus.experior.annotations.DataProvider;
-import net.mindengine.oculus.experior.annotations.EntryAction;
 import net.mindengine.oculus.experior.annotations.Test;
-import net.mindengine.oculus.experior.exception.TestConfigurationException;
 import net.mindengine.oculus.experior.test.TestRunnerConfiguration;
 
 /**
@@ -73,6 +71,7 @@ public class TestDescriptor implements Serializable {
         fieldContainer = collectFields(testDefinition, configuration);
         eventContainer = collectEvents(testDefinition, configuration);
         
+      //TODO change the following to TestResolver
         Test testAnnotation = testDefinition.getTestClass().getAnnotation(Test.class);
         if(testAnnotation!=null) {
             testName = testAnnotation.name();
@@ -82,7 +81,6 @@ public class TestDescriptor implements Serializable {
             testName = testDefinition.getTestClass().getName();
             projectId = "";
         }
-        //TODO change this later to TestResolver
     }
 
     /**
@@ -119,24 +117,6 @@ public class TestDescriptor implements Serializable {
             }
         }
         return eventContainers;
-    }
-
-    public EventDescriptor getEntryAction() throws TestConfigurationException {
-        //TODO Change this later to use ActionResolver
-        
-        if (!isInformationCollected) {
-            throw new IllegalArgumentException("Test information is not collected");
-        }
-
-        EventDescriptorsContainer container = eventContainer.get(EntryAction.class);
-        if (container == null)
-            throw new TestConfigurationException("There is no EntryAction found in test class");
-
-        if (container.getDescriptors().size() == 0) {
-            throw new TestConfigurationException("There is no EntryAction found in test class");
-        }
-
-        return container.getDescriptors().entrySet().iterator().next().getValue();
     }
 
     /**

@@ -18,7 +18,7 @@
  ******************************************************************************/
 package net.mindengine.oculus.experior.test.descriptors;
 
-import java.util.Collection;
+import java.util.List;
 
 import net.mindengine.oculus.experior.test.TestRunner;
 
@@ -52,7 +52,7 @@ public class TestInformation {
     /**
      * Sequence of action names which will be run during test execution
      */
-    private Collection<String> estimatedActions;
+    private List<String> estimatedActions;
 
     /**
      * Number of action in a sequence described above which is running right
@@ -99,11 +99,11 @@ public class TestInformation {
         this.phase = phase;
     }
 
-    public Collection<String> getEstimatedActions() {
+    public List<String> getEstimatedActions() {
         return estimatedActions;
     }
 
-    public void setEstimatedActions(Collection<String> estimatedActions) {
+    public void setEstimatedActions(List<String> estimatedActions) {
         this.estimatedActions = estimatedActions;
     }
 
