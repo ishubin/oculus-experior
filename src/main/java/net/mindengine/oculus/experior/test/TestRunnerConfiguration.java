@@ -7,7 +7,10 @@ import net.mindengine.oculus.experior.test.resolvers.actions.ActionResolver;
 import net.mindengine.oculus.experior.test.resolvers.cleanup.CleanupResolver;
 import net.mindengine.oculus.experior.test.resolvers.dataprovider.DataDependencyResolver;
 import net.mindengine.oculus.experior.test.resolvers.dataprovider.DataProviderResolver;
+import net.mindengine.oculus.experior.test.resolvers.errors.ErrorResolver;
 import net.mindengine.oculus.experior.test.resolvers.parameters.ParameterResolver;
+import net.mindengine.oculus.experior.test.resolvers.rollbacks.RollbackResolver;
+import net.mindengine.oculus.experior.test.resolvers.test.TestResolver;
 
 /**
  * Contains all needed resolvers to provide test run logic
@@ -31,6 +34,10 @@ public class TestRunnerConfiguration {
     private DataDependencyResolver dataDependencyResolver;
     private DataProviderResolver dataProviderResolver;
     private ActionResolver actionResolver;
+    private RollbackResolver rollbackResolver;
+    private ErrorResolver errorResolver;
+    private TestResolver testResolver;
+    
     
     public DataDependencyResolver getDataDependencyResolver() {
         return dataDependencyResolver;
@@ -73,6 +80,24 @@ public class TestRunnerConfiguration {
     }
     public ActionResolver getActionResolver() {
         return actionResolver;
+    }
+    public void setRollbackResolver(RollbackResolver rollbackResolver) {
+        this.rollbackResolver = rollbackResolver;
+    }
+    public RollbackResolver getRollbackResolver() {
+        return rollbackResolver;
+    }
+    public void setErrorResolver(ErrorResolver errorResolver) {
+        this.errorResolver = errorResolver;
+    }
+    public ErrorResolver getErrorResolver() {
+        return errorResolver;
+    }
+    public void setTestResolver(TestResolver testResolver) {
+        this.testResolver = testResolver;
+    }
+    public TestResolver getTestResolver() {
+        return testResolver;
     }
 
 }

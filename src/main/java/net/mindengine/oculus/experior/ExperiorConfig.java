@@ -33,7 +33,10 @@ import net.mindengine.oculus.experior.test.resolvers.actions.ActionResolver;
 import net.mindengine.oculus.experior.test.resolvers.cleanup.CleanupResolver;
 import net.mindengine.oculus.experior.test.resolvers.dataprovider.DataDependencyResolver;
 import net.mindengine.oculus.experior.test.resolvers.dataprovider.DataProviderResolver;
+import net.mindengine.oculus.experior.test.resolvers.errors.ErrorResolver;
 import net.mindengine.oculus.experior.test.resolvers.parameters.ParameterResolver;
+import net.mindengine.oculus.experior.test.resolvers.rollbacks.RollbackResolver;
+import net.mindengine.oculus.experior.test.resolvers.test.TestResolver;
 
 public class ExperiorConfig {
 
@@ -49,8 +52,12 @@ public class ExperiorConfig {
     public static final String TESTRUNNER_RESOLVERS_PARAMETERS = "testrunner.resolvers.parameters";
     public static final String TESTRUNNER_RESOLVERS_CLEANUP = "testrunner.resolvers.cleanup";
     public static final String TESTRUNNER_RESOLVERS_ACTIONS = "testrunner.resolvers.actions";
+    public static final String TESTRUNNER_RESOLVERS_ROLLBACKS = "testrunner.resolvers.rollbacks";
+    public static final String TESTRUNNER_RESOLVERS_ERRORS = "testrunner.resolvers.errors";
+    public static final String TESTRUNNER_RESOLVERS_TEST = "testrunner.resolvers.test";
     public static final String TESTRUNNER_SUPPOERTEDANNOTATIONS_FIELDS = "testrunner.supportedAnnotations.fields";
     public static final String TESTRUNNER_SUPPOERTEDANNOTATIONS_EVENTS = "testrunner.supportedAnnotations.events";
+    
     
     private static ExperiorConfig _instance = null;
 
@@ -100,6 +107,9 @@ public class ExperiorConfig {
                 testRunnerConfiguration.setDataProviderResolver((DataProviderResolver) createObject(getMandatoryField(TESTRUNNER_RESOLVERS_DATAPROVIDER)));
                 testRunnerConfiguration.setParameterResolver((ParameterResolver) createObject(getMandatoryField(TESTRUNNER_RESOLVERS_PARAMETERS)));
                 testRunnerConfiguration.setActionResolver((ActionResolver) createObject(getMandatoryField(TESTRUNNER_RESOLVERS_ACTIONS)));
+                testRunnerConfiguration.setRollbackResolver((RollbackResolver) createObject(getMandatoryField(TESTRUNNER_RESOLVERS_ROLLBACKS)));
+                testRunnerConfiguration.setErrorResolver((ErrorResolver) createObject(getMandatoryField(TESTRUNNER_RESOLVERS_ERRORS)));
+                testRunnerConfiguration.setTestResolver((TestResolver) createObject(getMandatoryField(TESTRUNNER_RESOLVERS_TEST)));
                 
                 //Reading fields annotations
                 String[] fieldNames = getMandatoryField(TESTRUNNER_SUPPOERTEDANNOTATIONS_FIELDS).split(",");

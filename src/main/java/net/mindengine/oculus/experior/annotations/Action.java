@@ -48,6 +48,4 @@ public @interface Action {
      */
     String rollback() default "";
 
-    // String timeout() default "10m";//Defining timeout in 10 minutes
-    boolean report() default true;
 }

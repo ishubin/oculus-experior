@@ -52,13 +52,13 @@ public class UnitedSuiteRunner extends SuiteRunner {
                  * into the first one
                  */
 
-                Collection<TestDescriptor> includeTests = new LinkedList<TestDescriptor>();
+                Collection<TestDefinition> includeTests = new LinkedList<TestDefinition>();
                 TestDefinition firstTestDefinition = null;
                 for (TestDefinition testDefinition : testList) {
                     if (firstTestDefinition == null) {
                         firstTestDefinition = testDefinition;
                     } else {
-                        includeTests.add(TestDescriptor.create(testDefinition, getTestRunnerConfiguration()));
+                        includeTests.add(testDefinition);
                     }
                 }
 

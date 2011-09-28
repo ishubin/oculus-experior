@@ -28,5 +28,4 @@ import java.lang.annotation.Target;
 public @interface RollbackHandler {
     String name() default "";
 
-    boolean report() default true;
 }

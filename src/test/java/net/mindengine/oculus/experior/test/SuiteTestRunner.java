@@ -44,6 +44,7 @@ import net.mindengine.oculus.experior.test.sampletests.TestWithErrorInAction;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class SuiteTestRunner {
@@ -174,6 +175,18 @@ public class SuiteTestRunner {
         Assert.assertNotNull(test.testInformation);
     }
     
+    @Ignore
+    @Test
+    public void verifyRollbackHandlers() {
+        //TODO implement this test: RollbackHandler
+    }
+    
+    @Ignore
+    @Test
+    public void verifyErrorHandlers() {
+        // TODO implement this test: ErrorHandler
+    }
+    
     public TestDefinition  testDefinition(Class<?>testClass) {
         TestDefinition testDefinition = new TestDefinition();
         testDefinition.setName("Basic test");
@@ -207,4 +220,6 @@ public class SuiteTestRunner {
 
         Assert.assertEquals(expected.size(), real.size());
     }
+    
+    
 }

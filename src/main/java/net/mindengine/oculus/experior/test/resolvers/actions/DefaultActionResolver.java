@@ -1,16 +1,20 @@
 package net.mindengine.oculus.experior.test.resolvers.actions;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import net.mindengine.oculus.experior.TestRunListener;
 import net.mindengine.oculus.experior.annotations.Action;
 import net.mindengine.oculus.experior.annotations.EntryAction;
+import net.mindengine.oculus.experior.annotations.events.AfterAction;
+import net.mindengine.oculus.experior.annotations.events.BeforeAction;
 import net.mindengine.oculus.experior.exception.TestConfigurationException;
 import net.mindengine.oculus.experior.exception.TestInterruptedException;
+import net.mindengine.oculus.experior.test.TestRunner;
+import net.mindengine.oculus.experior.test.descriptors.ActionInformation;
 import net.mindengine.oculus.experior.test.descriptors.EventDescriptor;
 import net.mindengine.oculus.experior.test.descriptors.EventDescriptorsContainer;
 import net.mindengine.oculus.experior.test.descriptors.TestDescriptor;
@@ -51,7 +55,7 @@ public class DefaultActionResolver implements ActionResolver{
         } else
             actionSequence.add(method.getName());
 
-        EventDescriptor nextAction = nextAction(testDescriptor, currentAction);
+        EventDescriptor nextAction = getNextAction(testDescriptor, currentAction);
         if (nextAction != null) {
             return fetchNumberOfActionInSequence(testDescriptor, nextAction, iteration + 1, max, actionSequence);
         } else
@@ -73,7 +77,7 @@ public class DefaultActionResolver implements ActionResolver{
     }
 
     @Override
-    public EventDescriptor nextAction(TestDescriptor testDescriptor, EventDescriptor currentAction) throws TestConfigurationException {
+    public EventDescriptor getNextAction(TestDescriptor testDescriptor, EventDescriptor currentAction) throws TestConfigurationException {
         Action action = currentAction.getMethod().getAnnotation(Action.class);
         if(action==null) throw new TestConfigurationException("Action "+currentAction.getName()+" doesn't support annotation "+Annotation.class);
         
@@ -93,21 +97,47 @@ public class DefaultActionResolver implements ActionResolver{
     }
 
     @Override
-    public void runAction(TestDescriptor testDescriptor, EventDescriptor action, TestInformation testInformation, TestRunListener testRunListener) throws TestConfigurationException, TestInterruptedException {
-        // TODO Auto-generated method stub
+    public void runAction(TestRunner testRunner, EventDescriptor actionDescriptor, TestInformation testInformation, ActionInformation actionInformation) throws TestConfigurationException, TestInterruptedException {        
+        Method method = actionDescriptor.getMethod();
+
+        //Increasing the runningActionNumber variable so it would be possible to see the detailed progress of test run
+        testInformation.setRunningActionNumber(testInformation.getRunningActionNumber()+1);
+        
+        try {
+            TestRunner.invokeEvents(BeforeAction.class, testRunner.getTestDescriptor(), testRunner.getTestInstance(), actionInformation);
+            method.invoke(testRunner.getTestInstance());
+            //TODO Handle data-providers for action
+        } 
+        catch (IllegalArgumentException e) {
+            throw new TestConfigurationException(e);
+        } 
+        catch (IllegalAccessException e) {
+            throw new TestConfigurationException(e);
+        } 
+        catch (InvocationTargetException e) {
+            throw new TestInterruptedException(e.getTargetException());
+        }
+        finally {
+            TestRunner.invokeEvents(AfterAction.class, testRunner.getTestDescriptor(), testRunner.getTestInstance(), actionInformation);
+        }
         
     }
+    
 
     @Override
-    public EventDescriptor getActionRollback(TestDescriptor testDescriptor, EventDescriptor action) throws TestConfigurationException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-    
-    @Override
-    public EventDescriptor getActionErrorHandler(TestDescriptor testDescriptor, EventDescriptor action, Throwable error) throws TestConfigurationException {
-        // TODO Auto-generated method stub
-        return null;
+    public ActionInformation getActionInformation(TestDescriptor testDescriptor, TestInformation testInformation, EventDescriptor actionDescriptor) {
+        ActionInformation actionInformation = new ActionInformation();
+        
+        Method method = actionDescriptor.getMethod();
+        Action action = method.getAnnotation(Action.class);
+        actionInformation.setActionMethod(method);
+        if (action.name() != null && !action.name().isEmpty()) {
+            actionInformation.setActionName(action.name());
+        } else
+            actionInformation.setActionName(method.getName());
+        actionInformation.setTestInformation(testInformation);
+        
+        return actionInformation;
     }
 
 }

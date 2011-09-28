@@ -20,33 +20,17 @@ package net.mindengine.oculus.experior.test;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.List;
 import java.util.Stack;
 
 import net.mindengine.oculus.experior.TestRunListener;
-import net.mindengine.oculus.experior.annotations.Action;
-import net.mindengine.oculus.experior.annotations.ErrorHandler;
-import net.mindengine.oculus.experior.annotations.RollbackHandler;
-import net.mindengine.oculus.experior.annotations.events.AfterAction;
-import net.mindengine.oculus.experior.annotations.events.AfterErrorHandler;
-import net.mindengine.oculus.experior.annotations.events.AfterRollback;
-import net.mindengine.oculus.experior.annotations.events.AfterTest;
-import net.mindengine.oculus.experior.annotations.events.BeforeAction;
-import net.mindengine.oculus.experior.annotations.events.BeforeErrorHandler;
-import net.mindengine.oculus.experior.annotations.events.BeforeRollback;
-import net.mindengine.oculus.experior.annotations.events.BeforeTest;
-import net.mindengine.oculus.experior.annotations.events.OnException;
-import net.mindengine.oculus.experior.annotations.events.OnTestFailure;
 import net.mindengine.oculus.experior.exception.TestConfigurationException;
 import net.mindengine.oculus.experior.exception.TestInterruptedException;
 import net.mindengine.oculus.experior.suite.SuiteRunner;
 import net.mindengine.oculus.experior.test.descriptors.ActionInformation;
-import net.mindengine.oculus.experior.test.descriptors.ErrorInformation;
 import net.mindengine.oculus.experior.test.descriptors.EventDescriptor;
 import net.mindengine.oculus.experior.test.descriptors.EventDescriptorsContainer;
-import net.mindengine.oculus.experior.test.descriptors.RollbackInformation;
 import net.mindengine.oculus.experior.test.descriptors.TestDefinition;
 import net.mindengine.oculus.experior.test.descriptors.TestDescriptor;
 import net.mindengine.oculus.experior.test.descriptors.TestInformation;
@@ -58,7 +42,7 @@ public class TestRunner {
     private TestSession testSession;
     private Object testInstance;
     private TestRunListener testRunListener;
-    private Collection<TestDescriptor> includeTests;
+    private Collection<TestDefinition> includeTests;
     private SuiteRunner suiteRunner;
     private TestRunnerConfiguration configuration;
     private Collection<TestRunner> injectedTestRunners;
@@ -98,7 +82,6 @@ public class TestRunner {
         } finally {
             collectOutputParameters();
             cleanup();
-            
             
             // TODO Injected tests running should be updated a bit when TestDefinition class will support this feature
             
@@ -182,45 +165,58 @@ public class TestRunner {
         EventDescriptor entryAction = configuration.getActionResolver().getEntryAction(testDescriptor);
         List<String> actionSequence = configuration.getActionResolver().getActionsSequence(testDescriptor);
 
+        
         TestInformation testInformation = new TestInformation();
         testInformation.setTestRunner(this);
         testInformation.setEstimatedActions(actionSequence);
         testInformation.setRunningActionNumber(-1);
         
-        //TODO move before-test event to TestResolver
-        invokeEvents(BeforeTest.class, testInformation);
+        if(configuration.getTestResolver()==null) {
+            throw new TestConfigurationException("TestResolver is not specified");
+        }
+        
+        configuration.getTestResolver().beforeTest(this, testInformation);
         if (testRunListener != null) {
-            testRunListener.onTestStarted(testInformation);
+            try {
+                testRunListener.onTestStarted(testInformation);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         
         /**
          * Invoking the first action. All other actions will be run recursively
          */
+        
+        
         try {
             runAction(entryAction, testInformation);
         }
         catch (TestInterruptedException e) {
             testInformation.setFailureCause(e.getCause());
             testInformation.setStatus(TestInformation.STATUS_FAILED);
-          //TODO move the following to TestFailure TestResolver
-            invokeOnExceptionEvent(e.getCause(), testInformation);
-            invokeEvents(OnTestFailure.class, testInformation);
+            configuration.getTestResolver().handleException(this, testInformation, e.getCause());
+            configuration.getTestResolver().onTestFailure(this, testInformation);
             throw e;
         } 
         catch (TestConfigurationException e) {
             testInformation.setFailureCause(e.getCause());
             testInformation.setStatus(TestInformation.STATUS_FAILED);
-          //TODO move the following to TestFailure TestResolver. same as above
-            invokeOnExceptionEvent(e.getCause(), testInformation);
-            invokeEvents(OnTestFailure.class, testInformation);
+            configuration.getTestResolver().handleException(this, testInformation, e.getCause());
+            configuration.getTestResolver().onTestFailure(this, testInformation);
             throw e;
         }
         finally {
             invokeRollbackHandlers(testInformation);
-          //TODO move after-test event to TestResolver
-            invokeEvents(AfterTest.class, testInformation);
+            configuration.getTestResolver().afterTest(this, testInformation);
             if (testRunListener != null) {
-                testRunListener.onTestFinished(testInformation);
+                try {
+                    testRunListener.onTestFinished(testInformation);
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -233,25 +229,7 @@ public class TestRunner {
      */
     protected void invokeRollbackHandlers(TestInformation testInformation) throws TestInterruptedException, TestConfigurationException {
         for (EventDescriptor rollbackDescriptor : rollbackSequence) {
-            if (rollbackDescriptor.getAnnotation().annotationType().equals(RollbackHandler.class)) {
-                RollbackHandler annotation = (RollbackHandler) rollbackDescriptor.getAnnotation();
-                RollbackInformation rollbackInformation = new RollbackInformation();
-                if (annotation.name() != null && !annotation.name().isEmpty()) {
-                    rollbackInformation.setName(annotation.name());
-                } else
-                    rollbackInformation.setName(rollbackDescriptor.getMethod().getName());
-                rollbackInformation.setTestInformation(testInformation);
-                invokeEvents(BeforeRollback.class, rollbackInformation);
-
-                // Invoking method for the roll-back handler
-                try {
-                    rollbackDescriptor.getMethod().invoke(testInstance, rollbackInformation);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                invokeEvents(AfterRollback.class, rollbackInformation);
-            } else
-                throw new TestConfigurationException();
+            configuration.getRollbackResolver().runRollback(this, rollbackDescriptor, testInformation);
         }
     }
 
@@ -260,15 +238,21 @@ public class TestRunner {
      * 
      * @param event
      * @param args
+     * @throws TestConfigurationException 
+     * @throws TestInterruptedException 
      */
-    protected void invokeEvents(Class<?> eventType, Object... args) {
+    public void invokeEvents(Class<?> eventType, Object... args) throws TestConfigurationException, TestInterruptedException {
         EventDescriptorsContainer edc = testDescriptor.getEventContainer().get(eventType);
         if (edc != null) {
             for (EventDescriptor eventDescriptor : edc.getDescriptors().values()) {
                 try {
                     eventDescriptor.getMethod().invoke(testInstance, args);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                } catch (IllegalArgumentException e) {
+                    throw new TestConfigurationException(e);
+                } catch (IllegalAccessException e) {
+                    throw new TestConfigurationException(e);
+                } catch (InvocationTargetException e) {
+                    throw new TestInterruptedException(e.getTargetException());
                 }
             }
         }
@@ -286,141 +270,79 @@ public class TestRunner {
      * @throws TestInterruptedException
      */
     protected void runAction(EventDescriptor actionDescriptor, TestInformation testInformation) throws TestConfigurationException, TestInterruptedException {
-      //TODO move this to ActionResolver
-        Method method = actionDescriptor.getMethod();
-        Action action = method.getAnnotation(Action.class);
-
-        //Increasing the runningActionNumber variable so it would be possible to see the detailed progress of test run
-        testInformation.setRunningActionNumber(testInformation.getRunningActionNumber()+1);
-        
-        //Creating action information variable so it could be used in all events invocation
-        ActionInformation actionInformation = new ActionInformation();
-        actionInformation.setActionMethod(method);
-        if (action.name() != null && !action.name().isEmpty()) {
-            actionInformation.setActionName(action.name());
-        } else
-            actionInformation.setActionName(method.getName());
-        actionInformation.setTestInformation(testInformation);
-
-        if (testRunListener != null) {
-            testRunListener.onTestAction(actionInformation);
-        }
-        
-        invokeEvents(BeforeAction.class, actionInformation);
-
-        // Searching for a roll-back method and adding it to roll-back stack
-        if (action.rollback() != null && !action.rollback().isEmpty()) {
-            EventDescriptor rollback = testDescriptor.findEvent(RollbackHandler.class, action.rollback());
-            if (rollback == null) {
-                throw new TestConfigurationException("Cannot find rollback handler with name: " + action.rollback());
-            }
-            rollbackSequence.add(rollback);
-        }
-
-        // Invoking test method
+      //Creating action information variable so it could be used in all events invocation
+        ActionInformation actionInformation = configuration.getActionResolver().getActionInformation(testDescriptor, testInformation, actionDescriptor);
         try {
-            method.invoke(testInstance);
-        } catch (InvocationTargetException invocationTargetException) {
+            if(testRunListener!=null) {
+                testRunListener.onTestAction(actionInformation);
+            }            
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        try {
+            configuration.getActionResolver().runAction(this, actionDescriptor, testInformation, actionInformation);
+            EventDescriptor rollback = configuration.getRollbackResolver().getActionRollback(testDescriptor, actionDescriptor);
+            if(rollback!=null) {
+                rollbackSequence.add(rollback);
+            }
+        }
+        catch (TestConfigurationException e) {
+            throw e;
+        }
+        catch (TestInterruptedException e) {
             /**
              * Method has thrown an exception. Looking for error handlers in it
              */
-            Throwable errorToThrow = invocationTargetException.getTargetException();
-            if (action.onerror() != null && !action.onerror().isEmpty()) {
-                if (invokeOnErrorHandler(action.onerror(), invocationTargetException.getCause())) {
-                    errorToThrow = null;
-                }
+            Throwable errorToThrow = e.getCause();
+            if(configuration.getErrorResolver()==null){
+                throw new TestConfigurationException("ErrorResolver is not specified");
             }
-            if (errorToThrow != null) {
+            
+            EventDescriptor errorHandlerDescriptor = configuration.getErrorResolver().getActionErrorHandler(actionDescriptor, testDescriptor, errorToThrow);
+            if(errorHandlerDescriptor!=null) {
+                /*
+                 * Running error-handler event. In case the error is thrown from it the test will be interrupted
+                 */
+                configuration.getErrorResolver().runErrorHandler(this, errorHandlerDescriptor, testInformation, errorToThrow);
+                /*
+                 * Here it means that the error-handler didn't throw any exception so it also means that the error was handled properly for specified action.
+                 * In this case the test should not be interrupted.
+                 */
+                errorToThrow = null;
+            }
+            
+            if(errorToThrow!=null) {
                 throw new TestInterruptedException(errorToThrow);
             }
-
-        } catch (IllegalArgumentException e) {
-            throw new TestConfigurationException(e);
-        } catch (IllegalAccessException e) {
-            throw new TestConfigurationException(e);
-        } finally {
-            invokeEvents(AfterAction.class, actionInformation);
         }
-
-        // Invoking next action
-        String nextMethodName = action.next();
-        if (nextMethodName != null && !nextMethodName.isEmpty()) {
-            EventDescriptor eventDescriptor = testDescriptor.findEvent(Action.class, nextMethodName);
-            if (eventDescriptor == null) {
-                throw new TestConfigurationException("Can't find next action method with name '" + nextMethodName + "'");
-            }
-            runAction(eventDescriptor, testInformation);
+        
+        //Invoking next action
+        EventDescriptor nextActionDescriptor = configuration.getActionResolver().getNextAction(testDescriptor, actionDescriptor);
+        if(nextActionDescriptor!=null) {
+            runAction(nextActionDescriptor, testInformation);
         }
     }
 
-    /**
-     * Searches for the event which is subscribed for the specified exception
-     * and invokes it
-     * 
-     * @param exception
-     *            Exception which caused the test failure
-     */
-    protected void invokeOnExceptionEvent(Throwable exception, TestInformation testInformation) {
-        EventDescriptorsContainer edc = testDescriptor.getEventContainer().get(OnException.class);
+    
+    public static void invokeEvents(Class<?> eventType, TestDescriptor testDescriptor, Object testInstance, Object ...args) throws TestConfigurationException, TestInterruptedException {
+        EventDescriptorsContainer edc = testDescriptor.getEventContainer().get(eventType);
         if (edc != null) {
             for (EventDescriptor eventDescriptor : edc.getDescriptors().values()) {
-                Method method = eventDescriptor.getMethod();
-                OnException onExceptionAnnotation = method.getAnnotation(OnException.class);
-                if (onExceptionAnnotation.exception().equals(exception.getClass())) {
-                    try {
-                        method.invoke(testInstance, testInformation);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                try {
+                    eventDescriptor.getMethod().invoke(testInstance, args);
+                } catch (IllegalArgumentException e) {
+                    throw new TestConfigurationException(e);
+                } catch (IllegalAccessException e) {
+                    throw new TestConfigurationException(e);
+                } catch (InvocationTargetException e) {
+                    throw new TestInterruptedException(e.getTargetException());
                 }
             }
         }
     }
 
-    /**
-     * Invokes error handler
-     * 
-     * @param errorHandlerName
-     *            Name of error handler
-     * @param actionError
-     *            Exception which was thrown from test action
-     * @return true in case if error handler was found and was invoked without
-     *         any errors
-     * @throws TestInterruptedException
-     *             In case if there was thrown an exception from error handler
-     *             method it will wrapped in {@link TestInterruptedException}
-     * @throws TestConfigurationException 
-     */
-    protected boolean invokeOnErrorHandler(String errorHandlerName, Throwable actionError) throws TestInterruptedException, TestConfigurationException {
-        EventDescriptor eventDescriptor = testDescriptor.findEvent(ErrorHandler.class, errorHandlerName);
-        if (eventDescriptor != null) {
-            Method method = eventDescriptor.getMethod();
-            ErrorHandler errorAnnotation = method.getAnnotation(ErrorHandler.class);
-
-            ErrorInformation errorInformation = new ErrorInformation();
-            errorInformation.setException(actionError);
-            errorInformation.setMethod(method);
-            if (errorAnnotation.name() != null && !errorAnnotation.name().isEmpty()) {
-                errorInformation.setName(errorAnnotation.name());
-            } else
-                errorInformation.setName(method.getName());
-
-            try {
-                invokeEvents(BeforeErrorHandler.class, errorInformation);
-                method.invoke(testInstance, actionError);
-            } catch (InvocationTargetException e) {
-                throw new TestInterruptedException(e.getCause());
-            } catch (IllegalArgumentException e) {
-                throw new TestConfigurationException(e);
-            } catch (IllegalAccessException e) {
-                throw new TestConfigurationException(e);
-            } finally {
-                invokeEvents(AfterErrorHandler.class, errorInformation);
-            }
-            return true;
-        }
-        return false;
-    }
 
     public Object getTestInstance() {
         return this.testInstance;
@@ -458,11 +380,11 @@ public class TestRunner {
         this.testRunListener = testRunListener;
     }
 
-    public void setIncludeTests(Collection<TestDescriptor> includeTests) {
+    public void setIncludeTests(Collection<TestDefinition> includeTests) {
         this.includeTests = includeTests;
     }
 
-    public Collection<TestDescriptor> getIncludeTests() {
+    public Collection<TestDefinition> getIncludeTests() {
         return includeTests;
     }
 

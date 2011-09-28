@@ -25,10 +25,8 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import net.mindengine.oculus.experior.ClassUtils;
-import net.mindengine.oculus.experior.annotations.Action;
 import net.mindengine.oculus.experior.annotations.InputParameter;
 import net.mindengine.oculus.experior.annotations.OutputParameter;
-import net.mindengine.oculus.experior.annotations.RollbackHandler;
 import net.mindengine.oculus.experior.annotations.events.AfterTest;
 import net.mindengine.oculus.experior.annotations.events.BeforeAction;
 import net.mindengine.oculus.experior.annotations.events.BeforeErrorHandler;
@@ -249,18 +247,12 @@ public abstract class OculusTest {
 
     @BeforeAction
     public void onBeforeAction(ActionInformation actionInformation) {
-        Action annotation = actionInformation.getActionMethod().getAnnotation(Action.class);
-        if (annotation.report()) {
-            report.action(actionInformation.getActionName());
-        }
+        report.action(actionInformation.getActionName());
     }
 
     @BeforeRollback
     public void onBeforeRollback(RollbackInformation rollbackInformation) {
-        RollbackHandler annotation = rollbackInformation.getMethod().getAnnotation(RollbackHandler.class);
-        if (annotation.report()) {
-            report.action(rollbackInformation.getName(), null, ReportLogo.ROLLBACK);
-        }
+        report.action(rollbackInformation.getName(), null, ReportLogo.ROLLBACK);
     }
 
     @BeforeErrorHandler

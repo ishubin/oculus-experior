@@ -28,7 +28,6 @@ import java.util.Map;
 
 import net.mindengine.oculus.experior.ClassUtils;
 import net.mindengine.oculus.experior.annotations.DataProvider;
-import net.mindengine.oculus.experior.annotations.Test;
 import net.mindengine.oculus.experior.test.TestRunnerConfiguration;
 
 /**
@@ -45,6 +44,7 @@ public class TestDescriptor implements Serializable {
     private boolean isInformationCollected = false;
     private String testName;
     private String projectId;
+    private Class<?> testClass;
     //public static final Class<?>[] supportedFieldAnnotations = new Class<?>[] { InputParameter.class, OutputParameter.class, Temp.class };
 
     //public static final Class<?>[] supportedEventAnnotations = new Class<?>[] { EntryAction.class, Action.class, BeforeTest.class, AfterTest.class, BeforeAction.class, AfterAction.class,
@@ -70,17 +70,10 @@ public class TestDescriptor implements Serializable {
         setInformationCollected(true);
         fieldContainer = collectFields(testDefinition, configuration);
         eventContainer = collectEvents(testDefinition, configuration);
+        testClass = testDefinition.getTestClass();
         
-      //TODO change the following to TestResolver
-        Test testAnnotation = testDefinition.getTestClass().getAnnotation(Test.class);
-        if(testAnnotation!=null) {
-            testName = testAnnotation.name();
-            projectId = testAnnotation.projectId();
-        }
-        else {
-            testName = testDefinition.getTestClass().getName();
-            projectId = "";
-        }
+        testName = configuration.getTestResolver().getTestName(this);
+        projectId = configuration.getTestResolver().getProjectId(this);
     }
 
     /**
@@ -239,6 +232,14 @@ public class TestDescriptor implements Serializable {
             }
         }
         return null;
+    }
+
+    public void setTestClass(Class<?> testClass) {
+        this.testClass = testClass;
+    }
+
+    public Class<?> getTestClass() {
+        return testClass;
     }
 
 }
