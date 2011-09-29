@@ -48,7 +48,7 @@ public class TestRunner {
     private Collection<TestRunner> injectedTestRunners;
 
     // Used to store events which should be invoked when the test is finished
-    private Collection<EventDescriptor> rollbackSequence;
+    private Stack<EventDescriptor> rollbackSequence;
 
     /**
      * Runs the test. In order to launch this method the test runner should
@@ -189,35 +189,57 @@ public class TestRunner {
          * Invoking the first action. All other actions will be run recursively
          */
         
+        Throwable errorToThrow = null;
         
         try {
             runAction(entryAction, testInformation);
         }
         catch (TestInterruptedException e) {
-            testInformation.setFailureCause(e.getCause());
-            testInformation.setStatus(TestInformation.STATUS_FAILED);
-            configuration.getTestResolver().handleException(this, testInformation, e.getCause());
-            configuration.getTestResolver().onTestFailure(this, testInformation);
-            throw e;
+            errorToThrow = e.getCause();
         } 
         catch (TestConfigurationException e) {
-            testInformation.setFailureCause(e.getCause());
-            testInformation.setStatus(TestInformation.STATUS_FAILED);
-            configuration.getTestResolver().handleException(this, testInformation, e.getCause());
-            configuration.getTestResolver().onTestFailure(this, testInformation);
-            throw e;
+            errorToThrow = e;
         }
-        finally {
+        
+        //Invoking rollback-handlers
+        try {
             invokeRollbackHandlers(testInformation);
-            configuration.getTestResolver().afterTest(this, testInformation);
-            if (testRunListener != null) {
-                try {
-                    testRunListener.onTestFinished(testInformation);
-                }
-                catch (Exception e) {
-                    e.printStackTrace();
-                }
+        }
+        catch (TestConfigurationException e) {
+            errorToThrow = e;
+        }
+        catch (TestInterruptedException e) {
+            errorToThrow = e.getCause();
+        }
+        if(errorToThrow!=null) {
+            testInformation.setFailureCause(errorToThrow);
+            testInformation.setStatus(TestInformation.STATUS_FAILED);
+            try {
+                configuration.getTestResolver().handleException(this, testInformation, errorToThrow);
+                configuration.getTestResolver().onTestFailure(this, testInformation);
             }
+            catch (TestConfigurationException e) {
+                errorToThrow = e;
+            }
+            catch (TestInterruptedException e) {
+                errorToThrow = e.getCause();
+            }
+        }
+        configuration.getTestResolver().afterTest(this, testInformation);
+        if (testRunListener != null) {
+            try {
+                testRunListener.onTestFinished(testInformation);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        
+        if(errorToThrow!=null) {
+            if(errorToThrow instanceof TestConfigurationException) {
+                throw (TestConfigurationException)errorToThrow; 
+            }
+            else throw new TestInterruptedException(errorToThrow);
         }
     }
 
@@ -228,7 +250,9 @@ public class TestRunner {
      * @throws TestConfigurationException
      */
     protected void invokeRollbackHandlers(TestInformation testInformation) throws TestInterruptedException, TestConfigurationException {
-        for (EventDescriptor rollbackDescriptor : rollbackSequence) {
+        
+        while(!rollbackSequence.isEmpty()) {
+            EventDescriptor rollbackDescriptor = rollbackSequence.pop();
             configuration.getRollbackResolver().runRollback(this, rollbackDescriptor, testInformation);
         }
     }

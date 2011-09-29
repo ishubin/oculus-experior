@@ -26,7 +26,7 @@ public class DefaultRollbackResolver implements RollbackResolver {
         if(action.rollback()!=null && !action.rollback().isEmpty()) {
             EventDescriptor rollbackDescriptor = testDescriptor.findEvent(RollbackHandler.class, action.rollback());
             if(rollbackDescriptor==null) {
-                throw new TestConfigurationException("Can't find rollback with nam '"+action.rollback()+"' for action '"+eventDescriptor.getName()+"'");
+                throw new TestConfigurationException("Can't find rollback with name '"+action.rollback()+"' for action '"+eventDescriptor.getName()+"'");
             }
             return rollbackDescriptor;
         }
@@ -43,6 +43,7 @@ public class DefaultRollbackResolver implements RollbackResolver {
             } else
                 rollbackInformation.setName(rollbackDescriptor.getMethod().getName());
             rollbackInformation.setTestInformation(testInformation);
+            rollbackInformation.setMethod(rollbackDescriptor.getMethod());
             TestRunner.invokeEvents(BeforeRollback.class, testRunner.getTestDescriptor(), testRunner.getTestInstance(), rollbackInformation);
 
             // Invoking method for the roll-back handler
@@ -55,8 +56,9 @@ public class DefaultRollbackResolver implements RollbackResolver {
             } catch (InvocationTargetException e) {
                 throw new TestInterruptedException(e.getTargetException());
             }
-            
-            TestRunner.invokeEvents(AfterRollback.class, testRunner.getTestDescriptor(), testRunner.getTestInstance(), rollbackInformation);
+            finally{
+                TestRunner.invokeEvents(AfterRollback.class, testRunner.getTestDescriptor(), testRunner.getTestInstance(), rollbackInformation);
+            }
         } else
             throw new TestConfigurationException();
     }

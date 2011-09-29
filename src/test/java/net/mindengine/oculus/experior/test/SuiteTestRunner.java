@@ -23,11 +23,14 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import junit.framework.Assert;
-
 import net.mindengine.oculus.experior.ExperiorConfig;
 import net.mindengine.oculus.experior.annotations.events.AfterAction;
+import net.mindengine.oculus.experior.annotations.events.AfterErrorHandler;
+import net.mindengine.oculus.experior.annotations.events.AfterRollback;
 import net.mindengine.oculus.experior.annotations.events.AfterTest;
 import net.mindengine.oculus.experior.annotations.events.BeforeAction;
+import net.mindengine.oculus.experior.annotations.events.BeforeErrorHandler;
+import net.mindengine.oculus.experior.annotations.events.BeforeRollback;
 import net.mindengine.oculus.experior.annotations.events.BeforeTest;
 import net.mindengine.oculus.experior.exception.TestConfigurationException;
 import net.mindengine.oculus.experior.exception.TestInterruptedException;
@@ -40,11 +43,15 @@ import net.mindengine.oculus.experior.test.sampletests.Test1;
 import net.mindengine.oculus.experior.test.sampletests.Test2_B;
 import net.mindengine.oculus.experior.test.sampletests.TestEvent;
 import net.mindengine.oculus.experior.test.sampletests.TestSampleForDataDependency;
+import net.mindengine.oculus.experior.test.sampletests.TestSampleForErrorHandler_1;
+import net.mindengine.oculus.experior.test.sampletests.TestSampleForErrorHandler_2;
+import net.mindengine.oculus.experior.test.sampletests.TestSampleForRollbackHandler_1;
+import net.mindengine.oculus.experior.test.sampletests.TestSampleForRollbackHandler_2;
+import net.mindengine.oculus.experior.test.sampletests.TestSampleForRollbackHandler_3;
 import net.mindengine.oculus.experior.test.sampletests.TestWithErrorInAction;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class SuiteTestRunner {
@@ -175,16 +182,185 @@ public class SuiteTestRunner {
         Assert.assertNotNull(test.testInformation);
     }
     
-    @Ignore
     @Test
-    public void verifyRollbackHandlers() {
-        //TODO implement this test: RollbackHandler
+    public void verifyRollbackHandlers() throws TestConfigurationException, TestInterruptedException {
+        TestRunner testRunner = new TestRunner();
+        TestDefinition td = testDefinition(TestSampleForRollbackHandler_1.class);
+        testRunner.setTestDescriptor(TestDescriptor.create(td, ExperiorConfig.getInstance().getTestRunnerConfiguration()));
+        testRunner.setConfiguration(ExperiorConfig.getInstance().getTestRunnerConfiguration());
+        testRunner.setTestDefinition(td);
+        testRunner.runTest();
+
+        TestSampleForRollbackHandler_1 test = (TestSampleForRollbackHandler_1) testRunner.getTestInstance();
+        
+        verifySequence(test.getSequence(), TestEvent.collection(
+            TestEvent.event(BeforeTest.class), 
+            TestEvent.event(BeforeAction.class, "action1"), 
+            TestEvent.event("action1"), 
+            TestEvent.event(AfterAction.class, "action1"), 
+            TestEvent.event(BeforeAction.class, "action2"), 
+            TestEvent.event("action2"),
+            TestEvent.event(AfterAction.class, "action2"),
+            TestEvent.event(BeforeAction.class, "action3"), 
+            TestEvent.event("action3"),
+            TestEvent.event(AfterAction.class, "action3"),
+            TestEvent.event(BeforeAction.class, "action4"), 
+            TestEvent.event("action4"),
+            TestEvent.event(AfterAction.class, "action4"),
+            TestEvent.event(BeforeRollback.class, "rollback4"),
+            TestEvent.event("rollback4"),
+            TestEvent.event(AfterRollback.class, "rollback4"),
+            TestEvent.event(BeforeRollback.class, "rollback2"),
+            TestEvent.event("rollback2"),
+            TestEvent.event(AfterRollback.class, "rollback2"),
+            TestEvent.event(BeforeRollback.class, "rollback1"),
+            TestEvent.event("rollback1"),
+            TestEvent.event(AfterRollback.class, "rollback1"),
+            TestEvent.event(AfterTest.class)));
     }
     
-    @Ignore
     @Test
-    public void verifyErrorHandlers() {
-        // TODO implement this test: ErrorHandler
+    public void verifyRollbackHandlersWithErrorFromAction() throws TestConfigurationException {
+        TestRunner testRunner = new TestRunner();
+        TestDefinition td = testDefinition(TestSampleForRollbackHandler_2.class);
+        testRunner.setTestDescriptor(TestDescriptor.create(td, ExperiorConfig.getInstance().getTestRunnerConfiguration()));
+        testRunner.setConfiguration(ExperiorConfig.getInstance().getTestRunnerConfiguration());
+        testRunner.setTestDefinition(td);
+        
+        Throwable error = null;
+        try {
+            testRunner.runTest();
+        } catch (TestInterruptedException e) {
+            error = e.getCause();
+        }
+        
+        Assert.assertNotNull(error);
+        Assert.assertEquals(NullPointerException.class, error.getClass());
+        Assert.assertEquals("test exeption",error.getMessage());
+
+        TestSampleForRollbackHandler_2 test = (TestSampleForRollbackHandler_2) testRunner.getTestInstance();
+        
+        verifySequence(test.getSequence(), TestEvent.collection(
+            TestEvent.event(BeforeTest.class), 
+            TestEvent.event(BeforeAction.class, "action1"), 
+            TestEvent.event("action1"), 
+            TestEvent.event(AfterAction.class, "action1"), 
+            TestEvent.event(BeforeAction.class, "action2"), 
+            TestEvent.event("action2"),
+            TestEvent.event(AfterAction.class, "action2"),
+            TestEvent.event(BeforeAction.class, "action3"), 
+            TestEvent.event("action3"),
+            TestEvent.event(AfterAction.class, "action3"),
+            TestEvent.event(BeforeRollback.class, "rollback2"),
+            TestEvent.event("rollback2"),
+            TestEvent.event(AfterRollback.class, "rollback2"),
+            TestEvent.event(BeforeRollback.class, "rollback1"),
+            TestEvent.event("rollback1"),
+            TestEvent.event(AfterRollback.class, "rollback1"),
+            TestEvent.event(AfterTest.class)));
+    }
+    
+    @Test
+    public void verifyRollbackHandlersWithErrorFromHandler() throws TestConfigurationException {
+        TestRunner testRunner = new TestRunner();
+        TestDefinition td = testDefinition(TestSampleForRollbackHandler_3.class);
+        testRunner.setTestDescriptor(TestDescriptor.create(td, ExperiorConfig.getInstance().getTestRunnerConfiguration()));
+        testRunner.setConfiguration(ExperiorConfig.getInstance().getTestRunnerConfiguration());
+        testRunner.setTestDefinition(td);
+        
+        Throwable error = null;
+        try {
+            testRunner.runTest();
+        } catch (TestInterruptedException e) {
+            error = e.getCause();
+        }
+        
+        Assert.assertNotNull(error);
+        Assert.assertEquals(NullPointerException.class, error.getClass());
+        Assert.assertEquals("test exeption",error.getMessage());
+
+        TestSampleForRollbackHandler_3 test = (TestSampleForRollbackHandler_3) testRunner.getTestInstance();
+        
+        verifySequence(test.getSequence(), TestEvent.collection(
+            TestEvent.event(BeforeTest.class), 
+            TestEvent.event(BeforeAction.class, "action1"), 
+            TestEvent.event("action1"), 
+            TestEvent.event(AfterAction.class, "action1"), 
+            TestEvent.event(BeforeAction.class, "action2"), 
+            TestEvent.event("action2"),
+            TestEvent.event(AfterAction.class, "action2"),
+            TestEvent.event(BeforeRollback.class, "rollback2"),
+            TestEvent.event("rollback2"),
+            TestEvent.event(AfterRollback.class, "rollback2"),
+            TestEvent.event(AfterTest.class)));
+    }
+    
+    @Test
+    public void verifyErrorHandlersPositive() throws TestConfigurationException, TestInterruptedException {
+        TestRunner testRunner = new TestRunner();
+        TestDefinition td = testDefinition(TestSampleForErrorHandler_1.class);
+        testRunner.setTestDescriptor(TestDescriptor.create(td, ExperiorConfig.getInstance().getTestRunnerConfiguration()));
+        testRunner.setConfiguration(ExperiorConfig.getInstance().getTestRunnerConfiguration());
+        testRunner.setTestDefinition(td);
+        testRunner.runTest();
+
+        TestSampleForErrorHandler_1 test = (TestSampleForErrorHandler_1) testRunner.getTestInstance();
+        
+        verifySequence(test.getSequence(), TestEvent.collection(
+            TestEvent.event(BeforeTest.class), 
+            TestEvent.event(BeforeAction.class, "action1"), 
+            TestEvent.event("action1"), 
+            TestEvent.event(AfterAction.class, "action1"), 
+            TestEvent.event(BeforeAction.class, "action2"), 
+            TestEvent.event("action2"),
+            TestEvent.event(AfterAction.class, "action2"),
+            TestEvent.event(BeforeErrorHandler.class, "errorHandler2"),
+            TestEvent.event("errorHandler2"),
+            TestEvent.event(AfterErrorHandler.class, "errorHandler2"),
+            TestEvent.event(BeforeAction.class, "action3"), 
+            TestEvent.event("action3"),
+            TestEvent.event(AfterAction.class, "action3"),
+            TestEvent.event(AfterTest.class)));
+    }
+    
+    @Test
+    public void verifyErrorHandlersWithExceptionFromHandler() throws TestConfigurationException {
+        TestRunner testRunner = new TestRunner();
+        TestDefinition td = testDefinition(TestSampleForErrorHandler_2.class);
+        testRunner.setTestDescriptor(TestDescriptor.create(td, ExperiorConfig.getInstance().getTestRunnerConfiguration()));
+        testRunner.setConfiguration(ExperiorConfig.getInstance().getTestRunnerConfiguration());
+        testRunner.setTestDefinition(td);
+        
+        Throwable error = null;
+        try {
+            testRunner.runTest();
+        }
+        catch (TestInterruptedException e) {
+            error = e.getCause();
+        }
+
+        TestSampleForErrorHandler_2 test = (TestSampleForErrorHandler_2) testRunner.getTestInstance();
+        Assert.assertNotNull(error);
+        Assert.assertEquals(NullPointerException.class, error.getClass());
+        Assert.assertEquals("This exeption is thrown from error-handler",error.getMessage());
+        
+        verifySequence(test.getSequence(), TestEvent.collection(
+            TestEvent.event(BeforeTest.class), 
+            TestEvent.event(BeforeAction.class, "action1"), 
+            TestEvent.event("action1"), 
+            TestEvent.event(AfterAction.class, "action1"), 
+            TestEvent.event(BeforeAction.class, "action2"), 
+            TestEvent.event("action2"),
+            TestEvent.event(AfterAction.class, "action2"),
+            TestEvent.event(BeforeErrorHandler.class, "errorHandler2"),
+            TestEvent.event("errorHandler2"),
+            TestEvent.event(AfterErrorHandler.class, "errorHandler2"),
+            TestEvent.event(AfterTest.class)));
+    }
+    
+    @Test
+    public void verifyOnExceptionEvents(){
+        //TODO implement test: for OnException and OnTestFailure events
     }
     
     public TestDefinition  testDefinition(Class<?>testClass) {
