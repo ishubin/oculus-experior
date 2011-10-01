@@ -170,6 +170,7 @@ public class TestRunner {
         testInformation.setTestRunner(this);
         testInformation.setEstimatedActions(actionSequence);
         testInformation.setRunningActionNumber(-1);
+        testInformation.setPhase(TestInformation.PHASE_RUNNING);
         
         if(configuration.getTestResolver()==null) {
             throw new TestConfigurationException("TestResolver is not specified");
@@ -226,6 +227,7 @@ public class TestRunner {
             }
         }
         configuration.getTestResolver().afterTest(this, testInformation);
+        testInformation.setPhase(TestInformation.PHASE_DONE);
         if (testRunListener != null) {
             try {
                 testRunListener.onTestFinished(testInformation);

@@ -21,9 +21,12 @@ package net.mindengine.oculus.experior.test;
 import java.io.File;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import junit.framework.Assert;
 import net.mindengine.oculus.experior.ExperiorConfig;
+import net.mindengine.oculus.experior.TestRunListener;
 import net.mindengine.oculus.experior.annotations.events.AfterAction;
 import net.mindengine.oculus.experior.annotations.events.AfterErrorHandler;
 import net.mindengine.oculus.experior.annotations.events.AfterRollback;
@@ -37,8 +40,10 @@ import net.mindengine.oculus.experior.exception.TestInterruptedException;
 import net.mindengine.oculus.experior.suite.Suite;
 import net.mindengine.oculus.experior.suite.SuiteRunner;
 import net.mindengine.oculus.experior.suite.XmlSuiteParser;
+import net.mindengine.oculus.experior.test.descriptors.ActionInformation;
 import net.mindengine.oculus.experior.test.descriptors.TestDefinition;
 import net.mindengine.oculus.experior.test.descriptors.TestDescriptor;
+import net.mindengine.oculus.experior.test.descriptors.TestInformation;
 import net.mindengine.oculus.experior.test.sampletests.Test1;
 import net.mindengine.oculus.experior.test.sampletests.Test2_B;
 import net.mindengine.oculus.experior.test.sampletests.TestEvent;
@@ -58,6 +63,8 @@ public class SuiteTestRunner {
 
     Log log = LogFactory.getLog(getClass());
 
+    //TODO Test - for action data-providers
+    
     /**
      * Checks the instantiation of parameters with specified default values.
      * Checks the sequence of following events:
@@ -79,8 +86,27 @@ public class SuiteTestRunner {
         testRunner.setTestDescriptor(TestDescriptor.create(td, ExperiorConfig.getInstance().getTestRunnerConfiguration()));
         testRunner.setConfiguration(ExperiorConfig.getInstance().getTestRunnerConfiguration());
         testRunner.setTestDefinition(td);
+        final List<TestEvent> testRunListenerEvents = new LinkedList<TestEvent>();
+        testRunner.setTestRunListener(new TestRunListener() {
+            
+            @Override
+            public void onTestStarted(TestInformation testInformation) {
+                testRunListenerEvents.add(TestEvent.event("onTestStarted", testInformation));
+            }
+            
+            @Override
+            public void onTestFinished(TestInformation testInformation) {
+                testRunListenerEvents.add(TestEvent.event("onTestFinished", testInformation));
+            }
+            
+            @Override
+            public void onTestAction(ActionInformation actionInformation) {
+                testRunListenerEvents.add(TestEvent.event("onTestAction", actionInformation));
+            }
+        });
+        
         testRunner.runTest();
-
+        
         Test1 test = (Test1) testRunner.getTestInstance();
 
         // Verifying that input parameters were instantiated with default values
@@ -106,7 +132,26 @@ public class SuiteTestRunner {
             TestEvent.event(AfterAction.class, "action2"), 
             TestEvent.event(AfterTest.class)));
         
-        //TODO verify action sequence in testinformation
+        /*
+         * Verifying sequence of event from TestRunListener
+         */
+        verifySequence(testRunListenerEvents, TestEvent.collection(
+            TestEvent.event("onTestStarted"),
+            TestEvent.event("onTestAction"),
+            TestEvent.event("onTestAction"),
+            TestEvent.event("onTestFinished")
+            ));
+        
+        TestEvent event =  testRunListenerEvents.get(0);
+        
+        TestInformation testInformation = (TestInformation) event.getEventObjects()[0];
+        testInformation.getEstimatedActions();
+        Assert.assertEquals(2, testInformation.getEstimatedActions().size());
+        Assert.assertEquals("Action 1", testInformation.getEstimatedActions().get(0));
+        Assert.assertEquals("action2", testInformation.getEstimatedActions().get(1));
+        Assert.assertEquals(TestInformation.PHASE_DONE, testInformation.getPhase());
+        Assert.assertEquals(TestInformation.STATUS_PASSED, testInformation.getStatus());
+        Assert.assertEquals(1, testInformation.getRunningActionNumber());
     }
     
     /**
@@ -155,6 +200,14 @@ public class SuiteTestRunner {
         Assert.assertNotNull(test.component2);
         Assert.assertNotNull(test.component2_1);
         Assert.assertEquals(test.component1_1, test.component2_1.getComponent1());
+        
+        
+        /**
+         * Verifying data-providers for actions
+         */
+        Assert.assertEquals(4, (int)test.argument1);
+        Assert.assertNotNull(test.argument2);
+        Assert.assertEquals(test.someStringField, test.argument2.getField());
     }
     
     @Test

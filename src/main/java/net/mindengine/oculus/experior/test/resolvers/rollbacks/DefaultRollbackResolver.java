@@ -35,6 +35,9 @@ public class DefaultRollbackResolver implements RollbackResolver {
 
     @Override
     public void runRollback(TestRunner testRunner, EventDescriptor rollbackDescriptor, TestInformation testInformation) throws TestConfigurationException, TestInterruptedException {
+        //TODO Rollback method should be run without RollbackInformation
+        
+        //TODO RollbackResolver should handle data-sources as arguments of rollback-method
         if (rollbackDescriptor.getAnnotation().annotationType().equals(RollbackHandler.class)) {
             RollbackHandler annotation = (RollbackHandler) rollbackDescriptor.getAnnotation();
             RollbackInformation rollbackInformation = new RollbackInformation();

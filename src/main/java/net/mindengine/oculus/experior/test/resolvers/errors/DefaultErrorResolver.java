@@ -34,6 +34,9 @@ public class DefaultErrorResolver implements ErrorResolver{
 
     @Override
     public void runErrorHandler(TestRunner testRunner, EventDescriptor errorHandlerDescriptor, TestInformation information, Throwable error) throws TestConfigurationException, TestInterruptedException {
+        
+        //TODO ErrorInformation should not be used in error-handlers. Instead the exception which was thrown from method should be passed as a first argument to the error-handler
+        //TODO Handle data-source method arguments for error-handlers 
         if (errorHandlerDescriptor != null) {
             Method method = errorHandlerDescriptor.getMethod();
             ErrorHandler errorAnnotation = method.getAnnotation(ErrorHandler.class);

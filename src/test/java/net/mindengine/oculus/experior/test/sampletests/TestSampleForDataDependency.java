@@ -37,13 +37,15 @@ public class TestSampleForDataDependency {
     @DataSource(dependencies={"component1_1>component1"})
     public Component2 component2_1;
     
-    
+    public Integer argument1;
+    public Component1 argument2;
     
     
     @EntryAction
     @Action(name="Action")
-    public void action() {
-        
+    public void action(@DataSource(provider="intProvider2") Integer arg1, @DataSource(dependencies={"field:someStringField"}) Component1 arg2) {
+        this.argument1 = arg1;
+        this.argument2 = arg2;
         
     }
     

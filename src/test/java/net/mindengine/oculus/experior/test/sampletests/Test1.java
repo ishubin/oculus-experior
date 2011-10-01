@@ -49,7 +49,7 @@ public class Test1 extends BaseTest{
         sequence.add(TestEvent.event("action1"));
     }
     
-    @Action(name="Action 2")
+    @Action()
     public void action2(){
         sequence.add(TestEvent.event("action2"));
     }

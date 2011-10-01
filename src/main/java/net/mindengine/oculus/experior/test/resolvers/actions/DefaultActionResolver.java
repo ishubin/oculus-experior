@@ -19,6 +19,8 @@ import net.mindengine.oculus.experior.test.descriptors.EventDescriptor;
 import net.mindengine.oculus.experior.test.descriptors.EventDescriptorsContainer;
 import net.mindengine.oculus.experior.test.descriptors.TestDescriptor;
 import net.mindengine.oculus.experior.test.descriptors.TestInformation;
+import net.mindengine.oculus.experior.test.resolvers.dataprovider.DataDependency;
+import net.mindengine.oculus.experior.test.resolvers.dataprovider.DataProviderResolver;
 
 public class DefaultActionResolver implements ActionResolver{
 
@@ -101,12 +103,28 @@ public class DefaultActionResolver implements ActionResolver{
         Method method = actionDescriptor.getMethod();
 
         //Increasing the runningActionNumber variable so it would be possible to see the detailed progress of test run
-        testInformation.setRunningActionNumber(testInformation.getRunningActionNumber()+1);
+        testInformation.setRunningActionNumber(testInformation.getRunningActionNumber() + 1);
+        
+        /*
+         * Instantiating data-source parameters of action
+         */
+        DataProviderResolver dataProviderResolver = testRunner.getConfiguration().getDataProviderResolver();
+        
+        Class<?>[]parameterTypes = method.getParameterTypes();
+        Object[] parameters = null;
+        if(dataProviderResolver!=null && parameterTypes!=null) {
+            parameters = new Object[parameterTypes.length];
+            Annotation[][] annotations = method.getParameterAnnotations();
+            for(int i=0; i< parameterTypes.length; i++) {
+                Collection<DataDependency> dependencies = testRunner.getConfiguration().getDataDependencyResolver().resolveDependencies(annotations[i]);
+                parameters[i] = dataProviderResolver.instantiateDataSourceComponent(testRunner, "arg"+i, parameterTypes[i], annotations[i], dependencies);
+            }
+        }
+        else parameters = new Object[0];
         
         try {
             TestRunner.invokeEvents(BeforeAction.class, testRunner.getTestDescriptor(), testRunner.getTestInstance(), actionInformation);
-            method.invoke(testRunner.getTestInstance());
-            //TODO Handle data-providers for action
+            method.invoke(testRunner.getTestInstance(), parameters);
         } 
         catch (IllegalArgumentException e) {
             throw new TestConfigurationException(e);

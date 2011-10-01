@@ -43,8 +43,8 @@ public class DefaultDataProviderResolver implements DataProviderResolver {
             // TODO Implement validation in order to check if there is a cross-reference in data source dependencies
 
             for (FieldDescriptor fieldDescriptor : fieldDescriptors) {
-                Collection<DataDependency> dependencies = dataDependencyResolver.resolveDependencies(fieldDescriptor.getField());
-                Object componentValue = instantiateDataSourceComponent(testDescriptor, fieldDescriptor.getField().getName(), fieldDescriptor.getField().getType(), fieldDescriptor.getField().getAnnotations(), testRunner.getTestInstance(), dependencies);
+                Collection<DataDependency> dependencies = dataDependencyResolver.resolveDependencies(fieldDescriptor.getField().getAnnotations());
+                Object componentValue = instantiateDataSourceComponent(testRunner, fieldDescriptor.getField().getName(), fieldDescriptor.getField().getType(), fieldDescriptor.getField().getAnnotations(), dependencies);
                 try {
                     ClassUtils.setFieldValue(fieldDescriptor.getField(), testRunner.getTestInstance(), componentValue);
                 } catch (Exception e) {
@@ -55,7 +55,7 @@ public class DefaultDataProviderResolver implements DataProviderResolver {
     }
 
     @Override
-    public Object instantiateDataSourceComponent(TestDescriptor testDescriptor, String fieldName, Class<?> fieldType, Annotation[] fieldAnnotations, Object testInstance, Collection<DataDependency> dependencies) throws TestConfigurationException {
+    public Object instantiateDataSourceComponent(TestRunner testRunner, String fieldName, Class<?> fieldType, Annotation[] fieldAnnotations, Collection<DataDependency> dependencies) throws TestConfigurationException {
         DataSource dataSource = null;
         
         if(fieldAnnotations!=null) {
@@ -78,6 +78,8 @@ public class DefaultDataProviderResolver implements DataProviderResolver {
         information.setType(dataSource.type());
         information.setName(dataSource.name());
 
+        
+        TestDescriptor testDescriptor = testRunner.getTestDescriptor();
         // Searching for a proper data provider based on name and type of object
         // EventDescriptorsContainer
         Collection<EventDescriptor> eventDescriptors = testDescriptor.getEventDescriptors(DataProvider.class);
@@ -112,11 +114,11 @@ public class DefaultDataProviderResolver implements DataProviderResolver {
             // Calling data-provider method and setting its result to a
             // data-source field
             try {
-                Object component = dataProviderDescriptor.getMethod().invoke(testInstance, information);
+                Object component = dataProviderDescriptor.getMethod().invoke(testRunner.getTestInstance(), information);
                 
                 // Resolving dependencies for data-source field
                 if (dependencies != null) {
-                    resolveDependencies(fieldName, component, dependencies, testInstance);
+                    resolveDependencies(fieldName, component, dependencies, testRunner.getTestInstance());
                 }
                 
                 return component;
@@ -165,7 +167,7 @@ public class DefaultDataProviderResolver implements DataProviderResolver {
     }
 
     private boolean hasDependency(FieldDescriptor depField, FieldDescriptor refField, DataDependencyResolver dataDependencyResolver) throws TestConfigurationException {
-        Collection<DataDependency> dependencies = dataDependencyResolver.resolveDependencies(depField.getField());
+        Collection<DataDependency> dependencies = dataDependencyResolver.resolveDependencies(depField.getField().getAnnotations());
         if (dependencies != null) {
             for (DataDependency dependency : dependencies) {
 

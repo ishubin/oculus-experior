@@ -1,6 +1,6 @@
 package net.mindengine.oculus.experior.test.resolvers.dataprovider;
 
-import java.lang.reflect.Field;
+import java.lang.annotation.Annotation;
 import java.util.Collection;
 
 import net.mindengine.oculus.experior.exception.TestConfigurationException;
@@ -18,5 +18,5 @@ public interface DataDependencyResolver {
      * @return Collection of data dependencies for the specified field. Returns Null In case there is no dependency specified 
      * @throws TestConfigurationException in case if it couldn't find appropriate annotation 
      */
-    public Collection<DataDependency> resolveDependencies(Field field) throws TestConfigurationException;
+    public Collection<DataDependency> resolveDependencies(Annotation[] annotations) throws TestConfigurationException;
 }

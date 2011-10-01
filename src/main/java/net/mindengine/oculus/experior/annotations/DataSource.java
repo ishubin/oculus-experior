@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 import net.mindengine.oculus.experior.test.resolvers.dataprovider.DataDependencyResolver;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
+@Target({ElementType.FIELD, ElementType.PARAMETER})
 public @interface DataSource {
     
     /**
