@@ -54,6 +54,7 @@ import net.mindengine.oculus.experior.test.sampletests.TestSampleForErrorHandler
 import net.mindengine.oculus.experior.test.sampletests.TestSampleForRollbackHandler_1;
 import net.mindengine.oculus.experior.test.sampletests.TestSampleForRollbackHandler_2;
 import net.mindengine.oculus.experior.test.sampletests.TestSampleForRollbackHandler_3;
+import net.mindengine.oculus.experior.test.sampletests.TestSampleWithError;
 import net.mindengine.oculus.experior.test.sampletests.TestWithErrorInAction;
 
 import org.apache.commons.logging.Log;
@@ -64,9 +65,6 @@ public class SuiteTestRunner {
 
     Log log = LogFactory.getLog(getClass());
 
-    //TODO Test - for error-handler data-providers
-    //TODO Test - for rollback-handler data-providers
-    
     /**
      * Checks the instantiation of parameters with specified default values.
      * Checks the sequence of following events:
@@ -433,8 +431,33 @@ public class SuiteTestRunner {
     }
     
     @Test
-    public void verifyOnExceptionEvents(){
-        //TODO Test - for OnException and OnTestFailure events
+    public void verifyOnExceptionEvents() throws TestConfigurationException{
+        TestRunner testRunner = new TestRunner();
+        TestDefinition td = testDefinition(TestSampleWithError.class);
+        testRunner.setTestDescriptor(TestDescriptor.create(td, ExperiorConfig.getInstance().getTestRunnerConfiguration()));
+        testRunner.setConfiguration(ExperiorConfig.getInstance().getTestRunnerConfiguration());
+        testRunner.setTestDefinition(td);
+        
+        Throwable error = null;
+        try {
+            testRunner.runTest();
+        } catch (TestInterruptedException e) {
+            error = e.getCause();
+        }
+        
+        Assert.assertNotNull(error);
+        Assert.assertEquals(NullPointerException.class, error.getClass());
+        Assert.assertEquals("Some test exception",error.getMessage());
+        
+        TestSampleWithError test = (TestSampleWithError) testRunner.getTestInstance();
+        
+        Assert.assertNotNull(test.onExceptionArgument);
+        Assert.assertEquals(NullPointerException.class, test.onExceptionArgument.getFailureCause().getClass());
+        
+        
+        Assert.assertNotNull(test.onTestFailureArgument);
+        Assert.assertEquals(NullPointerException.class, test.onTestFailureArgument.getFailureCause().getClass());
+        
     }
     
     public TestDefinition  testDefinition(Class<?>testClass) {
