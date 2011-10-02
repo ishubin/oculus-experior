@@ -48,6 +48,7 @@ import net.mindengine.oculus.experior.test.sampletests.Test1;
 import net.mindengine.oculus.experior.test.sampletests.Test2_B;
 import net.mindengine.oculus.experior.test.sampletests.TestEvent;
 import net.mindengine.oculus.experior.test.sampletests.TestSampleForDataDependency;
+import net.mindengine.oculus.experior.test.sampletests.TestSampleForDataDependency_2;
 import net.mindengine.oculus.experior.test.sampletests.TestSampleForErrorHandler_1;
 import net.mindengine.oculus.experior.test.sampletests.TestSampleForErrorHandler_2;
 import net.mindengine.oculus.experior.test.sampletests.TestSampleForRollbackHandler_1;
@@ -210,6 +211,25 @@ public class SuiteTestRunner {
         Assert.assertNotNull(test.argument2);
         Assert.assertEquals(test.someStringField, test.argument2.getField());
     }
+    
+    
+    @Test
+    public void testDefaultDataProviderResolverErrorAndRollbacks() throws TestConfigurationException, TestInterruptedException {
+        TestRunner testRunner = new TestRunner();
+        TestDefinition td = testDefinition(TestSampleForDataDependency_2.class);
+        testRunner.setTestDescriptor(TestDescriptor.create(td, ExperiorConfig.getInstance().getTestRunnerConfiguration()));
+        testRunner.setConfiguration(ExperiorConfig.getInstance().getTestRunnerConfiguration());
+        testRunner.setTestDefinition(td);
+        testRunner.runTest();
+        
+        TestSampleForDataDependency_2 test = (TestSampleForDataDependency_2) testRunner.getTestInstance();
+        
+        Assert.assertEquals(Integer.valueOf(4), test.errorHandlerArgument);
+        
+        Assert.assertNotNull(test.rollbackHandlerArgument);
+        Assert.assertEquals("Test field data", test.rollbackHandlerArgument.getField());
+    }
+    
     
     @Test
     public void testErrorInsideAction() throws TestConfigurationException {

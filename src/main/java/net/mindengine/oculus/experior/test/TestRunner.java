@@ -309,10 +309,6 @@ public class TestRunner {
         
         try {
             configuration.getActionResolver().runAction(this, actionDescriptor, testInformation, actionInformation);
-            EventDescriptor rollback = configuration.getRollbackResolver().getActionRollback(testDescriptor, actionDescriptor);
-            if(rollback!=null) {
-                rollbackSequence.add(rollback);
-            }
         }
         catch (TestConfigurationException e) {
             throw e;
@@ -344,6 +340,10 @@ public class TestRunner {
             }
         }
         
+        EventDescriptor rollback = configuration.getRollbackResolver().getActionRollback(testDescriptor, actionDescriptor);
+        if(rollback!=null) {
+            rollbackSequence.add(rollback);
+        }
         //Invoking next action
         EventDescriptor nextActionDescriptor = configuration.getActionResolver().getNextAction(testDescriptor, actionDescriptor);
         if(nextActionDescriptor!=null) {

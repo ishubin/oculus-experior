@@ -56,7 +56,7 @@ public class DefaultErrorResolver implements ErrorResolver{
             }
             
             if(dataProviderResolver!=null && parameterTypes.length>1) {
-                parameters = new Object[parameterTypes.length+1];
+                parameters = new Object[parameterTypes.length];
                 Annotation[][] annotations = method.getParameterAnnotations();
                 for(int i=1; i< parameterTypes.length; i++) {
                     Collection<DataDependency> dependencies = testRunner.getConfiguration().getDataDependencyResolver().resolveDependencies(annotations[i]);

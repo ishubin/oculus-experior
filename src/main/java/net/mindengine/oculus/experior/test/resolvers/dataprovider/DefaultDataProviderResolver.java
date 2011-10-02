@@ -3,6 +3,7 @@ package net.mindengine.oculus.experior.test.resolvers.dataprovider;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -41,6 +42,8 @@ public class DefaultDataProviderResolver implements DataProviderResolver {
             Collection<FieldDescriptor> fieldDescriptors = orderFieldsByDependency(dataSources, dataDependencyResolver);
 
             // TODO Implement validation in order to check if there is a cross-reference in data source dependencies
+            
+            
 
             for (FieldDescriptor fieldDescriptor : fieldDescriptors) {
                 Collection<DataDependency> dependencies = dataDependencyResolver.resolveDependencies(fieldDescriptor.getField().getAnnotations());
@@ -114,7 +117,16 @@ public class DefaultDataProviderResolver implements DataProviderResolver {
             // Calling data-provider method and setting its result to a
             // data-source field
             try {
-                Object component = dataProviderDescriptor.getMethod().invoke(testRunner.getTestInstance(), information);
+                /*
+                 * Checking if data-provider method supports DataSourceInformation argument
+                 */
+                Method method = dataProviderDescriptor.getMethod();
+                Object component = null;
+                if(method.getParameterTypes().length==1 && method.getParameterTypes()[0].equals(DataSourceInformation.class)) {
+                    component = method.invoke(testRunner.getTestInstance(), information);
+                }
+                else component = method.invoke(testRunner.getTestInstance());
+                
                 
                 // Resolving dependencies for data-source field
                 if (dependencies != null) {
