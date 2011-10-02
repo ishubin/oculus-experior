@@ -1,7 +1,9 @@
 package net.mindengine.oculus.experior.test.resolvers.rollbacks;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collection;
 
 import net.mindengine.oculus.experior.annotations.Action;
 import net.mindengine.oculus.experior.annotations.RollbackHandler;
@@ -14,6 +16,8 @@ import net.mindengine.oculus.experior.test.descriptors.EventDescriptor;
 import net.mindengine.oculus.experior.test.descriptors.RollbackInformation;
 import net.mindengine.oculus.experior.test.descriptors.TestDescriptor;
 import net.mindengine.oculus.experior.test.descriptors.TestInformation;
+import net.mindengine.oculus.experior.test.resolvers.dataprovider.DataDependency;
+import net.mindengine.oculus.experior.test.resolvers.dataprovider.DataProviderResolver;
 
 public class DefaultRollbackResolver implements RollbackResolver {
 
@@ -35,9 +39,6 @@ public class DefaultRollbackResolver implements RollbackResolver {
 
     @Override
     public void runRollback(TestRunner testRunner, EventDescriptor rollbackDescriptor, TestInformation testInformation) throws TestConfigurationException, TestInterruptedException {
-        //TODO Rollback method should be run without RollbackInformation
-        
-        //TODO RollbackResolver should handle data-sources as arguments of rollback-method
         if (rollbackDescriptor.getAnnotation().annotationType().equals(RollbackHandler.class)) {
             RollbackHandler annotation = (RollbackHandler) rollbackDescriptor.getAnnotation();
             RollbackInformation rollbackInformation = new RollbackInformation();
@@ -49,9 +50,27 @@ public class DefaultRollbackResolver implements RollbackResolver {
             rollbackInformation.setMethod(rollbackDescriptor.getMethod());
             TestRunner.invokeEvents(BeforeRollback.class, testRunner.getTestDescriptor(), testRunner.getTestInstance(), rollbackInformation);
 
+            
+            /*
+             * Instantiating data-source parameters of action
+             */
+            DataProviderResolver dataProviderResolver = testRunner.getConfiguration().getDataProviderResolver();
+            
+            Class<?>[]parameterTypes = rollbackDescriptor.getMethod().getParameterTypes();
+            Object[] parameters = null;
+            if(dataProviderResolver!=null && parameterTypes!=null) {
+                parameters = new Object[parameterTypes.length];
+                Annotation[][] annotations = rollbackDescriptor.getMethod().getParameterAnnotations();
+                for(int i=0; i< parameterTypes.length; i++) {
+                    Collection<DataDependency> dependencies = testRunner.getConfiguration().getDataDependencyResolver().resolveDependencies(annotations[i]);
+                    parameters[i] = dataProviderResolver.instantiateDataSourceComponent(testRunner, "arg"+i, parameterTypes[i], annotations[i], dependencies);
+                }
+            }
+            else parameters = new Object[0];
+            
             // Invoking method for the roll-back handler
             try {
-                rollbackDescriptor.getMethod().invoke(testRunner.getTestInstance(), rollbackInformation);
+                rollbackDescriptor.getMethod().invoke(testRunner.getTestInstance(), parameters);
             } catch (IllegalArgumentException e) {
                 throw new TestConfigurationException(e);
             } catch (IllegalAccessException e) {

@@ -4,7 +4,6 @@ import net.mindengine.oculus.experior.annotations.Action;
 import net.mindengine.oculus.experior.annotations.EntryAction;
 import net.mindengine.oculus.experior.annotations.ErrorHandler;
 import net.mindengine.oculus.experior.annotations.Test;
-import net.mindengine.oculus.experior.test.descriptors.ErrorInformation;
 
 
 @Test(name="Test Sample for error handler 2", projectId="")
@@ -23,7 +22,7 @@ public class TestSampleForErrorHandler_2 extends BaseTest {
     }
     
     @ErrorHandler(name="Error handler 2")
-    public void errorHandler2(ErrorInformation errorInformation) {
+    public void errorHandler2(Throwable error) {
         sequence.add(TestEvent.event("errorHandler2"));
         throw new NullPointerException("This exeption is thrown from error-handler");
     }

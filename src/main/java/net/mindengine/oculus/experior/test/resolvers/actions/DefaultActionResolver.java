@@ -138,7 +138,6 @@ public class DefaultActionResolver implements ActionResolver{
         finally {
             TestRunner.invokeEvents(AfterAction.class, testRunner.getTestDescriptor(), testRunner.getTestInstance(), actionInformation);
         }
-        
     }
     
 
@@ -157,5 +156,4 @@ public class DefaultActionResolver implements ActionResolver{
         
         return actionInformation;
     }
-
 }

@@ -63,7 +63,8 @@ public class SuiteTestRunner {
 
     Log log = LogFactory.getLog(getClass());
 
-    //TODO Test - for action data-providers
+    //TODO Test - for error-handler data-providers
+    //TODO Test - for rollback-handler data-providers
     
     /**
      * Checks the instantiation of parameters with specified default values.
@@ -413,7 +414,7 @@ public class SuiteTestRunner {
     
     @Test
     public void verifyOnExceptionEvents(){
-        //TODO implement test: for OnException and OnTestFailure events
+        //TODO Test - for OnException and OnTestFailure events
     }
     
     public TestDefinition  testDefinition(Class<?>testClass) {
