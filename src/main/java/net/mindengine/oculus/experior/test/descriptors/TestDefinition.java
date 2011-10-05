@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import net.mindengine.oculus.experior.suite.Suite;
@@ -41,11 +42,15 @@ public class TestDefinition implements Serializable {
      * dependencies
      */
     private Long customId;
-
-    //TODO Injected tests definition
+    
     
     /**
-     * Contains the path to the test. By default is used as a classpath. Format:
+     * These test will be run inside the TestRunner of current test so it will give an ability to unite tests into test-group and share the same test-session
+     */
+    private List<TestDefinition> injectedTests;
+    
+    /**
+     * Contains the path to the test. By default is used as a "classpath". Format:
      * "loaderName:path"
      * 
      * where
@@ -183,6 +188,14 @@ public class TestDefinition implements Serializable {
 
     public String getDescription() {
         return description;
+    }
+
+    public void setInjectedTests(List<TestDefinition> injectedTests) {
+        this.injectedTests = injectedTests;
+    }
+
+    public List<TestDefinition> getInjectedTests() {
+        return injectedTests;
     }
 
 }

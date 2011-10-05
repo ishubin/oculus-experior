@@ -61,8 +61,6 @@ public class XmlSuiteParser {
                     // Loading the agent
                     suite.setAgentName(XmlUtils.getNodeAttribute(node, "name"));
                 } else if (node.getNodeName().equals("uniteTests")) {
-                    // Loading the agent
-                    suite.setUniteTests(Boolean.parseBoolean(XmlUtils.getNodeAttribute(node, "value")));
                 } else if (node.getNodeName().equals("test")) {
                     // Loading the test
                     suite.addTest(XmlTestParser.parse(node));
@@ -98,10 +96,6 @@ public class XmlSuiteParser {
             fw.write("\"/>\n");
         }
 
-        // Writing uniteTests
-        fw.write("\n<uniteTests value=\"");
-        fw.write(suite.getUniteTests().toString());
-        fw.write("\"/>\n");
 
         // Exporting tests
         for (TestDefinition test : suite.getTests()) {

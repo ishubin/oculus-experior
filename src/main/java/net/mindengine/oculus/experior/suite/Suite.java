@@ -48,7 +48,6 @@ public class Suite extends SuiteRunBean {
 
     private Map<String, String> parameters = new HashMap<String, String>();
 
-    private Boolean uniteTests = false;
     /**
      * Set of tests with key = test custom id and value = test descriptor Used
      * to quickly fetch the test by its customId
@@ -177,14 +176,6 @@ public class Suite extends SuiteRunBean {
 
     public Map<Long, Map<String, Object>> getTestsOutputParameters() {
         return testsOutputParameters;
-    }
-
-    public void setUniteTests(Boolean uniteTests) {
-        this.uniteTests = uniteTests;
-    }
-
-    public Boolean getUniteTests() {
-        return uniteTests;
     }
 
     public void setTestsInputParameters(Map<Long, Map<String, Object>> testsInputParameters) {

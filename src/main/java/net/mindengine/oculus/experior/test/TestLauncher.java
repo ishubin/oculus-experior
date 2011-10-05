@@ -27,7 +27,6 @@ import net.mindengine.oculus.experior.TestRunListener;
 import net.mindengine.oculus.experior.suite.Suite;
 import net.mindengine.oculus.experior.suite.SuiteListener;
 import net.mindengine.oculus.experior.suite.SuiteRunner;
-import net.mindengine.oculus.experior.suite.UnitedSuiteRunner;
 import net.mindengine.oculus.experior.suite.XmlSuiteParser;
 
 public class TestLauncher {
@@ -42,14 +41,7 @@ public class TestLauncher {
     }
 
     public void launch() {
-        SuiteRunner suiteRunner;
-        if (suite.getUniteTests()) {
-            suiteRunner = new UnitedSuiteRunner();
-            System.out.println("Using United Suite Runner");
-        } else {
-            System.out.println("Using Default Suite Runner");
-            suiteRunner = new SuiteRunner();
-        }
+        SuiteRunner suiteRunner = new SuiteRunner();
         suiteRunner.setTestRunnerConfiguration(ExperiorConfig.getInstance().getTestRunnerConfiguration());
         launch(suiteRunner);
     }

@@ -20,7 +20,6 @@ package net.mindengine.oculus.experior.test;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Collection;
 import java.util.List;
 import java.util.Stack;
 
@@ -42,10 +41,9 @@ public class TestRunner {
     private TestSession testSession;
     private Object testInstance;
     private TestRunListener testRunListener;
-    private Collection<TestDefinition> includeTests;
     private SuiteRunner suiteRunner;
     private TestRunnerConfiguration configuration;
-    private Collection<TestRunner> injectedTestRunners;
+    
 
     // Used to store events which should be invoked when the test is finished
     private Stack<EventDescriptor> rollbackSequence;
@@ -66,32 +64,29 @@ public class TestRunner {
      *             and etc.
      */
     public void runTest() throws TestConfigurationException, TestInterruptedException {
-        // Verifying testRunner
         preparation();
-
         instantiateTest();
         instantiateTestInputParameters();
         instantiateTestComponents();
         try {
             executeTestFlow();
             collectOutputParameters();
+            
+            if(testDefinition.getInjectedTests()!=null){
+                for(TestDefinition injectedTestDefinition : testDefinition.getInjectedTests()) {
+                    TestRunner testRunner = new TestRunner();
+                    testRunner.setConfiguration(getConfiguration());
+                    testRunner.setParent(this);
+                    testRunner.setTestDefinition(injectedTestDefinition);
+                    testRunner.runTest();
+                }
+            }
         } catch (TestConfigurationException e) {
             throw e;
         } catch (TestInterruptedException e) {
             throw e;
         } finally {
-            collectOutputParameters();
-            cleanup();
-            
-            // TODO Injected tests running should be updated a bit when TestDefinition class will support this feature
-            
-            //Executing injected test runners
-            if(injectedTestRunners!=null) {
-                for(TestRunner testRunner : injectedTestRunners) {
-                    testRunner.setParent(this);
-                    testRunner.runTest();
-                }
-            }
+            cleanup();   
         }
     }
 
@@ -114,7 +109,7 @@ public class TestRunner {
             throw new TestConfigurationException("TestDefinition wasn't provided");
         }
         if (testDescriptor == null) {
-            throw new TestConfigurationException("TestDescriptor wasn't provided");
+            testDescriptor = TestDescriptor.create(testDefinition, getConfiguration());
         }
         if(configuration==null) {
             throw new TestConfigurationException("TestRunnerConfiguration is not provided");
@@ -406,14 +401,6 @@ public class TestRunner {
         this.testRunListener = testRunListener;
     }
 
-    public void setIncludeTests(Collection<TestDefinition> includeTests) {
-        this.includeTests = includeTests;
-    }
-
-    public Collection<TestDefinition> getIncludeTests() {
-        return includeTests;
-    }
-
     public void setTestDefinition(TestDefinition testDefinition) {
         this.testDefinition = testDefinition;
     }
@@ -438,11 +425,4 @@ public class TestRunner {
         return configuration;
     }
 
-    public void setInjectedTestRunners(Collection<TestRunner> injectedTestRunners) {
-        this.injectedTestRunners = injectedTestRunners;
-    }
-
-    public Collection<TestRunner> getInjectedTestRunners() {
-        return injectedTestRunners;
-    }
 }

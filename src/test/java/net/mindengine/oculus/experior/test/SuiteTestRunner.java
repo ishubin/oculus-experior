@@ -65,6 +65,9 @@ public class SuiteTestRunner {
 
     Log log = LogFactory.getLog(getClass());
 
+    
+    //TODO junit test for injected test runners 
+    
     /**
      * Checks the instantiation of parameters with specified default values.
      * Checks the sequence of following events:
