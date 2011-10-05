@@ -44,7 +44,13 @@ public class TestRunner {
     private SuiteRunner suiteRunner;
     private TestRunnerConfiguration configuration;
     
-
+    // TODO Change name resolving for test which is used everywhere in TestInformation class. 
+    /*
+     * The name should be first taken from test definition. If it is not there it should be taken from TestResolver
+     */
+    
+    
+    
     // Used to store events which should be invoked when the test is finished
     private Stack<EventDescriptor> rollbackSequence;
 
@@ -71,16 +77,6 @@ public class TestRunner {
         try {
             executeTestFlow();
             collectOutputParameters();
-            
-            if(testDefinition.getInjectedTests()!=null){
-                for(TestDefinition injectedTestDefinition : testDefinition.getInjectedTests()) {
-                    TestRunner testRunner = new TestRunner();
-                    testRunner.setConfiguration(getConfiguration());
-                    testRunner.setParent(this);
-                    testRunner.setTestDefinition(injectedTestDefinition);
-                    testRunner.runTest();
-                }
-            }
         } catch (TestConfigurationException e) {
             throw e;
         } catch (TestInterruptedException e) {
@@ -220,6 +216,34 @@ public class TestRunner {
             catch (TestInterruptedException e) {
                 errorToThrow = e.getCause();
             }
+        }
+        
+        /*
+         * In case if there were no errors - invoking all injected tests.
+         */
+        if(errorToThrow==null) {
+            try {
+                if(testDefinition.getInjectedTests()!=null){
+                    for(TestDefinition injectedTestDefinition : testDefinition.getInjectedTests()) {
+                        TestRunner testRunner = new TestRunner();
+                        testRunner.setConfiguration(getConfiguration());
+                        testRunner.setParent(this);
+                        testRunner.setTestDefinition(injectedTestDefinition);
+                        testRunner.runTest();
+                    }
+                }
+            }
+            catch (TestConfigurationException e) {
+                errorToThrow = e;
+            }
+            catch (TestInterruptedException e) {
+                errorToThrow = e.getCause();
+            }
+        }
+        
+        testInformation.setFailureCause(errorToThrow);
+        if(errorToThrow!=null) {
+            testInformation.setStatus(TestInformation.STATUS_FAILED);
         }
         configuration.getTestResolver().afterTest(this, testInformation);
         testInformation.setPhase(TestInformation.PHASE_DONE);
@@ -377,6 +401,17 @@ public class TestRunner {
         this.testDescriptor = testDescriptor;
     }
 
+    /**
+     * Searches for the root test runner.
+     * @return Root test runner or self in case if there is no hierarchy specified
+     */
+    public TestRunner getRoot() {
+        if(parent==null) {
+            return this;
+        }
+        else return parent.getRoot();
+    }
+    
     public TestRunner getParent() {
         return parent;
     }

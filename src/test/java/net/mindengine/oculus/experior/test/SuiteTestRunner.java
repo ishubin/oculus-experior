@@ -56,6 +56,9 @@ import net.mindengine.oculus.experior.test.sampletests.TestSampleForRollbackHand
 import net.mindengine.oculus.experior.test.sampletests.TestSampleForRollbackHandler_3;
 import net.mindengine.oculus.experior.test.sampletests.TestSampleWithError;
 import net.mindengine.oculus.experior.test.sampletests.TestWithErrorInAction;
+import net.mindengine.oculus.experior.test.sampletests.injectedtests.RootTest;
+import net.mindengine.oculus.experior.test.sampletests.injectedtests.SubTest1;
+import net.mindengine.oculus.experior.test.sampletests.injectedtests.SubTest2;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -65,8 +68,6 @@ public class SuiteTestRunner {
 
     Log log = LogFactory.getLog(getClass());
 
-    
-    //TODO junit test for injected test runners 
     
     /**
      * Checks the instantiation of parameters with specified default values.
@@ -460,8 +461,50 @@ public class SuiteTestRunner {
         
         Assert.assertNotNull(test.onTestFailureArgument);
         Assert.assertEquals(NullPointerException.class, test.onTestFailureArgument.getFailureCause().getClass());
-        
     }
+    
+    @Test
+    public void injectedTestRunningCheck() throws TestConfigurationException, TestInterruptedException {
+        TestDefinition rootTestDefinition = new TestDefinition();
+        rootTestDefinition.setName("Custom test name");
+        rootTestDefinition.setMapping(RootTest.class.getName());
+        rootTestDefinition.setDescription("Custom test description");
+        
+        TestDefinition subTestDefinition1 = new TestDefinition();
+        subTestDefinition1.setMapping(SubTest1.class.getName());
+        
+        TestDefinition subTestDefinition2 = new TestDefinition();
+        subTestDefinition2.setMapping(SubTest2.class.getName()); 
+        
+        List<TestDefinition> injectedTestDefinitions = new LinkedList<TestDefinition>();
+        injectedTestDefinitions.add(subTestDefinition1);
+        injectedTestDefinitions.add(subTestDefinition2);
+        
+        rootTestDefinition.setInjectedTests(injectedTestDefinitions);
+        
+        TestRunner testRunner = new TestRunner();
+        testRunner.setConfiguration(ExperiorConfig.getInstance().getTestRunnerConfiguration());
+        testRunner.setTestDefinition(rootTestDefinition);
+        testRunner.runTest();
+        
+        RootTest rootTest = (RootTest)testRunner.getTestInstance();
+        
+        verifySequence(rootTest.events, TestEvent.collection(
+                TestEvent.event("RootTest.beforeTest"),
+                TestEvent.event("RootTest.action"),
+                TestEvent.event("SubTest1.beforeTest"),
+                TestEvent.event("SubTest1.action"),
+                TestEvent.event("SubTest1.afterTest"),
+                TestEvent.event("SubTest2.beforeTest"),
+                TestEvent.event("SubTest2.action"),
+                TestEvent.event("SubTest2.afterTest"),
+                TestEvent.event("RootTest.afterTest")
+                ));
+        
+        //TODO verify that the name of root test definition is used everywhere with TestInformation class
+        //TODO verify that parameter dependencies are resolved properly inside injected tests
+    }
+    
     
     public TestDefinition  testDefinition(Class<?>testClass) {
         TestDefinition testDefinition = new TestDefinition();
@@ -496,6 +539,5 @@ public class SuiteTestRunner {
 
         Assert.assertEquals(expected.size(), real.size());
     }
-    
     
 }
