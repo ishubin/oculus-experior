@@ -43,7 +43,7 @@ public class SuiteRunner {
         }
         /*
          * Creating new SuiteSession instance this session will live until all
-         * tests have completed
+         * tests are completed
          */
         suite.setStartTime(new Date());
         SuiteSession suiteSession = SuiteSession.createInstance();
@@ -80,8 +80,6 @@ public class SuiteRunner {
                     } catch (Throwable e) {
                         e.printStackTrace();
                     }
-                } else {
-                    System.out.println("**************\nSuiteRunner was Interrupted\n***********************");
                 }
             }
         }

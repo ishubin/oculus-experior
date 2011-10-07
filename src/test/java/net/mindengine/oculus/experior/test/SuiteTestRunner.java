@@ -467,35 +467,35 @@ public class SuiteTestRunner {
     
     @Test
     public void injectedTestRunningCheck() throws TestConfigurationException, TestInterruptedException {
-        //TODO Move definitions of tests to suite xml file so it will also test how the test definition is read from file.
-        TestDefinition rootTestDefinition = new TestDefinition();
-        rootTestDefinition.setName("Custom test name");
-        rootTestDefinition.setMapping(RootTest.class.getName());
-        rootTestDefinition.setDescription("Custom test description");
-        
-        TestDefinition subTestDefinition1 = new TestDefinition();
-        subTestDefinition1.setMapping(SubTest1.class.getName());
-        
-        TestDefinition subTestDefinition2 = new TestDefinition();
-        subTestDefinition2.setMapping(SubTest2.class.getName()); 
-        
-        List<TestDefinition> injectedTestDefinitions = new LinkedList<TestDefinition>();
-        injectedTestDefinitions.add(subTestDefinition1);
-        injectedTestDefinitions.add(subTestDefinition2);
-        
-        rootTestDefinition.setInjectedTests(injectedTestDefinitions);
-        
-        TestRunner testRunner = new TestRunner();
-        testRunner.setConfiguration(ExperiorConfig.getInstance().getTestRunnerConfiguration());
-        testRunner.setTestDefinition(rootTestDefinition);
+        Suite suite;
+        try {
+            suite = XmlSuiteParser.parse(new File(getClass().getResource("/test-suites/injected-test-suite.xml").getFile()));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        SuiteRunner suiteRunner = new SuiteRunner();
+        suiteRunner.setTestRunnerConfiguration(ExperiorConfig.getInstance().getTestRunnerConfiguration());
+        suiteRunner.setSuite(suite);
         
         final Map<String, Object> dataOnTestStarted = new HashMap<String, Object>();
         final Map<String, Object> dataOnTestFinished = new HashMap<String, Object>();
         final Map<String, Object> dataOnTestAction = new HashMap<String, Object>();
-        testRunner.setTestRunListener(new TestRunListener() {
+        
+
+        suiteRunner.setTestRunListener(new TestRunListener() {
             @Override
             public void onTestStarted(TestInformation testInformation) {
-                dataOnTestStarted.put("testName", testInformation.getTestRunner().getTestDefinition().getName());
+                Object testInstance = testInformation.getTestRunner().getTestInstance();
+                if(testInstance instanceof RootTest){
+                    dataOnTestStarted.put("rootTest", testInstance);
+                    dataOnTestStarted.put("testName", testInformation.getTestRunner().getTestDefinition().getName());
+                }
+                else if(testInstance instanceof SubTest1){
+                    dataOnTestStarted.put("subTest1", testInstance);
+                }
+                else if(testInstance instanceof SubTest2){
+                    dataOnTestStarted.put("subTest2", testInstance);
+                }
             }
             @Override
             public void onTestFinished(TestInformation testInformation) {
@@ -506,10 +506,9 @@ public class SuiteTestRunner {
                 dataOnTestAction.put("testName", actionInformation.getTestInformation().getTestRunner().getTestDefinition().getName());
             }
         });
-        testRunner.runTest();
+        suiteRunner.runSuite();
         
-        RootTest rootTest = (RootTest)testRunner.getTestInstance();
-        
+        RootTest rootTest = (RootTest) dataOnTestStarted.get("rootTest");
         verifySequence(rootTest.events, TestEvent.collection(
                 TestEvent.event("RootTest.beforeTest"),
                 TestEvent.event("RootTest.action"),
@@ -521,9 +520,15 @@ public class SuiteTestRunner {
                 TestEvent.event("SubTest2.afterTest"),
                 TestEvent.event("RootTest.afterTest")
                 ));
-        //TODO verify that parameter dependencies are resolved properly inside injected tests
+        
+        SubTest1 subTest1 = (SubTest1)dataOnTestStarted.get("subTest1");
+        SubTest2 subTest2 = (SubTest2)dataOnTestStarted.get("subTest2");
+        
         Assert.assertEquals("Custom test name", dataOnTestStarted.get("testName"));
         Assert.assertEquals("Custom test name", dataOnTestFinished.get("testName"));
+        
+        Assert.assertEquals("out test value from root-test", subTest1.param);
+        Assert.assertEquals("output parameter from sub-test-1", subTest2.param);
     }
     
     

@@ -20,6 +20,8 @@ package net.mindengine.oculus.experior.test;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.LinkedList;
+import java.util.List;
 
 import net.mindengine.oculus.experior.test.descriptors.TestDefinition;
 import net.mindengine.oculus.experior.test.descriptors.TestDependency;
@@ -76,6 +78,19 @@ public class XmlTestParser {
                 } else if (node.getNodeName().equals("description")) {
                     String description = node.getTextContent();
                     testDefinition.setDescription(description);
+                } else if (node.getNodeName().equals("tests")) {
+                    
+                    List<TestDefinition> injectedTestDefinitions = new LinkedList<TestDefinition>();
+                    
+                    NodeList injectedTestNodes = node.getChildNodes();
+                    for(int j=0;j<injectedTestNodes.getLength();j++) {
+                        Node injectedTestNode = injectedTestNodes.item(j);
+                        if(injectedTestNode.getNodeType() == Node.ELEMENT_NODE && injectedTestNode.getNodeName().equals("test")) {
+                             injectedTestDefinitions.add(XmlTestParser.parse(injectedTestNode));
+                        }
+                    }
+                    
+                    testDefinition.setInjectedTests(injectedTestDefinitions);
                 }
             }
         }

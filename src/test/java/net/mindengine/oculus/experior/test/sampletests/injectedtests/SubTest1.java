@@ -14,7 +14,7 @@ public class SubTest1 {
 
     private RootTest rootTest;
     
-    @InputParameter(defaultValue="default value")
+    @InputParameter(defaultValue="default value for sub-test-1")
     public String param;
     
     @OutputParameter

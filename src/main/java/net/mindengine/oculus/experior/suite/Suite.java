@@ -20,7 +20,6 @@ package net.mindengine.oculus.experior.suite;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +27,6 @@ import java.util.Random;
 
 import net.mindengine.oculus.experior.db.SuiteRunBean;
 import net.mindengine.oculus.experior.db.TestRunBean;
-import net.mindengine.oculus.experior.exception.LoopedDependencyException;
 import net.mindengine.oculus.experior.exception.TestIsNotDefinedException;
 import net.mindengine.oculus.experior.test.descriptors.TestDefinition;
 
@@ -62,12 +60,8 @@ public class Suite extends SuiteRunBean {
     /**
      * Contains all parameters for all tests which were finished
      */
-    private Map<Long, Map<String, Object>> testsOutputParameters = new HashMap<Long, Map<String, Object>>();
+    private Map<Long, Map<String, Object>> testsParameterValues = new HashMap<Long, Map<String, Object>>();
 
-    /**
-     * Contains all parameters for all tests that have started
-     */
-    private Map<Long, Map<String, Object>> testsInputParameters = new HashMap<Long, Map<String, Object>>();
 
     /**
      * A list of test runs. Will be filled with latest test run at the end of
@@ -79,24 +73,39 @@ public class Suite extends SuiteRunBean {
      * Adding test to suite tests list and collecting all the needed information
      * about the test
      * 
-     * @param testDescriptor
+     * @param testDefinition
      * @throws ClassNotFoundException
      * @throws NoSuchMethodException
      * @throws SecurityException
      * @throws TestIsNotDefinedException
      */
-    public void addTest(TestDefinition testDescriptor) throws ClassNotFoundException, SecurityException, NoSuchMethodException, TestIsNotDefinedException {
-        if (testDescriptor.getCustomId() == null) {
+    public void addTest(TestDefinition testDefinition) throws ClassNotFoundException, SecurityException, NoSuchMethodException, TestIsNotDefinedException {
+        if (testDefinition.getCustomId() == null) {
             /**
              * Generating custom id
              */
             Random rnd = new Random();
 
-            testDescriptor.setCustomId(rnd.nextLong());
+            testDefinition.setCustomId(rnd.nextLong());
         }
-        testsMap.put(testDescriptor.getCustomId(), testDescriptor);
-        tests.add(testDescriptor);
-        testDescriptor.setSuite(this);
+        
+        /*
+         * Collecting all injected tests and adding them to testMap along with the testDefinition.
+         * This is needed because later it will be easier to access output and input parameters of all tests from any hierarchy level of the test-suite.
+         */
+        collectNestedTestsToTestMap(testDefinition);
+        tests.add(testDefinition);
+        testDefinition.setSuite(this);
+    }
+    
+    
+    private void collectNestedTestsToTestMap(TestDefinition testDefinition) {
+        testsMap.put(testDefinition.getCustomId(), testDefinition);
+        if(testDefinition.getInjectedTests()!=null) {
+            for(TestDefinition injectDefinition : testDefinition.getInjectedTests()) {
+                collectNestedTestsToTestMap(injectDefinition);
+            }
+        }
     }
 
     public Map<Long, TestDefinition> getTestsMap() {
@@ -115,48 +124,14 @@ public class Suite extends SuiteRunBean {
     public List<TestDefinition> getTestsList() {
         List<TestDefinition> list = new ArrayList<TestDefinition>();
 
-        TestDefinition[] array = getSortedTestsByDependencies();
+        TestDefinition[] array = TestDefinition.sortTestsByDependencies(tests);
         for (TestDefinition td : array) {
             list.add(td);
         }
         return list;
     }
 
-    public TestDefinition[] getSortedTestsByDependencies() {
-        /*
-         * Here is used the bubble sorting algorithm. Each test is compared with
-         * other test by dependency to each other If on of them has a dependency
-         * to other test - it will have less weight then its prerequisite If
-         * both tests have a dependency to each other the
-         * LoopedDependencyException will be thrown
-         */
-        TestDefinition array[] = new TestDefinition[tests.size()];
-        Iterator<TestDefinition> iterator = tests.iterator();
-        for (int i = 0; i < array.length; i++) {
-            TestDefinition td = iterator.next();
-            array[i] = td;
-        }
-
-        // Sorting the array
-        boolean b1 = false;
-        boolean b2 = false;
-        TestDefinition temp = null;
-        for (int i = 0; i < array.length - 1; i++) {
-            for (int j = i + 1; j < array.length; j++) {
-                b1 = array[i].hasDependencies(array[j].getCustomId());
-                b2 = array[j].hasDependencies(array[i].getCustomId());
-                if (b1 & b2)
-                    throw new LoopedDependencyException("Tests: '" + array[i].getName() + "' and '" + array[j].getName() + "' have dependencies on each other");
-                if (b1) {
-                    temp = array[i];
-                    array[i] = array[j];
-                    array[j] = temp;
-                }
-            }
-        }
-        return array;
-    }
-
+    
     public void setParameters(Map<String, String> parameters) {
         this.parameters = parameters;
     }
@@ -168,22 +143,6 @@ public class Suite extends SuiteRunBean {
     @Override
     public String toString() {
         return "parameters=" + parameters + ", tests=" + testsMap;
-    }
-
-    public void setTestsOutputParameters(Map<Long, Map<String, Object>> testsOutputParameters) {
-        this.testsOutputParameters = testsOutputParameters;
-    }
-
-    public Map<Long, Map<String, Object>> getTestsOutputParameters() {
-        return testsOutputParameters;
-    }
-
-    public void setTestsInputParameters(Map<Long, Map<String, Object>> testsInputParameters) {
-        this.testsInputParameters = testsInputParameters;
-    }
-
-    public Map<Long, Map<String, Object>> getTestsInputParameters() {
-        return testsInputParameters;
     }
 
     public void setTests(List<TestDefinition> tests) {
@@ -200,6 +159,16 @@ public class Suite extends SuiteRunBean {
 
     public List<TestRunBean> getTestRuns() {
         return testRuns;
+    }
+
+
+    public void setTestsParameterValues(Map<Long, Map<String, Object>> testsParameterValues) {
+        this.testsParameterValues = testsParameterValues;
+    }
+
+
+    public Map<Long, Map<String, Object>> getTestsParameterValues() {
+        return testsParameterValues;
     }
 
 }

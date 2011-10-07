@@ -17,17 +17,17 @@ public class RootTest {
     //Used for validation of event sequence in junit test
     public List<TestEvent> events = new LinkedList<TestEvent>();
     
-    @InputParameter(defaultValue="test value")
+    @InputParameter(defaultValue="test value from root-test")
     public String param;
     
     @OutputParameter
-    public String outParameter;
+    public String outParam;
     
     @EntryAction
     @Action
     public void action() {
         events.add(TestEvent.event("RootTest.action"));
-        outParameter = "out test value";
+        outParam = "out test value from root-test";
     }
     
     @BeforeTest

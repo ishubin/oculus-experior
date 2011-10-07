@@ -61,22 +61,14 @@ public class DefaultParameterResolver implements ParameterResolver {
                         throw new TestConfigurationException("The test with id = " + dependency.getPrerequisiteTestId() + " doesn't exist in suite");
 
                     Object dependentValue = null;
-                    boolean bParameterFound = false;
-                    if (suite.getTestsOutputParameters().containsKey(dependency.getPrerequisiteTestId())) {
-                        Map<String, Object> testParameters = suite.getTestsOutputParameters().get(dependency.getPrerequisiteTestId());
+                    if (suite.getTestsParameterValues().containsKey(dependency.getPrerequisiteTestId())) {
+                        Map<String, Object> testParameters = suite.getTestsParameterValues().get(dependency.getPrerequisiteTestId());
                         if (testParameters.containsKey(dependency.getPrerequisiteParameterName())) {
                             dependentValue = testParameters.get(dependency.getPrerequisiteParameterName());
-                            bParameterFound = true;
                         }
+                        else throw new TestConfigurationException("There is no '"+dependency.getPrerequisiteParameterName()+"' in test "+prerequisiteTestDefinition.getMapping());
                     }
-                    if (!bParameterFound) {
-                        if (suite.getTestsInputParameters().containsKey(testDefinition.getCustomId())) {
-                            Map<String, Object> testParameters = suite.getTestsInputParameters().get(testDefinition.getCustomId());
-                            if (testParameters.containsKey(dependency.getPrerequisiteParameterName())) {
-                                dependentValue = testParameters.get(dependency.getPrerequisiteParameterName());
-                            }
-                        }
-                    }
+                    
                     value = dependentValue;
                     try {
                         ClassUtils.setFieldValue(field, testRunner.getTestInstance(), dependentValue);
@@ -113,10 +105,10 @@ public class DefaultParameterResolver implements ParameterResolver {
                  * storage
                  */
                 if (suite != null) {
-                    if (!suite.getTestsInputParameters().containsKey(testDefinition.getCustomId())) {
-                        suite.getTestsInputParameters().put(testDefinition.getCustomId(), new HashMap<String, Object>());
+                    if (!suite.getTestsParameterValues().containsKey(testDefinition.getCustomId())) {
+                        suite.getTestsParameterValues().put(testDefinition.getCustomId(), new HashMap<String, Object>());
                     }
-                    suite.getTestsInputParameters().get(testDefinition.getCustomId()).put(inputParameter.getKey(), value);
+                    suite.getTestsParameterValues().get(testDefinition.getCustomId()).put(inputParameter.getKey(), value);
                 }
             }
         }
@@ -132,8 +124,8 @@ public class DefaultParameterResolver implements ParameterResolver {
         if (suiteRunner != null) {
             Suite suite = suiteRunner.getSuite();
             if (suite != null) {
-                if (suite.getTestsOutputParameters() == null) {
-                    suite.setTestsOutputParameters(new HashMap<Long, Map<String, Object>>());
+                if (suite.getTestsParameterValues() == null) {
+                    suite.setTestsParameterValues(new HashMap<Long, Map<String, Object>>());
                 }
 
                 // Fetching values for all test output parameters
@@ -143,14 +135,35 @@ public class DefaultParameterResolver implements ParameterResolver {
                         Field field = fieldDescriptor.getField();
                         try {
                             Object fieldValue = ClassUtils.getFieldValue(field, testRunner.getTestInstance());
-                            Map<String, Object> testOutputMap = suite.getTestsOutputParameters().get(testDefinition.getCustomId());
+                            Map<String, Object> testOutputMap = suite.getTestsParameterValues().get(testDefinition.getCustomId());
                             if (testOutputMap == null) {
                                 testOutputMap = new HashMap<String, Object>();
-                                suite.getTestsOutputParameters().put(testDefinition.getCustomId(), testOutputMap);
+                                suite.getTestsParameterValues().put(testDefinition.getCustomId(), testOutputMap);
                             }
                             testOutputMap.put(field.getName(), fieldValue);
 
                         } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                
+                //Fetching  values for all test input parameters
+                fieldDescriptors = testDescriptor.getFieldDescriptors(InputParameter.class);
+                if (fieldDescriptors != null) {
+                    for (FieldDescriptor fieldDescriptor : fieldDescriptors.values()) {
+                        Field field = fieldDescriptor.getField();
+                        try {
+                            Object fieldValue = ClassUtils.getFieldValue(field, testRunner.getTestInstance());
+                            Map<String, Object> testInputMap = suite.getTestsParameterValues().get(testDefinition.getCustomId());
+                            if (testInputMap == null) {
+                                testInputMap = new HashMap<String, Object>();
+                                suite.getTestsParameterValues().put(testDefinition.getCustomId(), testInputMap);
+                            }
+                            testInputMap.put(field.getName(), fieldValue);
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
                     }
                 }

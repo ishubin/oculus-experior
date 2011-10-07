@@ -70,7 +70,6 @@ public class TestRunner {
         instantiateTestComponents();
         try {
             executeTestFlow();
-            collectOutputParameters();
         } catch (TestConfigurationException e) {
             throw e;
         } catch (TestInterruptedException e) {
@@ -80,7 +79,7 @@ public class TestRunner {
         }
     }
 
-    protected void collectOutputParameters() throws TestConfigurationException {
+    protected void collectParameterValues() throws TestConfigurationException {
         if(configuration.getParameterResolver()==null) {
             throw new TestConfigurationException("ParameterResolver is not specified");
         }
@@ -215,14 +214,25 @@ public class TestRunner {
         /*
          * In case if there were no errors - invoking all injected tests.
          */
+        try {
+            collectParameterValues();
+        }
+        catch (TestConfigurationException e) {
+            errorToThrow = e;
+        }
+        
         if(errorToThrow==null) {
             try {
                 if(testDefinition.getInjectedTests()!=null){
-                    for(TestDefinition injectedTestDefinition : testDefinition.getInjectedTests()) {
+                    TestDefinition[] injectedTestsArray = TestDefinition.sortTestsByDependencies(testDefinition.getInjectedTests());
+                    
+                    for(TestDefinition injectedTestDefinition : injectedTestsArray) {
                         TestRunner testRunner = new TestRunner();
                         testRunner.setConfiguration(getConfiguration());
                         testRunner.setParent(this);
                         testRunner.setTestDefinition(injectedTestDefinition);
+                        testRunner.setTestRunListener(testRunListener);
+                        testRunner.setSuiteRunner(suiteRunner);
                         testRunner.runTest();
                     }
                 }

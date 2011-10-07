@@ -11,7 +11,7 @@ import net.mindengine.oculus.experior.test.sampletests.TestEvent;
 
 public class SubTest2 {
 
-private RootTest rootTest;
+    private RootTest rootTest;
     
     @InputParameter(defaultValue="")
     public String param;
