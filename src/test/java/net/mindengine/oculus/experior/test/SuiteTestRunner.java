@@ -20,9 +20,11 @@ package net.mindengine.oculus.experior.test;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import junit.framework.Assert;
 import net.mindengine.oculus.experior.ExperiorConfig;
@@ -465,6 +467,7 @@ public class SuiteTestRunner {
     
     @Test
     public void injectedTestRunningCheck() throws TestConfigurationException, TestInterruptedException {
+        //TODO Move definitions of tests to suite xml file so it will also test how the test definition is read from file.
         TestDefinition rootTestDefinition = new TestDefinition();
         rootTestDefinition.setName("Custom test name");
         rootTestDefinition.setMapping(RootTest.class.getName());
@@ -485,6 +488,24 @@ public class SuiteTestRunner {
         TestRunner testRunner = new TestRunner();
         testRunner.setConfiguration(ExperiorConfig.getInstance().getTestRunnerConfiguration());
         testRunner.setTestDefinition(rootTestDefinition);
+        
+        final Map<String, Object> dataOnTestStarted = new HashMap<String, Object>();
+        final Map<String, Object> dataOnTestFinished = new HashMap<String, Object>();
+        final Map<String, Object> dataOnTestAction = new HashMap<String, Object>();
+        testRunner.setTestRunListener(new TestRunListener() {
+            @Override
+            public void onTestStarted(TestInformation testInformation) {
+                dataOnTestStarted.put("testName", testInformation.getTestRunner().getTestDefinition().getName());
+            }
+            @Override
+            public void onTestFinished(TestInformation testInformation) {
+                dataOnTestFinished.put("testName", testInformation.getTestRunner().getTestDefinition().getName());
+            }
+            @Override
+            public void onTestAction(ActionInformation actionInformation) {
+                dataOnTestAction.put("testName", actionInformation.getTestInformation().getTestRunner().getTestDefinition().getName());
+            }
+        });
         testRunner.runTest();
         
         RootTest rootTest = (RootTest)testRunner.getTestInstance();
@@ -500,9 +521,9 @@ public class SuiteTestRunner {
                 TestEvent.event("SubTest2.afterTest"),
                 TestEvent.event("RootTest.afterTest")
                 ));
-        
-        //TODO verify that the name of root test definition is used everywhere with TestInformation class
         //TODO verify that parameter dependencies are resolved properly inside injected tests
+        Assert.assertEquals("Custom test name", dataOnTestStarted.get("testName"));
+        Assert.assertEquals("Custom test name", dataOnTestFinished.get("testName"));
     }
     
     

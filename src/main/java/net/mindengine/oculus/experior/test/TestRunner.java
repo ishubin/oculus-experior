@@ -44,12 +44,6 @@ public class TestRunner {
     private SuiteRunner suiteRunner;
     private TestRunnerConfiguration configuration;
     
-    // TODO Change name resolving for test which is used everywhere in TestInformation class. 
-    /*
-     * The name should be first taken from test definition. If it is not there it should be taken from TestResolver
-     */
-    
-    
     
     // Used to store events which should be invoked when the test is finished
     private Stack<EventDescriptor> rollbackSequence;
