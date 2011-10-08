@@ -39,7 +39,6 @@ import org.w3c.dom.NodeList;
  * 
  */
 public class XmlTestParser {
-    //TODO Implement "test-group" parsing for injected test definitions
     
     public static TestDefinition parse(Node testNode) throws Exception {
         TestDefinition testDefinition = new TestDefinition();

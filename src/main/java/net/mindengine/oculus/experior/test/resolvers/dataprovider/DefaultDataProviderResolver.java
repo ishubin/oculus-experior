@@ -43,8 +43,6 @@ public class DefaultDataProviderResolver implements DataProviderResolver {
 
             // TODO Implement validation in order to check if there is a cross-reference in data source dependencies
             
-            
-
             for (FieldDescriptor fieldDescriptor : fieldDescriptors) {
                 Collection<DataDependency> dependencies = dataDependencyResolver.resolveDependencies(fieldDescriptor.getField().getAnnotations());
                 Object componentValue = instantiateDataSourceComponent(testRunner, fieldDescriptor.getField().getName(), fieldDescriptor.getField().getType(), fieldDescriptor.getField().getAnnotations(), dependencies);
