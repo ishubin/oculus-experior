@@ -20,6 +20,7 @@ package net.mindengine.oculus.experior.test;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -45,9 +46,6 @@ public class XmlTestParser {
     public static TestDefinition parse(Node testNode) throws Exception {
         TestDefinition testDefinition = new TestDefinition();
         
-      //TODO Implement status dependencies between tests in suite.
-        
-
         String strCustomId = XmlUtils.getNodeAttribute(testNode, "id");
         if (strCustomId != null) {
             testDefinition.setCustomId(Long.parseLong(strCustomId));
@@ -84,7 +82,19 @@ public class XmlTestParser {
                         testDefinition.getParameterDependencies().add(dependency);
                     }
                     
-                } else if (node.getNodeName().equals("description")) {
+                } else if (node.getNodeName().equals("depends")) {
+                    Collection<Long> dependencies = new LinkedList<Long>();
+                        NodeList dependencyNodeList = node.getChildNodes();
+                        for(int j = 0; j<dependencyNodeList.getLength(); j++) {
+                            Node dependencyNode = dependencyNodeList.item(j);
+                            if(dependencyNode.getNodeType() == Node.ELEMENT_NODE && dependencyNode.getNodeName().equals("test")) {
+                                Long depId = Long.parseLong(dependencyNode.getTextContent().trim());
+                                dependencies.add(depId);
+                            }
+                        }
+                    testDefinition.setDependencies(dependencies);
+                }
+                else if (node.getNodeName().equals("description")) {
                     String description = node.getTextContent();
                     testDefinition.setDescription(description);
                 } else if (node.getNodeName().equals("tests")) {
@@ -116,23 +126,36 @@ public class XmlTestParser {
         writer.write("\" projectId=\"");
         writer.write(StringEscapeUtils.escapeXml(test.getProjectId()));
         writer.write("\">\n");
-        for (TestParameter parameter : test.getParameters().values()) {
-
-            writer.write("\n<parameter name=\"");
-            writer.write(StringEscapeUtils.escapeXml(parameter.getName()));
-            writer.write("\">");
-            writer.write(StringEscapeUtils.escapeXml(parameter.getValue()));
-            writer.write("</parameter>\n");
+        
+        if(test.getParameters()!=null) {
+            for (TestParameter parameter : test.getParameters().values()) {
+    
+                writer.write("\n<parameter name=\"");
+                writer.write(StringEscapeUtils.escapeXml(parameter.getName()));
+                writer.write("\">");
+                writer.write(StringEscapeUtils.escapeXml(parameter.getValue()));
+                writer.write("</parameter>\n");
+            }
         }
-
-        for (TestDependency dependency : test.getParameterDependencies()) {
-            writer.write("\n<parameter name=\"");
-            writer.write(StringEscapeUtils.escapeXml(dependency.getDependentParameterName()));
-            writer.write("\" refId=\"");
-            writer.write(StringEscapeUtils.escapeXml(dependency.getPrerequisiteTestId().toString()));
-            writer.write("\" refName=\"");
-            writer.write(StringEscapeUtils.escapeXml(dependency.getPrerequisiteParameterName()));
-            writer.write("\"/>\n");
+        
+        if(test.getParameterDependencies()!=null) {
+            for (TestDependency dependency : test.getParameterDependencies()) {
+                writer.write("\n<parameter name=\"");
+                writer.write(StringEscapeUtils.escapeXml(dependency.getDependentParameterName()));
+                writer.write("\" refId=\"");
+                writer.write(StringEscapeUtils.escapeXml(dependency.getPrerequisiteTestId().toString()));
+                writer.write("\" refName=\"");
+                writer.write(StringEscapeUtils.escapeXml(dependency.getPrerequisiteParameterName()));
+                writer.write("\"/>\n");
+            }
+        }
+        
+        if(test.getDependencies()!=null) {
+            writer.write("<depends>");
+            for(Long id : test.getDependencies()) {
+                writer.write("<test>"+id+"</test>");
+            }
+            writer.write("</depends>");
         }
 
         if (test.getDescription() != null) {

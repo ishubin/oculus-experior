@@ -2,15 +2,31 @@
 <suite name="Dependency suite" runnerId="1">
 
 	<test id="1" mapping="net.mindengine.oculus.experior.test.sampletests.TestSampleForParallelTesting">
-        <parameter name="param" refId="3" refName="paramOut"/>
+		<depends>
+			<test>3</test>
+			<test>2</test>
+		</depends>
     </test>
 
     <test id="2" mapping="net.mindengine.oculus.experior.test.sampletests.TestSampleForParallelTesting">
-        <parameter name="param" refId="1" refName="paramOut"/>
+    	<depends>
+			<test>5</test>
+		</depends>
     </test>
     
     <test id="3" mapping="net.mindengine.oculus.experior.test.sampletests.TestSampleForParallelTesting">
-    	<parameter name="param" refId="2" refName="paramOut"/>
+    	<depends>
+			<test>2</test>
+		</depends>
+    </test>
+    
+    <test id="4" mapping="net.mindengine.oculus.experior.test.sampletests.TestSampleForParallelTesting">
+    </test>
+    
+    <test id="5" mapping="net.mindengine.oculus.experior.test.sampletests.TestSampleForParallelTesting">
+    	<depends>
+			<test>1</test>
+		</depends>
     </test>
     
     

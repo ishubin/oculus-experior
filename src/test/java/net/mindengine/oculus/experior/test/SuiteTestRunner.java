@@ -571,8 +571,6 @@ public class SuiteTestRunner {
     
     @Test
     public void crossParameterDependencyInSuiteShouldGiveError() throws TestConfigurationException {
-        //TODO junit test
-        
         Suite suite;
         try {
             suite = XmlSuiteParser.parse(new File(getClass().getResource("/test-suites/cross-ref-in-parameters-suite.xml").getFile()));
@@ -583,6 +581,27 @@ public class SuiteTestRunner {
         suiteRunner.setTestRunnerConfiguration(ExperiorConfig.getInstance().getTestRunnerConfiguration());
         suiteRunner.setSuite(suite);
         
+        LoopedDependencyException realException = null;
+        try {
+            suiteRunner.runSuite();
+        }
+        catch (LoopedDependencyException e) {
+            realException = e;
+        }
+        
+        Assert.assertNotNull(realException);
+        SuiteSession suiteSession = suiteRunner.getSuite().getSuiteSession();
+        Assert.assertNotNull(suiteSession);
+        Assert.assertEquals(0, suiteSession.getData().size());
+    }
+    
+    @Test
+    public void crossTestDependencyInSuiteShouldGiveError() throws Exception {
+        Suite suite = XmlSuiteParser.parse(new File(getClass().getResource("/test-suites/cross-ref-in-test-suite.xml").getFile()));
+        
+        SuiteRunner suiteRunner = new SuiteRunner();
+        suiteRunner.setTestRunnerConfiguration(ExperiorConfig.getInstance().getTestRunnerConfiguration());
+        suiteRunner.setSuite(suite);
         
         LoopedDependencyException realException = null;
         try {
@@ -593,18 +612,9 @@ public class SuiteTestRunner {
         }
         
         Assert.assertNotNull(realException);
-        
-        
         SuiteSession suiteSession = suiteRunner.getSuite().getSuiteSession();
-        
         Assert.assertNotNull(suiteSession);
         Assert.assertEquals(0, suiteSession.getData().size());
-    }
-    
-    @Test
-    public void crossTestDependencyInSuiteShouldGiveError() {
-        //TODO junit test
-        
     }
     
     
