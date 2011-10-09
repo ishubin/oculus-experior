@@ -41,7 +41,9 @@ import net.mindengine.oculus.experior.exception.TestConfigurationException;
 import net.mindengine.oculus.experior.exception.TestInterruptedException;
 import net.mindengine.oculus.experior.suite.Suite;
 import net.mindengine.oculus.experior.suite.SuiteRunner;
+import net.mindengine.oculus.experior.suite.SuiteSession;
 import net.mindengine.oculus.experior.suite.XmlSuiteParser;
+import net.mindengine.oculus.experior.suite.threads.ParallelSuiteRunner;
 import net.mindengine.oculus.experior.test.descriptors.ActionInformation;
 import net.mindengine.oculus.experior.test.descriptors.TestDefinition;
 import net.mindengine.oculus.experior.test.descriptors.TestDescriptor;
@@ -529,6 +531,40 @@ public class SuiteTestRunner {
         
         Assert.assertEquals("out test value from root-test", subTest1.param);
         Assert.assertEquals("output parameter from sub-test-1", subTest2.param);
+    }
+    
+    @Test
+    public void parallelSuiteRunner() {
+        Suite suite;
+        try {
+            suite = XmlSuiteParser.parse(new File(getClass().getResource("/test-suites/parallel-suite.xml").getFile()));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        SuiteRunner suiteRunner = new ParallelSuiteRunner(6);
+        suiteRunner.setTestRunnerConfiguration(ExperiorConfig.getInstance().getTestRunnerConfiguration());
+        suiteRunner.setSuite(suite);
+        suiteRunner.runSuite();
+        
+        
+        SuiteSession suiteSession = suiteRunner.getSuite().getSuiteSession();
+        
+        Assert.assertNotNull(suiteSession);
+        
+        Assert.assertEquals("some value 1", suiteSession.getDataObject("Test#1:param"));
+        Assert.assertEquals("Test#3 out param value", suiteSession.getDataObject("Test#2:param"));
+        Assert.assertEquals("Test#4 out param value", suiteSession.getDataObject("Test#3:param"));
+        Assert.assertEquals("default", suiteSession.getDataObject("Test#4:param"));
+        Assert.assertEquals("default", suiteSession.getDataObject("Test#5:param"));
+        Assert.assertEquals("default", suiteSession.getDataObject("Test#6:param"));
+        Assert.assertEquals("default", suiteSession.getDataObject("Test#7:param"));
+        Assert.assertEquals("default", suiteSession.getDataObject("Test#8:param"));
+        Assert.assertEquals("default", suiteSession.getDataObject("Test#9:param"));
+        Assert.assertEquals("default", suiteSession.getDataObject("Test#10:param"));
+        
+        for(int i=1;i<=10;i++) {
+            Assert.assertEquals("Test#"+i+" out param value", suiteSession.getDataObject("Test#"+i+":outParam"));
+        }
     }
     
     

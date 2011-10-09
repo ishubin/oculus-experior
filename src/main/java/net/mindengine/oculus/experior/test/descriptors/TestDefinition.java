@@ -45,6 +45,7 @@ public class TestDefinition implements Serializable {
      */
     private Long customId;
     
+    //TODO Implement status dependencies between tests in suite.
     
     /**
      * These test will be run inside the TestRunner of current test so it will give an ability to unite tests into test-group and share the same test-session

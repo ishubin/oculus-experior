@@ -64,7 +64,7 @@ public class TestInformation {
     private int runningActionNumber;
 
     public String getTestName() {
-        return testRunner.getTestDefinition().getName();
+        return testRunner.getTestName();
     }
 
     public void setFailureCause(Throwable throwable) {

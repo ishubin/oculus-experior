@@ -46,16 +46,27 @@ public class SuiteRunner {
          * tests are completed
          */
         suite.setStartTime(new Date());
-        SuiteSession suiteSession = SuiteSession.createInstance();
-        suiteSession.setSuiteListener(suiteListener);
-        suiteSession.setSuite(suite);
+        
+      //TODO Move the suite session instantiation to SuiteResolver
+        suite.setSuiteSession(new SuiteSession());
+        
         if (suiteListener != null) {
             suiteListener.onSuiteStarted(this);
         }
 
+        runAllTests();
+
+        if (suiteListener != null) {
+            suiteListener.onSuiteFinished(this);
+        }
+    }
+
+    protected void runAllTests() {
         boolean bProceedSuite = true;
         boolean bProceedTest = true;
-        List<TestDefinition> testList = suite.getTestsList();
+        
+        //Using getTestsList method as here it is needed to sort all test by dependencies
+        List<TestDefinition> testList = suite.getSortedTestsList();
 
         if (testList != null) {
             Iterator<TestDefinition> iterator = testList.iterator();
@@ -75,7 +86,7 @@ public class SuiteRunner {
                         testRunner.setTestRunListener(testRunListener);
                         testRunner.setTestDefinition(testDefinition);
                         testRunner.setSuiteRunner(this);
-                        testRunner.setConfiguration(testRunnerConfiguration);
+                        testRunner.setConfiguration(getTestRunnerConfiguration());
                         testRunner.runTest();
                     } catch (Throwable e) {
                         e.printStackTrace();
@@ -83,14 +94,6 @@ public class SuiteRunner {
                 }
             }
         }
-
-        if (suiteListener != null) {
-            suiteListener.onSuiteFinished(this);
-        }
-        /*
-         * Destroying SuiteSession
-         */
-        SuiteSession.destroyInstance();
     }
 
     public void setSuite(Suite suite) {

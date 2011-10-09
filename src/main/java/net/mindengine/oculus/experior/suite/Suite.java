@@ -46,6 +46,7 @@ public class Suite extends SuiteRunBean {
 
     private Map<String, String> parameters = new HashMap<String, String>();
 
+    private SuiteSession suiteSession;
     /**
      * Set of tests with key = test custom id and value = test descriptor Used
      * to quickly fetch the test by its customId
@@ -121,7 +122,8 @@ public class Suite extends SuiteRunBean {
      * @return - Returns the sorted by dependency test list
      * @throws Exception
      */
-    public List<TestDefinition> getTestsList() {
+    public List<TestDefinition> getSortedTestsList() {
+        //TODO optimize sorting of tests
         List<TestDefinition> list = new ArrayList<TestDefinition>();
 
         TestDefinition[] array = TestDefinition.sortTestsByDependencies(tests);
@@ -169,6 +171,16 @@ public class Suite extends SuiteRunBean {
 
     public Map<Long, Map<String, Object>> getTestsParameterValues() {
         return testsParameterValues;
+    }
+
+
+    public void setSuiteSession(SuiteSession suiteSession) {
+        this.suiteSession = suiteSession;
+    }
+
+
+    public SuiteSession getSuiteSession() {
+        return suiteSession;
     }
 
 }

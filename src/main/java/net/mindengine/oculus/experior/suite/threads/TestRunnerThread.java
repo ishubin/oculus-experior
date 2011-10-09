@@ -16,23 +16,44 @@
  * You should have received a copy of the GNU General Public License
  * along with Oculus Experior.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package net.mindengine.oculus.experior.suite;
+package net.mindengine.oculus.experior.suite.threads;
 
-import java.util.HashMap;
-import java.util.Map;
+import net.mindengine.oculus.experior.test.TestRunner;
 
-public class SuiteSession {
-    private Map<String, Object> data = new HashMap<String, Object>();
+
+/**
+ * Used for parallel test running.
+ * @author Ivan Shubin
+ *
+ */
+public class TestRunnerThread implements Runnable{
+
+    private ThreadPoolListener threadPoolListener;
+    private TestRunner testRunner;
     
-    public synchronized void setDataObject(String name, Object object) {
-        data.put(name, object);
-    }
-    
-    public synchronized Object getDataObject(String name) {
-        return data.get(name);
-    }
-    
-    public SuiteSession() {
+    @Override
+    public void run() {
+        try {
+            testRunner.runTest();
+        } catch (Exception e) {
+            e.printStackTrace(); 
+        }
+        getThreadPoolListener().threadExit(this);
     }
 
+    public void setTestRunner(TestRunner testRunner) {
+        this.testRunner = testRunner;
+    }
+
+    public TestRunner getTestRunner() {
+        return testRunner;
+    }
+
+    public void setThreadPoolListener(ThreadPoolListener threadPoolListener) {
+        this.threadPoolListener = threadPoolListener;
+    }
+
+    public ThreadPoolListener getThreadPoolListener() {
+        return threadPoolListener;
+    }
 }

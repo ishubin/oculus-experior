@@ -16,52 +16,39 @@
  * You should have received a copy of the GNU General Public License
  * along with Oculus Experior.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package net.mindengine.oculus.experior.test.sampletests.injectedtests;
+package net.mindengine.oculus.experior.test.sampletests;
 
 import net.mindengine.oculus.experior.annotations.Action;
 import net.mindengine.oculus.experior.annotations.EntryAction;
 import net.mindengine.oculus.experior.annotations.InputParameter;
 import net.mindengine.oculus.experior.annotations.OutputParameter;
-import net.mindengine.oculus.experior.annotations.events.AfterTest;
 import net.mindengine.oculus.experior.annotations.events.BeforeTest;
-import net.mindengine.oculus.experior.test.TestRunner;
+import net.mindengine.oculus.experior.suite.Suite;
+import net.mindengine.oculus.experior.suite.SuiteSession;
 import net.mindengine.oculus.experior.test.descriptors.TestInformation;
-import net.mindengine.oculus.experior.test.sampletests.TestEvent;
 
-public class SubTest1 {
+public class TestSampleForParallelTesting {
 
-    private RootTest rootTest;
-    
-    @InputParameter(defaultValue="default value for sub-test-1")
+    @InputParameter(defaultValue="default")
     public String param;
     
     @OutputParameter
     public String outParam;
     
+    String testName;
+    SuiteSession suiteSession;
+    @BeforeTest
+    public void beforeTest(TestInformation testInformation) {
+        Suite suite = testInformation.getTestRunner().getSuiteRunner().getSuite();
+        testName = testInformation.getTestName();
+        suiteSession = suite.getSuiteSession();
+    }
+    
     @EntryAction
     @Action
-    public void action() {
-        if(rootTest!=null) {
-            rootTest.events.add(TestEvent.event("SubTest1.action"));
-        }
-        outParam = "output parameter from sub-test-1";
-    }
-    
-    @BeforeTest
-    public void onTestStart(TestInformation testInformation) {
-        TestRunner parentTestRunnner = testInformation.getTestRunner().getParent();
-        if(parentTestRunnner!=null) {
-            rootTest = (RootTest) parentTestRunnner.getTestInstance();
-            rootTest.events.add(TestEvent.event("SubTest1.beforeTest"));
-        }
-    }
-    
-    @AfterTest
-    public void onTestFinished(TestInformation testInformation) {
-        TestRunner parentTestRunnner = testInformation.getTestRunner().getParent();
-        if(parentTestRunnner!=null) {
-            rootTest = (RootTest) parentTestRunnner.getTestInstance();
-            rootTest.events.add(TestEvent.event("SubTest1.afterTest"));
-        }
+    public void action() throws InterruptedException {
+        outParam = testName +" out param value"; 
+        suiteSession.setDataObject(testName+":param", param);
+        suiteSession.setDataObject(testName+":outParam", outParam);
     }
 }

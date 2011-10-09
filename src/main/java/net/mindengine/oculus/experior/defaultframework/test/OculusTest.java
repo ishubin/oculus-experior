@@ -46,7 +46,7 @@ import net.mindengine.oculus.experior.reporter.nodes.ReportNode;
 import net.mindengine.oculus.experior.reporter.render.ReportRender;
 import net.mindengine.oculus.experior.reporter.render.XmlReportRender;
 import net.mindengine.oculus.experior.suite.Suite;
-import net.mindengine.oculus.experior.suite.SuiteSession;
+import net.mindengine.oculus.experior.suite.SuiteRunner;
 import net.mindengine.oculus.experior.test.TestSession;
 import net.mindengine.oculus.experior.test.descriptors.ActionInformation;
 import net.mindengine.oculus.experior.test.descriptors.ErrorInformation;
@@ -70,7 +70,11 @@ public abstract class OculusTest {
      */
     @BeforeTest
     public void onBeforeTest(TestInformation testInformation) throws Exception {
-        suite = SuiteSession.getInstance().getSuite();
+        SuiteRunner suiteRunner = testInformation.getTestRunner().getSuiteRunner();
+        if(suiteRunner!=null) {
+            suite = suiteRunner.getSuite();
+        }
+        
         startTime = new Date();
         /*
          * Checking if it is a root test
@@ -101,11 +105,13 @@ public abstract class OculusTest {
              * Collecting test run data
              */
             TestRunBean testRunBean = new TestRunBean();
-            SuiteSession suiteSession = SuiteSession.getInstance();
             testRunBean.setSuiteRunId(0L);
 
-            if (suiteSession != null) {
-                suite = suiteSession.getSuite();
+            
+            SuiteRunner suiteRunner = testInformation.getTestRunner().getSuiteRunner();
+            
+            if (suiteRunner != null) {
+                suite = suiteRunner.getSuite();
                 if (suite != null) {
                     testRunBean.setSuiteRunId(suite.getId());
                 }

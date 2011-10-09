@@ -16,17 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with Oculus Experior.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package net.mindengine.oculus.experior.test.sampletests.components;
+package net.mindengine.oculus.experior.suite.threads;
 
-public class Component1 {
+public interface ThreadPoolListener {
 
-    private String field;
-
-    public String getField() {
-        return field;
-    }
-
-    public void setField(String field) {
-        this.field = field;
-    }
+    
+    public void threadExit(Runnable thread);
+    
 }

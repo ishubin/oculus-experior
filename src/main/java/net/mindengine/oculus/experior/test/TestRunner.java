@@ -464,4 +464,11 @@ public class TestRunner {
         return configuration;
     }
 
+    public String getTestName() {
+        if(testDefinition.getName()!=null) {
+            return testDefinition.getName();
+        }
+        else return getConfiguration().getTestResolver().getTestName(getTestDescriptor());
+    }
+
 }
