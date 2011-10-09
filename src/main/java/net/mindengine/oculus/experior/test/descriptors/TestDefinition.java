@@ -20,8 +20,8 @@ package net.mindengine.oculus.experior.test.descriptors;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -181,7 +181,7 @@ public class TestDefinition implements Serializable {
         }
     }
     
-    public static TestDefinition[] sortTestsByDependencies(List<TestDefinition> tests) throws LoopedDependencyException {
+    public static List<TestDefinition> sortTestsByDependencies(List<TestDefinition> tests) throws LoopedDependencyException {
         /*
          * Here is used the bubble sorting algorithm. Each test is compared with
          * other test by dependency to each other If on of them has a dependency
@@ -189,31 +189,25 @@ public class TestDefinition implements Serializable {
          * both tests have a dependency to each other the
          * LoopedDependencyException will be thrown
          */
-        TestDefinition array[] = new TestDefinition[tests.size()];
-        Iterator<TestDefinition> iterator = tests.iterator();
-        for (int i = 0; i < array.length; i++) {
-            TestDefinition td = iterator.next();
-            array[i] = td;
-        }
-
+        
         // Sorting the array
         boolean b1 = false;
         boolean b2 = false;
-        TestDefinition temp = null;
-        for (int i = 0; i < array.length - 1; i++) {
-            for (int j = i + 1; j < array.length; j++) {
-                b1 = array[i].hasDependencies(array[j]);
-                b2 = array[j].hasDependencies(array[i]);
+        for (int i = 0; i < tests.size() - 1; i++) {
+            for (int j = i + 1; j < tests.size(); j++) {
+                
+                TestDefinition ti = tests.get(i);
+                TestDefinition tj = tests.get(j);
+                b1 = ti.hasDependencies(tj);
+                b2 = tj.hasDependencies(ti);
                 if (b1 & b2)
-                    throw new LoopedDependencyException("Tests: '" + array[i].getName() + "' and '" + array[j].getName() + "' have dependencies on each other");
+                    throw new LoopedDependencyException("Tests: '" + ti.getName() + "' and '" + tj.getName() + "' have dependencies on each other");
                 if (b1) {
-                    temp = array[i];
-                    array[i] = array[j];
-                    array[j] = temp;
+                    Collections.swap(tests, i, j);
                 }
             }
         }
-        return array;
+        return tests;
     }
 
     public void setTestClass(Class<?> testClass) {

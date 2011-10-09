@@ -67,7 +67,7 @@ public class SuiteRunner {
         boolean bProceedTest = true;
         
         //Using getTestsList method as here it is needed to sort all test by dependencies
-        List<TestDefinition> testList = suite.getSortedTestsList();
+        List<TestDefinition> testList = TestDefinition.sortTestsByDependencies(suite.getTests());
 
         TestDefinition.checkCrossReferences(testList);
         

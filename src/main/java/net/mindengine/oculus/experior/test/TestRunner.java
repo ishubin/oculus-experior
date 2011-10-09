@@ -232,7 +232,7 @@ public class TestRunner {
         if(errorToThrow==null) {
             try {
                 if(testDefinition.getInjectedTests()!=null){
-                    TestDefinition[] injectedTestsArray = TestDefinition.sortTestsByDependencies(testDefinition.getInjectedTests());
+                    List<TestDefinition> injectedTestsArray = TestDefinition.sortTestsByDependencies(testDefinition.getInjectedTests());
                     
                     for(TestDefinition injectedTestDefinition : injectedTestsArray) {
                         TestRunner testRunner = new TestRunner();

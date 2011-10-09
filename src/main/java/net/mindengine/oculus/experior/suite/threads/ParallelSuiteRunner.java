@@ -59,7 +59,7 @@ public class ParallelSuiteRunner extends SuiteRunner implements ThreadPoolListen
     protected void runAllTests() throws TestConfigurationException {
         if(capacity<1) throw new IllegalArgumentException("Capacity should be higher than zero");
         
-        List<TestDefinition> testDefinitions = getSuite().getSortedTestsList();
+        List<TestDefinition> testDefinitions = TestDefinition.sortTestsByDependencies(getSuite().getTests());
         TestDefinition.checkCrossReferences(testDefinitions);
         
         boolean hasTests = testDefinitions.size()>0;

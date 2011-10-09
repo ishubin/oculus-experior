@@ -18,7 +18,6 @@
  ******************************************************************************/
 package net.mindengine.oculus.experior.suite;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,7 +26,6 @@ import java.util.Random;
 
 import net.mindengine.oculus.experior.db.SuiteRunBean;
 import net.mindengine.oculus.experior.db.TestRunBean;
-import net.mindengine.oculus.experior.exception.TestConfigurationException;
 import net.mindengine.oculus.experior.exception.TestIsNotDefinedException;
 import net.mindengine.oculus.experior.test.descriptors.TestDefinition;
 
@@ -117,23 +115,6 @@ public class Suite extends SuiteRunBean {
     public void setTestsMap(Map<Long, TestDefinition> tests) {
         this.testsMap = tests;
     }
-
-    /**
-     * 
-     * @return - Returns the sorted by dependency test list
-     * @throws Exception
-     */
-    public List<TestDefinition> getSortedTestsList() throws TestConfigurationException {
-        //TODO optimize sorting of tests
-        List<TestDefinition> list = new ArrayList<TestDefinition>();
-
-        TestDefinition[] array = TestDefinition.sortTestsByDependencies(tests);
-        for (TestDefinition td : array) {
-            list.add(td);
-        }
-        return list;
-    }
-
     
     public void setParameters(Map<String, String> parameters) {
         this.parameters = parameters;
