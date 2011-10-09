@@ -23,6 +23,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
+import net.mindengine.oculus.experior.exception.TestConfigurationException;
 import net.mindengine.oculus.experior.suite.SuiteRunner;
 import net.mindengine.oculus.experior.test.TestRunner;
 import net.mindengine.oculus.experior.test.descriptors.TestDefinition;
@@ -55,12 +56,11 @@ public class ParallelSuiteRunner extends SuiteRunner implements ThreadPoolListen
     }
     
     @Override
-    protected void runAllTests() {
+    protected void runAllTests() throws TestConfigurationException {
         if(capacity<1) throw new IllegalArgumentException("Capacity should be higher than zero");
         
-        //TODO Check for cross-references between test in suite as this might block application.
-        
         List<TestDefinition> testDefinitions = getSuite().getSortedTestsList();
+        TestDefinition.checkCrossReferences(testDefinitions);
         
         boolean hasTests = testDefinitions.size()>0;
 
@@ -118,7 +118,7 @@ public class ParallelSuiteRunner extends SuiteRunner implements ThreadPoolListen
         threadLock.lock();
         try {
             for(TestRunnerThread thread : threads) {
-                if(testDefinition.hasDependencies(thread.getTestRunner().getTestDefinition().getCustomId())) {
+                if(testDefinition.hasDependencies(thread.getTestRunner().getTestDefinition())) {
                     return true;
                 }
             }
@@ -132,7 +132,7 @@ public class ParallelSuiteRunner extends SuiteRunner implements ThreadPoolListen
     private boolean hasDependenciesTo(TestDefinition src, List<TestDefinition> list) {
         for(TestDefinition td : list) {
             if(td!=src) {
-                if(src.hasDependencies(td.getCustomId())) {
+                if(src.hasDependencies(td)) {
                     return true;
                 }
             }

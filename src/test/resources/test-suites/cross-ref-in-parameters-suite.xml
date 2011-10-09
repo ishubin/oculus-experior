@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suite name="Dependency suite" runnerId="1">
+
+	<test id="1" mapping="net.mindengine.oculus.experior.test.sampletests.TestSampleForParallelTesting">
+        <parameter name="param" refId="3" refName="paramOut"/>
+    </test>
+
+    <test id="2" mapping="net.mindengine.oculus.experior.test.sampletests.TestSampleForParallelTesting">
+        <parameter name="param" refId="1" refName="paramOut"/>
+    </test>
+    
+    <test id="3" mapping="net.mindengine.oculus.experior.test.sampletests.TestSampleForParallelTesting">
+    	<parameter name="param" refId="2" refName="paramOut"/>
+    </test>
+    
+    
+</suite>xz

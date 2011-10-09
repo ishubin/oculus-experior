@@ -27,6 +27,7 @@ import java.util.Random;
 
 import net.mindengine.oculus.experior.db.SuiteRunBean;
 import net.mindengine.oculus.experior.db.TestRunBean;
+import net.mindengine.oculus.experior.exception.TestConfigurationException;
 import net.mindengine.oculus.experior.exception.TestIsNotDefinedException;
 import net.mindengine.oculus.experior.test.descriptors.TestDefinition;
 
@@ -122,7 +123,7 @@ public class Suite extends SuiteRunBean {
      * @return - Returns the sorted by dependency test list
      * @throws Exception
      */
-    public List<TestDefinition> getSortedTestsList() {
+    public List<TestDefinition> getSortedTestsList() throws TestConfigurationException {
         //TODO optimize sorting of tests
         List<TestDefinition> list = new ArrayList<TestDefinition>();
 

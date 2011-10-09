@@ -25,14 +25,23 @@ public class SuiteSession {
     private Map<String, Object> data = new HashMap<String, Object>();
     
     public synchronized void setDataObject(String name, Object object) {
-        data.put(name, object);
+        getData().put(name, object);
     }
     
     public synchronized Object getDataObject(String name) {
-        return data.get(name);
+        return getData().get(name);
     }
     
     public SuiteSession() {
     }
 
+    public void setData(Map<String, Object> data) {
+        this.data = data;
+    }
+
+    public Map<String, Object> getData() {
+        return data;
+    }
+
+    
 }

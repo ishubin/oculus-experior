@@ -24,6 +24,7 @@ import java.util.List;
 
 import net.mindengine.oculus.experior.SuiteInterruptListener;
 import net.mindengine.oculus.experior.TestRunListener;
+import net.mindengine.oculus.experior.exception.TestConfigurationException;
 import net.mindengine.oculus.experior.test.TestRunner;
 import net.mindengine.oculus.experior.test.TestRunnerConfiguration;
 import net.mindengine.oculus.experior.test.descriptors.TestDefinition;
@@ -36,7 +37,7 @@ public class SuiteRunner {
     private SuiteInterruptListener suiteInterruptListener;
     private TestRunnerConfiguration testRunnerConfiguration;
 
-    public void runSuite() {
+    public void runSuite() throws TestConfigurationException {
         
         if(testRunnerConfiguration==null) {
             throw new IllegalArgumentException("TestRunConfiguration is not provided");
@@ -61,13 +62,15 @@ public class SuiteRunner {
         }
     }
 
-    protected void runAllTests() {
+    protected void runAllTests() throws TestConfigurationException{
         boolean bProceedSuite = true;
         boolean bProceedTest = true;
         
         //Using getTestsList method as here it is needed to sort all test by dependencies
         List<TestDefinition> testList = suite.getSortedTestsList();
 
+        TestDefinition.checkCrossReferences(testList);
+        
         if (testList != null) {
             Iterator<TestDefinition> iterator = testList.iterator();
 
@@ -95,6 +98,7 @@ public class SuiteRunner {
             }
         }
     }
+
 
     public void setSuite(Suite suite) {
         this.suite = suite;

@@ -37,6 +37,7 @@ import net.mindengine.oculus.experior.annotations.events.BeforeAction;
 import net.mindengine.oculus.experior.annotations.events.BeforeErrorHandler;
 import net.mindengine.oculus.experior.annotations.events.BeforeRollback;
 import net.mindengine.oculus.experior.annotations.events.BeforeTest;
+import net.mindengine.oculus.experior.exception.LoopedDependencyException;
 import net.mindengine.oculus.experior.exception.TestConfigurationException;
 import net.mindengine.oculus.experior.exception.TestInterruptedException;
 import net.mindengine.oculus.experior.suite.Suite;
@@ -164,9 +165,10 @@ public class SuiteTestRunner {
     
     /**
      * Checks how test run with parameter dependencies
+     * @throws TestConfigurationException 
      */
     @Test
-    public void testDependencyInSuite() {
+    public void testDependencyInSuite() throws TestConfigurationException {
         
         Suite suite;
         try {
@@ -534,7 +536,7 @@ public class SuiteTestRunner {
     }
     
     @Test
-    public void parallelSuiteRunner() {
+    public void parallelSuiteRunner() throws TestConfigurationException {
         Suite suite;
         try {
             suite = XmlSuiteParser.parse(new File(getClass().getResource("/test-suites/parallel-suite.xml").getFile()));
@@ -566,6 +568,46 @@ public class SuiteTestRunner {
             Assert.assertEquals("Test#"+i+" out param value", suiteSession.getDataObject("Test#"+i+":outParam"));
         }
     }
+    
+    @Test
+    public void crossParameterDependencyInSuiteShouldGiveError() throws TestConfigurationException {
+        //TODO junit test
+        
+        Suite suite;
+        try {
+            suite = XmlSuiteParser.parse(new File(getClass().getResource("/test-suites/cross-ref-in-parameters-suite.xml").getFile()));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        SuiteRunner suiteRunner = new SuiteRunner();
+        suiteRunner.setTestRunnerConfiguration(ExperiorConfig.getInstance().getTestRunnerConfiguration());
+        suiteRunner.setSuite(suite);
+        
+        
+        LoopedDependencyException realException = null;
+        try {
+            suiteRunner.runSuite();
+        }
+        catch (LoopedDependencyException e) {
+            realException = e;
+        }
+        
+        Assert.assertNotNull(realException);
+        
+        
+        SuiteSession suiteSession = suiteRunner.getSuite().getSuiteSession();
+        
+        Assert.assertNotNull(suiteSession);
+        Assert.assertEquals(0, suiteSession.getData().size());
+    }
+    
+    @Test
+    public void crossTestDependencyInSuiteShouldGiveError() {
+        //TODO junit test
+        
+    }
+    
+    
     
     
     public TestDefinition  testDefinition(Class<?>testClass) {

@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suite name="Dependency suite" runnerId="1">
 
-	<test customId="1" name="Custom test name" mapping="net.mindengine.oculus.experior.test.sampletests.injectedtests.RootTest">
+	<test id="1" name="Custom test name" mapping="net.mindengine.oculus.experior.test.sampletests.injectedtests.RootTest">
         <parameter name="param">some value</parameter>
         
         <tests>
-    		<test customId="3" mapping="net.mindengine.oculus.experior.test.sampletests.injectedtests.SubTest2">
-    			<dependency name="param" prerequisiteCustomId="2" prerequisiteName="outParam"/>
+    		<test id="3" mapping="net.mindengine.oculus.experior.test.sampletests.injectedtests.SubTest2">
+    			<parameter name="param" refId="2" refName="outParam"/>
     		</test>
     		
-    		<test customId="2" mapping="net.mindengine.oculus.experior.test.sampletests.injectedtests.SubTest1">
-    			<dependency name="param" prerequisiteCustomId="1" prerequisiteName="outParam"/>
+    		<test id="2" mapping="net.mindengine.oculus.experior.test.sampletests.injectedtests.SubTest1">
+    			<parameter name="param" refId="1" refName="outParam"/>
     		</test>
         </tests>
     </test>

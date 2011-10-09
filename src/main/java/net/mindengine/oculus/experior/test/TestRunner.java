@@ -145,6 +145,14 @@ public class TestRunner {
     }
 
     protected void executeTestFlow() throws TestConfigurationException, TestInterruptedException {
+        //TODO Implement check on test status dependencies.
+        /*
+         * In case if any status dependencies are defined testRunner should check that all of those prerequisite tests were passed.
+         * In case if any of those test is failed test runner should instantiate test but instead of running an entry action it will call events "OnTestPostponed" which.
+         * Also parameter dependencies should not be resolved in this case. 
+         */
+        
+        
         if(configuration.getActionResolver()==null) throw new TestConfigurationException("ActionReslover is not specified");
         EventDescriptor entryAction = configuration.getActionResolver().getEntryAction(testDescriptor);
         List<String> actionSequence = configuration.getActionResolver().getActionsSequence(testDescriptor);

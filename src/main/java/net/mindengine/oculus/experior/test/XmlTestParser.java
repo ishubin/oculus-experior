@@ -23,6 +23,7 @@ import java.io.OutputStreamWriter;
 import java.util.LinkedList;
 import java.util.List;
 
+import net.mindengine.oculus.experior.exception.TestConfigurationException;
 import net.mindengine.oculus.experior.test.descriptors.TestDefinition;
 import net.mindengine.oculus.experior.test.descriptors.TestDependency;
 import net.mindengine.oculus.experior.test.descriptors.TestParameter;
@@ -40,13 +41,18 @@ import org.w3c.dom.NodeList;
  */
 public class XmlTestParser {
     
+    
     public static TestDefinition parse(Node testNode) throws Exception {
         TestDefinition testDefinition = new TestDefinition();
+        
+      //TODO Implement status dependencies between tests in suite.
+        
 
-        String strCustomId = XmlUtils.getNodeAttribute(testNode, "customId");
+        String strCustomId = XmlUtils.getNodeAttribute(testNode, "id");
         if (strCustomId != null) {
             testDefinition.setCustomId(Long.parseLong(strCustomId));
         }
+        else throw new TestConfigurationException("Test doesn't have id specified");
 
         testDefinition.setMapping(XmlUtils.getNodeAttribute(testNode, "mapping"));
         testDefinition.setName(XmlUtils.getNodeAttribute(testNode, "name"));
@@ -60,20 +66,24 @@ public class XmlTestParser {
                 if (node.getNodeName().equals("parameter")) {
                     // Loading the test parameter
                     String parameterName = XmlUtils.getNodeAttribute(node, "name");
-                    String parameterValue = node.getTextContent();
-                    testDefinition.getParameters().put(parameterName, new TestParameter(parameterName, parameterValue));
-                } else if (node.getNodeName().equals("dependency")) {
-                    // Loading the test dependency
-                    String parameterName = XmlUtils.getNodeAttribute(node, "name");
-                    String prerequisiteCustomId = XmlUtils.getNodeAttribute(node, "prerequisiteCustomId");
-                    String prerequisiteName = XmlUtils.getNodeAttribute(node, "prerequisiteName");
+                    
+                    String prerequisiteCustomId = XmlUtils.getNodeAttribute(node, "refId");
+                    
+                    if(prerequisiteCustomId==null){
+                        String parameterValue = node.getTextContent();
+                        testDefinition.getParameters().put(parameterName, new TestParameter(parameterName, parameterValue));
+                    }
+                    else {
+                        String prerequisiteName = XmlUtils.getNodeAttribute(node, "refName");
 
-                    TestDependency dependency = new TestDependency();
-                    dependency.setDependentParameterName(parameterName);
-                    dependency.setPrerequisiteParameterName(prerequisiteName);
-                    dependency.setPrerequisiteTestId(Long.parseLong(prerequisiteCustomId));
+                        TestDependency dependency = new TestDependency();
+                        dependency.setDependentParameterName(parameterName);
+                        dependency.setPrerequisiteParameterName(prerequisiteName);
+                        dependency.setPrerequisiteTestId(Long.parseLong(prerequisiteCustomId));
 
-                    testDefinition.getDependencies().add(dependency);
+                        testDefinition.getParameterDependencies().add(dependency);
+                    }
+                    
                 } else if (node.getNodeName().equals("description")) {
                     String description = node.getTextContent();
                     testDefinition.setDescription(description);
@@ -88,7 +98,6 @@ public class XmlTestParser {
                              injectedTestDefinitions.add(XmlTestParser.parse(injectedTestNode));
                         }
                     }
-                    
                     testDefinition.setInjectedTests(injectedTestDefinitions);
                 }
             }
@@ -116,12 +125,12 @@ public class XmlTestParser {
             writer.write("</parameter>\n");
         }
 
-        for (TestDependency dependency : test.getDependencies()) {
-            writer.write("\n<dependency name=\"");
+        for (TestDependency dependency : test.getParameterDependencies()) {
+            writer.write("\n<parameter name=\"");
             writer.write(StringEscapeUtils.escapeXml(dependency.getDependentParameterName()));
-            writer.write("\" prerequisiteCustomId=\"");
+            writer.write("\" refId=\"");
             writer.write(StringEscapeUtils.escapeXml(dependency.getPrerequisiteTestId().toString()));
-            writer.write("\" prerequisiteName=\"");
+            writer.write("\" refName=\"");
             writer.write(StringEscapeUtils.escapeXml(dependency.getPrerequisiteParameterName()));
             writer.write("\"/>\n");
         }

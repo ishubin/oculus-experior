@@ -18,7 +18,7 @@
  ******************************************************************************/
 package net.mindengine.oculus.experior.exception;
 
-public class LoopedDependencyException extends RuntimeException {
+public class LoopedDependencyException extends TestConfigurationException {
     /**
 	 * 
 	 */

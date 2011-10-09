@@ -45,7 +45,6 @@ public class TestDefinition implements Serializable {
      */
     private Long customId;
     
-    //TODO Implement status dependencies between tests in suite.
     
     /**
      * These test will be run inside the TestRunner of current test so it will give an ability to unite tests into test-group and share the same test-session
@@ -70,21 +69,29 @@ public class TestDefinition implements Serializable {
     private String description; // Used for more information about the test run
     private String projectId;
     private Map<String, TestParameter> parameters = new HashMap<String, TestParameter>();
-    private Collection<TestDependency> dependencies = new LinkedList<TestDependency>();
+    private Collection<TestDependency> parameterDependencies = new LinkedList<TestDependency>();
+    private Collection<Long> dependencies;
+    
     private Class<?> testClass;
 
-    public boolean hasDependencies(Long prerequisiteCustomId) {
-        for (TestDependency dependency : dependencies) {
-            if (dependency.getPrerequisiteTestId().equals(prerequisiteCustomId)) {
+    public boolean hasDependencies(TestDefinition testDefinition) {
+        for (TestDependency dependency : getParameterDependencies()) {
+            if (dependency.getPrerequisiteTestId().equals(testDefinition.getCustomId())) {
                 return true;
             }
         }
+        if(dependencies!=null) {
+            if(dependencies.contains(testDefinition.getCustomId())){
+                return true;
+            }
+        }
+        
         return false;
     }
     
     public TestDependency getDependency(String parameterName) {
-        if(getDependencies()!=null){
-            for (TestDependency testDependency : getDependencies()) {
+        if(getParameterDependencies()!=null){
+            for (TestDependency testDependency : getParameterDependencies()) {
                 if (parameterName.equals(testDependency.getDependentParameterName()))
                     return testDependency;
             }
@@ -133,14 +140,6 @@ public class TestDefinition implements Serializable {
         this.parameters = parameters;
     }
 
-    public Collection<TestDependency> getDependencies() {
-        return dependencies;
-    }
-
-    public void setDependencies(Collection<TestDependency> dependencies) {
-        this.dependencies = dependencies;
-    }
-
     public Class<?> getTestClass() {
         if (testClass == null) {
             try {
@@ -167,7 +166,22 @@ public class TestDefinition implements Serializable {
         return testClass;
     }
     
-    public static TestDefinition[] sortTestsByDependencies(List<TestDefinition> tests) {
+    public static void checkCrossReferences(List<TestDefinition> testList) throws LoopedDependencyException {
+        if(testList!=null && testList.size()>0) {
+            for(int i=0;i<testList.size()-1; i++) {
+                for(int j=i+1; j<testList.size(); j++) {
+                    TestDefinition td1 = testList.get(i);
+                    TestDefinition td2 = testList.get(j);
+                    
+                    if(td1.hasDependencies(td2)) {
+                        throw new LoopedDependencyException("Test #"+td1.getCustomId());
+                    }
+                }
+            }
+        }
+    }
+    
+    public static TestDefinition[] sortTestsByDependencies(List<TestDefinition> tests) throws LoopedDependencyException {
         /*
          * Here is used the bubble sorting algorithm. Each test is compared with
          * other test by dependency to each other If on of them has a dependency
@@ -188,8 +202,8 @@ public class TestDefinition implements Serializable {
         TestDefinition temp = null;
         for (int i = 0; i < array.length - 1; i++) {
             for (int j = i + 1; j < array.length; j++) {
-                b1 = array[i].hasDependencies(array[j].getCustomId());
-                b2 = array[j].hasDependencies(array[i].getCustomId());
+                b1 = array[i].hasDependencies(array[j]);
+                b2 = array[j].hasDependencies(array[i]);
                 if (b1 & b2)
                     throw new LoopedDependencyException("Tests: '" + array[i].getName() + "' and '" + array[j].getName() + "' have dependencies on each other");
                 if (b1) {
@@ -234,6 +248,22 @@ public class TestDefinition implements Serializable {
 
     public List<TestDefinition> getInjectedTests() {
         return injectedTests;
+    }
+
+    public void setParameterDependencies(Collection<TestDependency> parameterDependencies) {
+        this.parameterDependencies = parameterDependencies;
+    }
+
+    public Collection<TestDependency> getParameterDependencies() {
+        return parameterDependencies;
+    }
+
+    public void setDependencies(Collection<Long> dependencies) {
+        this.dependencies = dependencies;
+    }
+
+    public Collection<Long> getDependencies() {
+        return dependencies;
     }
 
 }

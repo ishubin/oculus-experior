@@ -24,6 +24,7 @@ import java.lang.reflect.Constructor;
 import net.mindengine.oculus.experior.ExperiorConfig;
 import net.mindengine.oculus.experior.SuiteInterruptListener;
 import net.mindengine.oculus.experior.TestRunListener;
+import net.mindengine.oculus.experior.exception.TestConfigurationException;
 import net.mindengine.oculus.experior.suite.Suite;
 import net.mindengine.oculus.experior.suite.SuiteListener;
 import net.mindengine.oculus.experior.suite.SuiteRunner;
@@ -40,13 +41,13 @@ public class TestLauncher {
 
     }
 
-    public void launch() {
+    public void launch() throws TestConfigurationException {
         SuiteRunner suiteRunner = new SuiteRunner();
         suiteRunner.setTestRunnerConfiguration(ExperiorConfig.getInstance().getTestRunnerConfiguration());
         launch(suiteRunner);
     }
 
-    public void launch(SuiteRunner suiteRunner) {
+    public void launch(SuiteRunner suiteRunner)throws TestConfigurationException{
         suiteRunner.setSuite(suite);
         suiteRunner.setTestRunListener(testRunListener);
         suiteRunner.setSuiteListener(getSuiteListener());
