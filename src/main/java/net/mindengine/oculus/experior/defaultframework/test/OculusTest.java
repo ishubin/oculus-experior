@@ -142,7 +142,6 @@ public abstract class OculusTest {
 
             if (testInformation.getFailureCause() != null || reportNode.hasError()) {
                 testRunBean.setStatus("FAILED");
-
                 /*
                  * Fetching reasons and translating them to the needed format
                  */
@@ -162,7 +161,7 @@ public abstract class OculusTest {
                 testInformation.setStatus(TestInformation.STATUS_FAILED);
             } else if (reportNode.hasWarn()) {
                 testRunBean.setStatus("WARNING");
-
+                
                 // Setting test status to testInformation so it could be fetched
                 // by test-run-manager system
                 testInformation.setStatus(TestInformation.STATUS_WARNING);

@@ -27,6 +27,7 @@ public class TestInformation {
     public static final int STATUS_PASSED = 1;
     public static final int STATUS_FAILED = 2;
     public static final int STATUS_WARNING = 3;
+    public static final int STATUS_POSTPONED = 4;
 
     public static final int PHASE_NOT_LAUNCHED = 0;
     public static final int PHASE_INITIATION = 1;

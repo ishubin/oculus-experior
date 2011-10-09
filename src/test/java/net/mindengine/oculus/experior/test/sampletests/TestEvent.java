@@ -96,4 +96,16 @@ public class TestEvent {
     public Object[] getEventObjects() {
         return eventObjects;
     }
+    
+    @Override
+    public String toString() {
+        String str = "";
+        if(event!=null) {
+            str+=event.toString()+" ";
+        }
+        if(name!=null) {
+            str+=name;
+        }
+        return str;
+    }
 }

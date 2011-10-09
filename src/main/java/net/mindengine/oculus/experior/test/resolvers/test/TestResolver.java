@@ -37,4 +37,6 @@ public interface TestResolver {
     public void handleException(TestRunner testRunner, TestInformation testInformation, Throwable error) throws TestConfigurationException, TestInterruptedException;
     
     public void onTestFailure(TestRunner testRunner, TestInformation testInformation) throws TestConfigurationException, TestInterruptedException;
+
+    public void onTestPostponed(TestRunner testRunner, TestInformation testInformation) throws TestConfigurationException, TestInterruptedException;
 }

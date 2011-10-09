@@ -66,10 +66,32 @@ public class TestRunner {
     public void runTest() throws TestConfigurationException, TestInterruptedException {
         preparation();
         instantiateTest();
-        instantiateTestInputParameters();
-        instantiateTestComponents();
+        
+        List<String> actionSequence = configuration.getActionResolver().getActionsSequence(testDescriptor);
+
+        TestInformation testInformation = new TestInformation();
+        testInformation.setTestRunner(this);
+        testInformation.setEstimatedActions(actionSequence);
+        testInformation.setRunningActionNumber(-1);
+        testInformation.setPhase(TestInformation.PHASE_RUNNING);
+        testInformation.setStatus(TestInformation.STATUS_UNKOWN);
+        testDefinition.setTestInformation(testInformation);
+        
+        /*
+         * In case if any status dependencies are defined testRunner should check that all of those prerequisite tests were passed.
+         * In case if any of those test is failed test runner should instantiate test but instead of running an entry action it will call events "OnTestPostponed" which.
+         * Also parameter dependencies should not be resolved in this case. 
+         */
+        
         try {
-            executeTestFlow();
+            if(checkStatusDependency()) {
+                instantiateTestInputParameters();
+                instantiateTestComponents();
+                executeTestFlow(testInformation);
+            }
+            else {
+                postponeTest(testInformation);
+            }
         } catch (TestConfigurationException e) {
             throw e;
         } catch (TestInterruptedException e) {
@@ -77,6 +99,45 @@ public class TestRunner {
         } finally {
             cleanup();   
         }
+    }
+
+    private void postponeTest(TestInformation testInformation) throws TestConfigurationException, TestInterruptedException {
+        testInformation.setStatus(TestInformation.STATUS_POSTPONED);
+        try {
+            getConfiguration().getTestResolver().beforeTest(this, testInformation);
+        }
+        finally {
+            try {
+                getConfiguration().getTestResolver().onTestPostponed(this, testInformation);
+            }
+            finally {
+                getConfiguration().getTestResolver().afterTest(this, testInformation);
+            }
+        }
+        
+    }
+
+    /**
+     * Checks if there are any status dependency specified and also checks if all prerequisite tests are passed.
+     * @return true if there are no dependencies or all dependent tests have status "passed"
+     * @throws TestConfigurationException 
+     */
+    private boolean checkStatusDependency() throws TestConfigurationException {
+        if(testDefinition.getDependencies()!=null) {
+            for(Long id : testDefinition.getDependencies()) {
+                TestDefinition testDefinition = suiteRunner.getSuite().getTestsMap().get(id);
+                if(testDefinition==null) {
+                    throw new TestConfigurationException("Can't find test with id = "+id);
+                }
+                if(testDefinition.getTestInformation()==null) {
+                    throw new TestConfigurationException("Can't find testInformation for test: "+testDefinition.getMapping());
+                }
+                if(!(testDefinition.getTestInformation().getStatus() == TestInformation.STATUS_PASSED || testDefinition.getTestInformation().getStatus() == TestInformation.STATUS_WARNING)) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     protected void collectParameterValues() throws TestConfigurationException {
@@ -144,25 +205,10 @@ public class TestRunner {
         configuration.getDataProviderResolver().resolveDataProviders(this, configuration.getDataDependencyResolver());
     }
 
-    protected void executeTestFlow() throws TestConfigurationException, TestInterruptedException {
-        //TODO Implement check on test status dependencies.
-        /*
-         * In case if any status dependencies are defined testRunner should check that all of those prerequisite tests were passed.
-         * In case if any of those test is failed test runner should instantiate test but instead of running an entry action it will call events "OnTestPostponed" which.
-         * Also parameter dependencies should not be resolved in this case. 
-         */
-        
-        
+    protected void executeTestFlow(TestInformation testInformation) throws TestConfigurationException, TestInterruptedException {
         if(configuration.getActionResolver()==null) throw new TestConfigurationException("ActionReslover is not specified");
         EventDescriptor entryAction = configuration.getActionResolver().getEntryAction(testDescriptor);
-        List<String> actionSequence = configuration.getActionResolver().getActionsSequence(testDescriptor);
-
-        
-        TestInformation testInformation = new TestInformation();
-        testInformation.setTestRunner(this);
-        testInformation.setEstimatedActions(actionSequence);
-        testInformation.setRunningActionNumber(-1);
-        testInformation.setPhase(TestInformation.PHASE_RUNNING);
+        testInformation.setStatus(TestInformation.STATUS_PASSED);
         
         if(configuration.getTestResolver()==null) {
             throw new TestConfigurationException("TestResolver is not specified");

@@ -71,8 +71,9 @@ public class TestDefinition implements Serializable {
     private Map<String, TestParameter> parameters = new HashMap<String, TestParameter>();
     private Collection<TestDependency> parameterDependencies = new LinkedList<TestDependency>();
     private Collection<Long> dependencies;
-    
     private Class<?> testClass;
+    
+    private TestInformation testInformation;
 
     public boolean hasDependencies(TestDefinition testDefinition) {
         for (TestDependency dependency : getParameterDependencies()) {
@@ -258,6 +259,14 @@ public class TestDefinition implements Serializable {
 
     public Collection<Long> getDependencies() {
         return dependencies;
+    }
+
+    public void setTestInformation(TestInformation testInformation) {
+        this.testInformation = testInformation;
+    }
+
+    public TestInformation getTestInformation() {
+        return testInformation;
     }
 
 }

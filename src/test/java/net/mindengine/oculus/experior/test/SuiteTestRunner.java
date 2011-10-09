@@ -262,6 +262,7 @@ public class SuiteTestRunner {
         Assert.assertEquals(test.actionNumber, (Integer)2);
         //Checking that OnTestFailure event was invoked
         Assert.assertNotNull(test.testInformation);
+        Assert.assertEquals(TestInformation.STATUS_FAILED, test.testInformation.getStatus());
     }
     
     @Test
@@ -618,9 +619,38 @@ public class SuiteTestRunner {
     }
     
     
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testDependencyInSuiteCheck() throws Exception {
+        Suite suite = XmlSuiteParser.parse(new File(getClass().getResource("/test-suites/test-dependency-with-failure-suite.xml").getFile()));
+        
+        SuiteRunner suiteRunner = new SuiteRunner();
+        suiteRunner.setTestRunnerConfiguration(ExperiorConfig.getInstance().getTestRunnerConfiguration());
+        suiteRunner.setSuite(suite);
+        
+        suiteRunner.runSuite();
+        
+        SuiteSession suiteSession = suiteRunner.getSuite().getSuiteSession();
+        Assert.assertNotNull(suiteSession);
+        List<TestEvent> events = (List<TestEvent>) suiteSession.getDataObject("events");
+        Assert.assertNotNull(events);
+        
+        verifySequence(events, TestEvent.collection(
+                TestEvent.event("BeforeTest:Test#2:status="+TestInformation.STATUS_PASSED+":param=default value"),
+                TestEvent.event("Action:Test#2"),
+                TestEvent.event("AfterTest:Test#2:status="+TestInformation.STATUS_PASSED+":param=default value"),
+                TestEvent.event("BeforeTest:Test#3:status="+TestInformation.STATUS_PASSED+":param=default value"),
+                TestEvent.event("Action:Test#3"),
+                TestEvent.event("AfterTest:Test#3:status="+TestInformation.STATUS_FAILED+":param=default value"),
+                TestEvent.event("BeforeTest:Test#1:status="+TestInformation.STATUS_POSTPONED+":param=null"),
+                TestEvent.event("AfterTest:Test#1:status="+TestInformation.STATUS_POSTPONED+":param=null"),
+                TestEvent.event("BeforeTest:Test#4:status="+TestInformation.STATUS_PASSED+":param=default value"),
+                TestEvent.event("Action:Test#4"),
+                TestEvent.event("AfterTest:Test#4:status="+TestInformation.STATUS_PASSED+":param=default value")
+                ));
+    }
     
-    
-    public TestDefinition  testDefinition(Class<?>testClass) {
+    public TestDefinition testDefinition(Class<?>testClass) {
         TestDefinition testDefinition = new TestDefinition();
         testDefinition.setName("Basic test");
         testDefinition.setTestClass(testClass);
@@ -653,5 +683,4 @@ public class SuiteTestRunner {
 
         Assert.assertEquals(expected.size(), real.size());
     }
-    
 }
