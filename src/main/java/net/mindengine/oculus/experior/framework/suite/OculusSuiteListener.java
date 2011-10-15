@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Oculus Experior.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package net.mindengine.oculus.experior.defaultframework.suite;
+package net.mindengine.oculus.experior.framework.suite;
 
 import java.util.Date;
 import java.util.Map;

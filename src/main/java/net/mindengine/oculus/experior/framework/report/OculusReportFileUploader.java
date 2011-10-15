@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Oculus Experior.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package net.mindengine.oculus.experior.defaultframework.report;
+package net.mindengine.oculus.experior.framework.report;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -176,11 +176,4 @@ public class OculusReportFileUploader {
         return new OculusReportFileUploader(config.get(ExperiorConfig.OCULUS_URL) + "/report/upload-file");
     }
 
-    public static void main(String[] args) throws Exception {
-
-        OculusReportFileUploader uploader = new OculusReportFileUploader("http://localhost:8080/oculus/report/upload-file");
-
-        uploader.addFile("file2.jpg", "d:\\temp\\deel.jpg");
-        uploader.upload();
-    }
 }

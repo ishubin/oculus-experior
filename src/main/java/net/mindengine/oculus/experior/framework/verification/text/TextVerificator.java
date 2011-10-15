@@ -16,15 +16,40 @@
  * You should have received a copy of the GNU General Public License
  * along with Oculus Experior.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package net.mindengine.oculus.experior.defaultframework.verification.text;
+package net.mindengine.oculus.experior.framework.verification.text;
 
-public interface TextVerifyable {
 
-    /**
-     * Used by the {@link TextVerificator} class in order to pick the real text
-     * of the entity which is being validated
-     * 
-     * @return
-     */
-    public String getTextForValidation();
+public interface TextVerificator {
+
+    public boolean is(String string);
+
+    public boolean isNot(String string);
+
+    public boolean contains(String string);
+
+    public boolean doesNotContain(String string);
+
+    public boolean startsWith(String string);
+
+    public boolean doesNotStartWith(String string);
+
+    public boolean matches(String string);
+    
+    public boolean doesNotMatch(String string);
+
+    public TextVerificator toLowerCase();
+
+    public TextVerificator toUpperCase();
+
+    public TextVerificator replace(String seek, String replace);
+
+    public TextVerificator substring(int id1, int id2);
+    
+    public TextVerificator substring(int id);
+    
+    public TextVerificator replaceAll(String target, String replacement);
+
+    
+    
+
 }

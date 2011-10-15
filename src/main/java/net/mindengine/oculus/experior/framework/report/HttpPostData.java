@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Oculus Experior.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package net.mindengine.oculus.experior.defaultframework.report;
+package net.mindengine.oculus.experior.framework.report;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;

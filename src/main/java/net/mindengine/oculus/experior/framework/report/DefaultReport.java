@@ -16,14 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with Oculus Experior.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package net.mindengine.oculus.experior.defaultframework.report;
+package net.mindengine.oculus.experior.framework.report;
 
 import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
 
-import net.mindengine.oculus.experior.defaultframework.test.OculusTest;
-import net.mindengine.oculus.experior.defaultframework.verification.OculusVerificator;
+import net.mindengine.oculus.experior.framework.test.OculusTest;
 import net.mindengine.oculus.experior.reporter.Report;
 import net.mindengine.oculus.experior.reporter.ReportCollector;
 import net.mindengine.oculus.experior.reporter.ReportLogo;
@@ -46,7 +45,6 @@ import net.mindengine.oculus.experior.reporter.nodes.TextReportNode;
 public class DefaultReport implements Report {
     private ReportCollector collector;
 
-    public OculusVerificator validator = new OculusVerificator(this);
 
     public DefaultReport() {
 

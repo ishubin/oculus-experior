@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Oculus Experior.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package net.mindengine.oculus.experior.defaultframework.test;
+package net.mindengine.oculus.experior.framework.test;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -37,7 +37,7 @@ import net.mindengine.oculus.experior.db.OculusSimpleJdbcDaoSupport;
 import net.mindengine.oculus.experior.db.ProjectBean;
 import net.mindengine.oculus.experior.db.TestBean;
 import net.mindengine.oculus.experior.db.TestRunBean;
-import net.mindengine.oculus.experior.defaultframework.report.DefaultReport;
+import net.mindengine.oculus.experior.framework.report.DefaultReport;
 import net.mindengine.oculus.experior.reporter.DefaultReportCollector;
 import net.mindengine.oculus.experior.reporter.Report;
 import net.mindengine.oculus.experior.reporter.ReportDesign;
