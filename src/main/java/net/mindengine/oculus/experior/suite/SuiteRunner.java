@@ -47,8 +47,6 @@ public class SuiteRunner {
          * tests are completed
          */
         suite.setStartTime(new Date());
-        
-      //TODO Move the suite session instantiation to SuiteResolver
         suite.setSuiteSession(new SuiteSession());
         
         if (suiteListener != null) {
