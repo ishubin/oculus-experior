@@ -1,187 +1,218 @@
-/*******************************************************************************
- * 2011 Ivan Shubin http://mindengine.net
- * 
- * This file is part of Oculus Experior.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with Oculus Experior.  If not, see <http://www.gnu.org/licenses/>.
- ******************************************************************************/
 package net.mindengine.oculus.experior.framework.verification.text;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import net.mindengine.oculus.experior.reporter.Report;
+import net.mindengine.oculus.experior.reporter.ReportDesign;
+import net.mindengine.oculus.experior.reporter.ReportLogo;
 
-public class DefaultTextVerificator implements TextVerificator, Cloneable {
+public class DefaultTextVerificator extends SimpleTextVerificator {
 
-    private String realValue;
-
+    private Report report;
+    private String name;
+    
     public DefaultTextVerificator() {
-
+        super();
     }
 
     public DefaultTextVerificator(String string) {
-        setRealValue(string);
+        super(string);
     }
+    
+    public DefaultTextVerificator(String string, String name, Report report) {
+        super(string);
+        setName(name);
+        setReport(report);
+    }
+    
+    public void reportInfo(String message) {
+        reportInfo(message, null);
+    }
+    
+    public void reportError(String message) {
+        reportError(message, null);
+    }
+    
+    public void reportInfo(String message, String details) {
+        if(report!=null) {
+            report.info(message, details, ReportLogo.VALIDATION_PASSED);
+        }
+    }
+    
+    private String fetchName() {
+        if(name!=null) {
+            return name;
+        }
+        else return "Undefined";
+    }
+
+    public void reportError(String message, String details) {
+        if(report!=null) {
+            report.info(message, details, ReportLogo.VALIDATION_FAILED);
+        }
+    }
+    
+    private String details(String expectedCaption, String expectedString) {
+        return ReportDesign.bold("Real text: ")+ReportDesign.string(getRealValue())+ReportDesign.breakline()+ReportDesign.bold(expectedCaption+": ")+ReportDesign.string(expectedString);
+    }
+    
 
     @Override
     public boolean contains(String string) {
-        if (realValue == null || string == null)
-            return false;
-
-        return realValue.contains(string);
+        boolean check = super.contains(string);
+        if(check){
+            reportInfo("The text of "+fetchName()+" contains the expected "+ReportDesign.shortString(string),
+                    details("Should contain", string));
+        }
+        else reportError("The text of "+fetchName()+" doesn't contain the expected "+ReportDesign.shortString(string),
+                details("Should contain", string));
+        return check;
     }
 
     @Override
     public boolean doesNotContain(String string) {
-        if (realValue == null || string == null)
-            return false;
+        boolean check = super.doesNotContain(string);
+        if(check){
+            reportInfo("The text of "+fetchName()+" doesn't contain the "+ReportDesign.shortString(string)+" as expected",
+                    details("Should not contain", string));
+        }
+        else reportError("The text of "+fetchName()+" contains the unexpected "+ReportDesign.shortString(string),
+                details("Should not contain", string));
+        return check;
+    }
 
-        return !realValue.contains(string);
+    @Override
+    public boolean doesNotMatch(String regEx) {
+        boolean check = super.doesNotMatch(regEx);
+        if(check){
+            reportInfo("The text of "+fetchName()+" doesn't match pattern "+ReportDesign.shortString(regEx)+" as expected",
+                    details("Pattern", regEx));
+        }
+        else reportError("The text of "+fetchName()+" matches the unexpected pattern "+ReportDesign.shortString(regEx),
+                details("Pattern", regEx));
+        return check;
     }
 
     @Override
     public boolean doesNotStartWith(String string) {
-        if (realValue == null || string == null)
-            return false;
-
-        return !realValue.startsWith(string);
+        boolean check = super.doesNotStartWith(string);
+        if(check){
+            reportInfo("The text of "+fetchName()+" doesn't start with text "+ReportDesign.shortString(string)+" as expected",
+                    details("Prefix", string));
+        }
+        else reportError("The text of "+fetchName()+" starts with unexpected text "+ReportDesign.shortString(string),
+                details("Prefix", string));
+        return check;
     }
 
     @Override
     public boolean is(String string) {
-        if (realValue == null || string == null)
-            return false;
-
-        return realValue.equals(string);
+        boolean check = super.is(string);
+        if(check){
+            reportInfo("The text of "+fetchName()+" is same as expected text "+ReportDesign.shortString(string),
+                    details("Expected text", string));
+        }
+        else reportError("The text of "+fetchName()+" not the same as expected text "+ReportDesign.shortString(string),
+                details("Expected text", string));
+        return check;
     }
 
     @Override
     public boolean isNot(String string) {
-        if (realValue == null || string == null)
-            return false;
-
-        return !realValue.equals(string);
+        boolean check = super.isNot(string);
+        if(check){
+            reportInfo("The text of "+fetchName()+" is not same as unexpected text "+ReportDesign.shortString(string),
+                    details("Unexpected text", string));
+        }
+        else reportError("The text of "+fetchName()+" is the same as unexpected text "+ReportDesign.shortString(string),
+                details("Unexpected text", string));
+        return check;
     }
 
     @Override
     public boolean matches(String regEx) {
-        if (realValue == null || regEx == null)
-            return false;
-
-        Pattern pattern = Pattern.compile(regEx);
-        Matcher matcher = pattern.matcher(realValue);
-        return matcher.matches();
-    }
-    
-    @Override
-    public boolean doesNotMatch(String regEx) {
-        if (realValue == null || regEx == null)
-            return false;
-
-        Pattern pattern = Pattern.compile(regEx);
-        Matcher matcher = pattern.matcher(realValue);
-        return matcher.matches();
-    }
-
-    
-    private DefaultTextVerificator copy(){
-        DefaultTextVerificator copy;
-        try {
-            copy = (DefaultTextVerificator) this.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e);
+        boolean check = super.matches(regEx);
+        if(check){
+            reportInfo("The text of "+fetchName()+" matches the expected pattern "+ReportDesign.shortString(regEx),
+                    details("Pattern", regEx));
         }
-        return copy;
-    }
-    
-    @Override
-    public TextVerificator replace(String target, String replacement) {
-        if(realValue==null){
-            throw new IllegalArgumentException("Cannot change null value");
-        }
-        
-        DefaultTextVerificator copy = copy();
-        copy.setRealValue(realValue.replace(target, replacement));
-        return copy;
-    }
-    
-    @Override
-    public TextVerificator replaceAll(String target, String replacement) {
-        if(realValue==null){
-            throw new IllegalArgumentException("Cannot change null value");
-        }
-        
-        DefaultTextVerificator copy = copy();
-        copy.setRealValue(realValue.replaceAll(target, replacement));
-        return copy;
+        else reportError("The text of "+fetchName()+" doesn't match the expected pattern "+ReportDesign.shortString(regEx),
+                details("Pattern", regEx));
+        return check;
     }
 
     @Override
     public boolean startsWith(String string) {
-        if(realValue==null || string == null) return false;
-        return realValue.startsWith(string);
-    }
-
-    @Override
-    public TextVerificator substring(int id1, int id2) {
-        if(realValue==null){
-            throw new IllegalArgumentException("Cannot change null value");
+        boolean check = super.startsWith(string);
+        if(check){
+            reportInfo("The text of "+fetchName()+" starts with text "+ReportDesign.shortString(string)+" as expected",
+                    details("Prefix", string));
         }
-        
-        DefaultTextVerificator copy = copy();
-        copy.setRealValue(realValue.substring(id1, id2));
-        return copy;
+        else reportError("The text of "+fetchName()+" doesn't start with expected text "+ReportDesign.shortString(string),
+                details("Prefix", string));
+        return check;
     }
     
     @Override
-    public TextVerificator substring(int id) {
-        if(realValue==null){
-            throw new IllegalArgumentException("Cannot change null value");
+    public boolean endsWith(String string) {
+        boolean check = super.endsWith(string);
+        if(check){
+            reportInfo("The text of "+fetchName()+" ends with text "+ReportDesign.shortString(string)+" as expected",
+                    details("Suffix", string));
         }
-        
-        DefaultTextVerificator copy = copy();
-        copy.setRealValue(realValue.substring(id));
-        return copy;
+        else reportError("The text of "+fetchName()+" doesn't end with expected text "+ReportDesign.shortString(string),
+                details("Suffix", string));
+        return check;
+    }
+    
+    @Override
+    public boolean doesNotEndWith(String string) {
+        boolean check = super.doesNotEndWith(string);
+        if(check){
+            reportInfo("The text of "+fetchName()+" doesn't end with unexpected text "+ReportDesign.shortString(string),
+                    details("Suffix", string));
+        }
+        else reportError("The text of "+fetchName()+" ends with unexpected text "+ReportDesign.shortString(string),
+                details("Suffix", string));
+        return check;
     }
 
     @Override
-    public TextVerificator toLowerCase() {
-        if(realValue==null){
-            throw new IllegalArgumentException("Cannot change null value");
+    public boolean isOneOf(String... strings) {
+        boolean check = super.isOneOf(strings);
+        if(check){
+            reportInfo("The text of "+fetchName()+" is in specified list of expected texts",
+                    details("Expected texts", ReportDesign.breakline()+ReportDesign.listValues((Object[])strings)));
         }
-        
-        DefaultTextVerificator copy = copy();
-        copy.setRealValue(realValue.toLowerCase());
-        return copy;
+        else reportError("The text of "+fetchName()+" is not in specified list of expected texts",
+                details("Expected texts", ReportDesign.breakline()+ReportDesign.listValues((Object[])strings)));
+        return check;
     }
-
+    
     @Override
-    public TextVerificator toUpperCase() {
-        if(realValue==null){
-            throw new IllegalArgumentException("Cannot change null value");
+    public boolean isNotOneOf(String... strings) {
+        boolean check = super.isNotOneOf(strings);
+        if(check){
+            reportInfo("The text of "+fetchName()+" is ont in specified list of unexpected texts",
+                    details("Unexpected texts", ReportDesign.breakline()+ReportDesign.listValues((Object[])strings)));
         }
-        
-        DefaultTextVerificator copy = copy();
-        copy.setRealValue(realValue.toUpperCase());
-        return copy;
+        else reportError("The text of "+fetchName()+" is in specified list of unexpected texts",
+                details("Unexpected texts", ReportDesign.breakline()+ReportDesign.listValues((Object[])strings)));
+        return check;
+    }
+    
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public void setRealValue(String realValue) {
-        this.realValue = realValue;
+    public String getName() {
+        return name;
     }
 
-    public String getRealValue() {
-        return realValue;
+    public void setReport(Report report) {
+        this.report = report;
     }
 
+    public Report getReport() {
+        return report;
+    }
+    
 }

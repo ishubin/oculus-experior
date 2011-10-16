@@ -16,30 +16,28 @@
  * You should have received a copy of the GNU General Public License
  * along with Oculus Experior.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package net.mindengine.oculus.experior.test;
+package net.mindengine.oculus.experior.framework.verification.collections;
 
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import net.mindengine.oculus.experior.framework.verification.collections.AbstractCollectionVerificator;
-import net.mindengine.oculus.experior.framework.verification.collections.CollectionVerificator;
 
-public class TextCollectionVerificator extends AbstractCollectionVerificator {
+public class SimpleTextCollectionVerificator extends AbstractCollectionVerificator {
 
     private List<?> realCollection;
     
     
-    public TextCollectionVerificator() {
+    public SimpleTextCollectionVerificator() {
         
     }
     
-    public TextCollectionVerificator(List<String> realCollection) {
+    public SimpleTextCollectionVerificator(List<String> realCollection) {
         this.realCollection = realCollection;
     }
     
-    public TextCollectionVerificator(String ... strings ) {
+    public SimpleTextCollectionVerificator(String ... strings ) {
         LinkedList<String> list = new LinkedList<String>();
         for(String string : strings) {
             list.add(string);
@@ -54,10 +52,10 @@ public class TextCollectionVerificator extends AbstractCollectionVerificator {
     }
 
     
-    private TextCollectionVerificator copy() {
-        TextCollectionVerificator copy;
+    private SimpleTextCollectionVerificator copy() {
+        SimpleTextCollectionVerificator copy;
         try {
-            copy = (TextCollectionVerificator) this.clone();
+            copy = (SimpleTextCollectionVerificator) this.clone();
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException(e);
         }
@@ -66,7 +64,7 @@ public class TextCollectionVerificator extends AbstractCollectionVerificator {
     
     @Override
     public CollectionVerificator reverse() {
-        TextCollectionVerificator copy = copy();
+        SimpleTextCollectionVerificator copy = copy();
         
         List<?> newList = realCollection.subList(0, realCollection.size());
         Collections.reverse(newList);
@@ -89,8 +87,8 @@ public class TextCollectionVerificator extends AbstractCollectionVerificator {
         return realCollection;
     }
 
-    public TextCollectionVerificator toLowerCase() {
-        TextCollectionVerificator copy = copy();
+    public SimpleTextCollectionVerificator toLowerCase() {
+        SimpleTextCollectionVerificator copy = copy();
         List<Object> newList = new LinkedList<Object>();
         
         for(Object object : realCollection) {
@@ -106,8 +104,8 @@ public class TextCollectionVerificator extends AbstractCollectionVerificator {
         return copy;
     }
     
-    public TextCollectionVerificator toUpperCase() {
-        TextCollectionVerificator copy = copy();
+    public SimpleTextCollectionVerificator toUpperCase() {
+        SimpleTextCollectionVerificator copy = copy();
         List<Object> newList = new LinkedList<Object>();
         
         for(Object object : realCollection) {
@@ -123,8 +121,8 @@ public class TextCollectionVerificator extends AbstractCollectionVerificator {
         return copy;
     }
     
-    public TextCollectionVerificator replace(String target, String replacement) {
-        TextCollectionVerificator copy = copy();
+    public SimpleTextCollectionVerificator replace(String target, String replacement) {
+        SimpleTextCollectionVerificator copy = copy();
         List<Object> newList = new LinkedList<Object>();
         
         for(Object object : realCollection) {
@@ -140,8 +138,8 @@ public class TextCollectionVerificator extends AbstractCollectionVerificator {
         return copy;
     }
     
-    public TextCollectionVerificator replaceAll(String regex, String replacement) {
-        TextCollectionVerificator copy = copy();
+    public SimpleTextCollectionVerificator replaceAll(String regex, String replacement) {
+        SimpleTextCollectionVerificator copy = copy();
         List<Object> newList = new LinkedList<Object>();
         
         for(Object object : realCollection) {
@@ -157,8 +155,8 @@ public class TextCollectionVerificator extends AbstractCollectionVerificator {
         return copy;
     }
     
-    public TextCollectionVerificator substring(int start, int end) {
-        TextCollectionVerificator copy = copy();
+    public SimpleTextCollectionVerificator substring(int start, int end) {
+        SimpleTextCollectionVerificator copy = copy();
         List<Object> newList = new LinkedList<Object>();
         
         for(Object object : realCollection) {
@@ -174,8 +172,8 @@ public class TextCollectionVerificator extends AbstractCollectionVerificator {
         return copy;
     }
     
-    public TextCollectionVerificator substring(int start) {
-        TextCollectionVerificator copy = copy();
+    public SimpleTextCollectionVerificator substring(int start) {
+        SimpleTextCollectionVerificator copy = copy();
         List<Object> newList = new LinkedList<Object>();
         
         for(Object object : realCollection) {

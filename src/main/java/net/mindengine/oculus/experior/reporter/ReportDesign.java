@@ -18,6 +18,8 @@
  ******************************************************************************/
 package net.mindengine.oculus.experior.reporter;
 
+import java.util.Collection;
+
 /**
  * Static methods are used to defined text design elements
  * 
@@ -114,9 +116,9 @@ public class ReportDesign {
         return "";
     }
 
-    public static String xpath(String xpath) {
+    public static String locator(String xpath) {
         if (xpath != null)
-            return "[xpath]" + xpath + "[/xpath]";
+            return "[locator]" + xpath + "[/locator]";
         return "";
     }
 
@@ -133,7 +135,43 @@ public class ReportDesign {
     public static String tip(String text) {
         return "[tip]" + text + "[/tip]";
     }
-
+    
+    public static String number(Number number) {
+        return "[number]"+number.toString()+"[/number]";
+    }
+    
+    public static String variableValue(String value) {
+        if(value==null){
+            return nullValue();
+        }
+        else return string(value);
+    }
+    
+    public static String variableValue(Number value) {
+        if(value==null){
+            return nullValue();
+        }
+        else return number(value);
+    }
+    
+    public static String listValues(Object...objects) {
+        String result = "[list]";
+        for(Object object : objects) {
+            result+="[item]"+ReportDesign.variableValue(object.toString())+"[/item]";
+        }
+        result+= "[/list]";
+        return result;
+    }
+    
+    public static String listValues(Collection<Object> objects) {
+        String result = "[list]";
+        for(Object object : objects) {
+            result+="[item]"+ReportDesign.variableValue(object.toString())+"[/item]";
+        }
+        result+= "[/list]";
+        return result;
+    }
+    
     /**
      * Removes all decoration tags from the specified text
      * 

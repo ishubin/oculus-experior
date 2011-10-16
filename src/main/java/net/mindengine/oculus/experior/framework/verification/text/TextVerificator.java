@@ -32,10 +32,18 @@ public interface TextVerificator {
     public boolean startsWith(String string);
 
     public boolean doesNotStartWith(String string);
+    
+    public boolean endsWith(String string);
+
+    public boolean doesNotEndWith(String string);
 
     public boolean matches(String string);
     
     public boolean doesNotMatch(String string);
+    
+    public boolean isOneOf(String... strings);
+    
+    public boolean isNotOneOf(String... strings);
 
     public TextVerificator toLowerCase();
 

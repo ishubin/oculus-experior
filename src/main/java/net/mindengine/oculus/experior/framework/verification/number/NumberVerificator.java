@@ -52,28 +52,28 @@ public interface NumberVerificator {
      * @param expected
      * @return true in case if real value is less then expected argument
      */
-    public boolean isLessThen(Number expected);
+    public boolean isLessThan(Number expected);
     
     /**
      * Verifies that the real value is less then or is the same as expected argument
      * @param expected
      * @return true in case if real value is less then or is the same as expected argument
      */
-    public boolean isLessThenOrEquals(Number expected);
+    public boolean isLessThanOrEquals(Number expected);
 
     /**
      * Verifies that the real value is bigger then expected 
      * @param expected
      * @return true if the real value is bigger then expected
      */
-    public boolean isGreaterThen(Number expected);
+    public boolean isGreaterThan(Number expected);
     
     /**
      * Verifies that the real value is bigger then or same as expected 
      * @param expected
      * @return true if the real value is bigger then or same as expected
      */
-    public boolean isGreaterThenOrEquals(Number expected);
+    public boolean isGreaterThanOrEquals(Number expected);
 
     /**
      * Verifies that the real value is in the specified array

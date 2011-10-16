@@ -26,9 +26,9 @@ package net.mindengine.oculus.experior.reporter;
  * 
  */
 public class ReportLogo {
-    public final static ReportLogo XPATH = new ReportLogo("xpath");
-    public final static ReportLogo XPATH_TYPE = new ReportLogo("xpath-type");
-    public final static ReportLogo XPATH_CLICK = new ReportLogo("xpath-click");
+    public final static ReportLogo UI = new ReportLogo("ui");
+    public final static ReportLogo UI_TYPE = new ReportLogo("ui-type");
+    public final static ReportLogo UI_CLICK = new ReportLogo("ui-click");
     public final static ReportLogo WAIT = new ReportLogo("wait");
     public final static ReportLogo SQL = new ReportLogo("sql");
     public final static ReportLogo MAIL = new ReportLogo("mail");

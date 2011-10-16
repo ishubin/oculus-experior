@@ -16,31 +16,29 @@
  * You should have received a copy of the GNU General Public License
  * along with Oculus Experior.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package net.mindengine.oculus.experior.test;
+package net.mindengine.oculus.experior.framework.verification.collections;
 
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import net.mindengine.oculus.experior.framework.verification.collections.AbstractCollectionVerificator;
-import net.mindengine.oculus.experior.framework.verification.collections.CollectionVerificator;
 import net.mindengine.oculus.experior.framework.verification.number.NumberOperations;
 
-public class NumberCollectionVerificator extends AbstractCollectionVerificator {
+public class SimpleNumberCollectionVerificator extends AbstractCollectionVerificator {
 
     private List<?> realCollection;
     
     
-    public NumberCollectionVerificator() {
+    public SimpleNumberCollectionVerificator() {
         
     }
     
-    public NumberCollectionVerificator(List<?> realCollection){
+    public SimpleNumberCollectionVerificator(List<?> realCollection){
         this.realCollection = realCollection;
     }
     
-    public NumberCollectionVerificator(Number...realCollection){
+    public SimpleNumberCollectionVerificator(Number...realCollection){
         LinkedList<Number> list = new LinkedList<Number>();
         for(Number number : realCollection) {
             list.add(number);
@@ -67,8 +65,8 @@ public class NumberCollectionVerificator extends AbstractCollectionVerificator {
         return realCollection;
     }
 
-    public NumberCollectionVerificator plus(Number value) {
-        NumberCollectionVerificator copy = copy();
+    public SimpleNumberCollectionVerificator plus(Number value) {
+        SimpleNumberCollectionVerificator copy = copy();
         List<Object> newList = new LinkedList<Object>();
         
         for(Object object : realCollection) {
@@ -79,18 +77,18 @@ public class NumberCollectionVerificator extends AbstractCollectionVerificator {
     }
     
 
-    private NumberCollectionVerificator copy() {
-        NumberCollectionVerificator copy;
+    private SimpleNumberCollectionVerificator copy() {
+        SimpleNumberCollectionVerificator copy;
         try {
-            copy = (NumberCollectionVerificator) this.clone();
+            copy = (SimpleNumberCollectionVerificator) this.clone();
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException(e);
         }
         return copy;
     }
 
-    public NumberCollectionVerificator minus(Number value) {
-        NumberCollectionVerificator copy = copy();
+    public SimpleNumberCollectionVerificator minus(Number value) {
+        SimpleNumberCollectionVerificator copy = copy();
         List<Object> newList = new LinkedList<Object>();
         
         for(Object object : realCollection) {
@@ -100,8 +98,8 @@ public class NumberCollectionVerificator extends AbstractCollectionVerificator {
         return copy;
     }
     
-    public NumberCollectionVerificator multiply(Number value) {
-        NumberCollectionVerificator copy = copy();
+    public SimpleNumberCollectionVerificator multiply(Number value) {
+        SimpleNumberCollectionVerificator copy = copy();
         List<Object> newList = new LinkedList<Object>();
         
         for(Object object : realCollection) {
@@ -111,8 +109,8 @@ public class NumberCollectionVerificator extends AbstractCollectionVerificator {
         return copy;
     }
 
-    public NumberCollectionVerificator divide(Number value) {
-        NumberCollectionVerificator copy = copy();
+    public SimpleNumberCollectionVerificator divide(Number value) {
+        SimpleNumberCollectionVerificator copy = copy();
         List<Object> newList = new LinkedList<Object>();
         
         for(Object object : realCollection) {
@@ -122,8 +120,8 @@ public class NumberCollectionVerificator extends AbstractCollectionVerificator {
         return copy;
     }
     
-    public NumberCollectionVerificator mod(Number value) {
-        NumberCollectionVerificator copy = copy();
+    public SimpleNumberCollectionVerificator mod(Number value) {
+        SimpleNumberCollectionVerificator copy = copy();
         List<Object> newList = new LinkedList<Object>();
         
         for(Object object : realCollection) {
@@ -136,7 +134,7 @@ public class NumberCollectionVerificator extends AbstractCollectionVerificator {
 
     @Override
     public CollectionVerificator reverse() {
-        NumberCollectionVerificator copy = copy();
+        SimpleNumberCollectionVerificator copy = copy();
         
         List<?> newList = realCollection.subList(0, realCollection.size());
         Collections.reverse(newList);
