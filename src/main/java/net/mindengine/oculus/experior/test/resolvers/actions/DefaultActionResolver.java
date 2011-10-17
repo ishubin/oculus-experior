@@ -117,7 +117,7 @@ public class DefaultActionResolver implements ActionResolver{
     }
 
     @Override
-    public void runAction(TestRunner testRunner, EventDescriptor actionDescriptor, TestInformation testInformation, ActionInformation actionInformation) throws TestConfigurationException, TestInterruptedException {        
+    public Object runAction(TestRunner testRunner, EventDescriptor actionDescriptor, TestInformation testInformation, ActionInformation actionInformation) throws TestConfigurationException, TestInterruptedException {        
         Method method = actionDescriptor.getMethod();
 
         //Increasing the runningActionNumber variable so it would be possible to see the detailed progress of test run
@@ -142,7 +142,8 @@ public class DefaultActionResolver implements ActionResolver{
         
         try {
             TestRunner.invokeEvents(BeforeAction.class, testRunner.getTestDescriptor(), testRunner.getTestInstance(), actionInformation);
-            method.invoke(testRunner.getTestInstance(), parameters);
+            Object result = method.invoke(testRunner.getTestInstance(), parameters);
+            return result;
         } 
         catch (IllegalArgumentException e) {
             throw new TestConfigurationException(e);

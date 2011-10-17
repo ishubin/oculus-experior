@@ -22,6 +22,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import junit.framework.Assert;
+import net.mindengine.oculus.experior.framework.verification.checkpoint.Checkpoint;
 import net.mindengine.oculus.experior.framework.verification.collections.CollectionVerificator;
 import net.mindengine.oculus.experior.framework.verification.collections.DefaultNumberCollectionVerificator;
 import net.mindengine.oculus.experior.framework.verification.collections.DefaultTextCollectionVerificator;
@@ -394,6 +395,38 @@ public class SuiteVerificators {
         Assert.assertTrue(verificator.substring(2).hasExactly("e", "o", "ree", "ur", "ve"));
         Assert.assertTrue(verificator.substring(0,2).hasExactly("On", "Tw", "Th", "Fo", "Fi"));
         Assert.assertTrue(verificator.replaceAll("e",".").hasExactly("On.", "Two", "Thr..", "Four", "Fiv."));
+        
+    }
+    
+    @Test
+    public void checkpointCheck() {
+        
+        final List<Boolean>results = new LinkedList<Boolean>();
+        Checkpoint checkpoint = new Checkpoint() {
+            public void passed() {
+                results.add(true);
+            }
+            
+            public void failed() {
+                results.add(false);
+            }
+        };
+        
+        checkpoint.checkIf(true).checkIf(true).done();
+        
+        checkpoint = checkpoint.clear();
+        checkpoint.checkIf(true).checkIf(false).done();
+        
+        checkpoint = checkpoint.clear();
+        checkpoint.checkIf(true).checkIf(true).done();
+        
+        checkpoint = checkpoint.clear();
+        checkpoint.done();
+        
+        Assert.assertEquals(3, results.size());
+        Assert.assertEquals((Boolean)true, (Boolean)results.get(0));
+        Assert.assertEquals((Boolean)false, (Boolean)results.get(1));
+        Assert.assertEquals((Boolean)true, (Boolean)results.get(2));
         
     }
 }

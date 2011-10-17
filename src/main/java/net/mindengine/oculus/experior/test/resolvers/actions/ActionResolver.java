@@ -39,7 +39,17 @@ public interface ActionResolver {
     
     public EventDescriptor getNextAction(TestDescriptor testDescriptor, EventDescriptor currentAction) throws TestConfigurationException;
     
-    public void runAction(TestRunner testRunner, EventDescriptor action, TestInformation testInformation, ActionInformation actionInformation) throws TestConfigurationException, TestInterruptedException;
+    /**
+     * Invokes the specified action
+     * @param testRunner
+     * @param action
+     * @param testInformation
+     * @param actionInformation
+     * @return Object returned from the action invocation
+     * @throws TestConfigurationException
+     * @throws TestInterruptedException
+     */
+    public Object runAction(TestRunner testRunner, EventDescriptor action, TestInformation testInformation, ActionInformation actionInformation) throws TestConfigurationException, TestInterruptedException;
     
     /**
      * Returns sequence of actions as a java collection. This method also verifies if there is an indefinite loop in actions sequence  

@@ -210,7 +210,7 @@ public class SuiteTestRunner {
         Assert.assertNotNull(test.component2);
         Assert.assertNotNull(test.component2_1);
         Assert.assertEquals(test.component1_1, test.component2_1.getComponent1());
-        
+        Assert.assertEquals("this is a test string from action 1", test.action2Argument);
         
         /**
          * Verifying data-providers for actions
@@ -649,6 +649,7 @@ public class SuiteTestRunner {
                 TestEvent.event("AfterTest:Test#4:status="+TestInformation.STATUS_PASSED+":param=default value")
                 ));
     }
+    
     
     public TestDefinition testDefinition(Class<?>testClass) {
         TestDefinition testDefinition = new TestDefinition();

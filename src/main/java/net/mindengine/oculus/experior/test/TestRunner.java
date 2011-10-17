@@ -20,7 +20,9 @@ package net.mindengine.oculus.experior.test;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 import net.mindengine.oculus.experior.TestRunListener;
@@ -44,6 +46,10 @@ public class TestRunner {
     private SuiteRunner suiteRunner;
     private TestRunnerConfiguration configuration;
     
+    /**
+     * Contains all object returned from actions
+     */
+    private Map<String, Object> actionResults;
     
     // Used to store events which should be invoked when the test is finished
     private Stack<EventDescriptor> rollbackSequence;
@@ -155,6 +161,8 @@ public class TestRunner {
     }
 
     protected void preparation() throws TestConfigurationException {
+        
+        actionResults = new HashMap<String, Object>();
         if (testDefinition == null) {
             throw new TestConfigurationException("TestDefinition wasn't provided");
         }
@@ -385,7 +393,8 @@ public class TestRunner {
         }
         
         try {
-            configuration.getActionResolver().runAction(this, actionDescriptor, testInformation, actionInformation);
+            Object actionResult = configuration.getActionResolver().runAction(this, actionDescriptor, testInformation, actionInformation);
+            actionResults.put(actionDescriptor.getName(), actionResult);
         }
         catch (TestConfigurationException e) {
             throw e;
@@ -523,6 +532,14 @@ public class TestRunner {
             return testDefinition.getName();
         }
         else return getConfiguration().getTestResolver().getTestName(getTestDescriptor());
+    }
+
+    public void setActionResults(Map<String, Object> actionResults) {
+        this.actionResults = actionResults;
+    }
+
+    public Map<String, Object> getActionResults() {
+        return actionResults;
     }
 
 }

@@ -57,15 +57,23 @@ public class TestSampleForDataDependency {
     
     public Integer argument1;
     public Component1 argument2;
-    
+    public String action2Argument;
     
     @EntryAction
-    @Action(name="Action")
-    public void action(@DataSource(provider="intProvider2") Integer arg1, @DataSource(dependencies={"field:someStringField"}) Component1 arg2) {
+    @Action(name="Action", next="action2")
+    public String action(@DataSource(provider="intProvider2") Integer arg1, @DataSource(dependencies={"field:someStringField"}) Component1 arg2) {
         this.argument1 = arg1;
         this.argument2 = arg2;
-        
+        return "this is a test string from action 1";
     }
+    
+    @Action
+    public String action2(@DataSource(provider="$action") String param){
+        this.action2Argument = param;
+        return "test";
+    }
+    
+    
     
     @DataProvider
     public Integer intProvider(DataSourceInformation information) {

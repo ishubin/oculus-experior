@@ -106,9 +106,16 @@ public class DefaultDataProviderResolver implements DataProviderResolver {
 
             EventDescriptor dataProviderDescriptor = null;
             if (!dataSource.provider().isEmpty()) {
-                dataProviderDescriptor = testDescriptor.findEvent(DataProvider.class, dataSource.provider());
-                if (dataProviderDescriptor == null)
-                    throw new TestConfigurationException("Cannot find DataProvider with name: " + dataSource.provider());
+                
+                if(dataSource.provider().startsWith("$")) {
+                    //This means that data-source is referencing to an action return object
+                    return testRunner.getActionResults().get(dataSource.provider().substring(1));
+                }
+                else {
+                    dataProviderDescriptor = testDescriptor.findEvent(DataProvider.class, dataSource.provider());
+                    if (dataProviderDescriptor == null)
+                        throw new TestConfigurationException("Cannot find DataProvider with name: " + dataSource.provider());
+                }
             } else {
                 /*
                  * Searching for the data-provider based on object type and
