@@ -50,7 +50,7 @@ public class DefaultTestResolver implements TestResolver {
     public String getProjectId(TestDescriptor testDescriptor) {
         Test test = testDescriptor.getTestClass().getAnnotation(Test.class);
         if(test!=null) {
-            return test.projectId();
+            return test.project();
         }
         return "";
     }

@@ -24,7 +24,7 @@ import net.mindengine.oculus.experior.annotations.Test;
 import net.mindengine.oculus.experior.annotations.events.OnTestFailure;
 import net.mindengine.oculus.experior.test.descriptors.TestInformation;
 
-@Test(name="Test with error in action", projectId="")
+@Test(name="Test with error in action", project="")
 public class TestWithErrorInAction {
 
     public Integer actionNumber = 0;

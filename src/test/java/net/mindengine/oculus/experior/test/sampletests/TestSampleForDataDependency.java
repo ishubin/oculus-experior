@@ -28,7 +28,7 @@ import net.mindengine.oculus.experior.test.resolvers.dataprovider.DataSourceInfo
 import net.mindengine.oculus.experior.test.sampletests.components.Component1;
 import net.mindengine.oculus.experior.test.sampletests.components.Component2;
 
-@Test(name="Test sample for DataDependency testing", projectId="")
+@Test(name="Test sample for DataDependency testing", project="")
 public class TestSampleForDataDependency {
 
     @DataSource(name="somename", type="sometype")

@@ -67,7 +67,7 @@ public class TestDefinition implements Serializable {
     private Suite suite;
     private String name;
     private String description; // Used for more information about the test run
-    private String projectId;
+    private String project;
     private Map<String, TestParameter> parameters = new HashMap<String, TestParameter>();
     private Collection<TestDependency> parameterDependencies = new LinkedList<TestDependency>();
     private Collection<Long> dependencies;
@@ -125,12 +125,12 @@ public class TestDefinition implements Serializable {
         this.name = name;
     }
     
-    public String getProjectId() {
-        return projectId;
+    public String getProject() {
+        return project;
     }
 
-    public void setProjectId(String projectId) {
-        this.projectId = projectId;
+    public void setProject(String project) {
+        this.project = project;
     }
 
     public Map<String, TestParameter> getParameters() {

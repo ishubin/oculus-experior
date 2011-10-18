@@ -30,19 +30,19 @@ import net.mindengine.oculus.experior.suite.SuiteRunner;
 import org.apache.commons.lang3.StringEscapeUtils;
 
 /**
- * This class handles the suite data and writes it to the DB
+ * This class handles the suite data and writes it to Oculus Database
  * 
  * @author Ivan Shubin
  * 
  */
-public class OculusSuiteListener implements SuiteListener {
+public class DefaultSuiteListener implements SuiteListener {
 
     public void onSuiteStarted(SuiteRunner suiteRunner) {
         Suite suite = suiteRunner.getSuite();
         OculusSimpleJdbcDaoSupport daoSupport = OculusSimpleJdbcDaoSupport.getInstance();
 
         /*
-         * Converting the suite parameters to string with the following
+         * Converting suite parameters to string with the following
          * template: <p><n>parameterName<v>parameterValue
          */
         Map<String, String> parameters = suite.getParameters();

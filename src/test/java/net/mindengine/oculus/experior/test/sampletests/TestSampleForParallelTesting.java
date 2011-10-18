@@ -48,7 +48,7 @@ public class TestSampleForParallelTesting {
     @Action
     public void action() throws InterruptedException {
         outParam = testName +" out param value"; 
-        suiteSession.setDataObject(testName+":param", param);
-        suiteSession.setDataObject(testName+":outParam", outParam);
+        suiteSession.getData().put(testName+":param", param);
+        suiteSession.getData().put(testName+":outParam", outParam);
     }
 }

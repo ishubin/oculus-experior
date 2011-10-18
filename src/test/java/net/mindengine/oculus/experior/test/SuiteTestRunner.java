@@ -554,19 +554,19 @@ public class SuiteTestRunner {
         
         Assert.assertNotNull(suiteSession);
         
-        Assert.assertEquals("some value 1", suiteSession.getDataObject("Test#1:param"));
-        Assert.assertEquals("Test#3 out param value", suiteSession.getDataObject("Test#2:param"));
-        Assert.assertEquals("Test#4 out param value", suiteSession.getDataObject("Test#3:param"));
-        Assert.assertEquals("default", suiteSession.getDataObject("Test#4:param"));
-        Assert.assertEquals("default", suiteSession.getDataObject("Test#5:param"));
-        Assert.assertEquals("default", suiteSession.getDataObject("Test#6:param"));
-        Assert.assertEquals("default", suiteSession.getDataObject("Test#7:param"));
-        Assert.assertEquals("default", suiteSession.getDataObject("Test#8:param"));
-        Assert.assertEquals("default", suiteSession.getDataObject("Test#9:param"));
-        Assert.assertEquals("default", suiteSession.getDataObject("Test#10:param"));
+        Assert.assertEquals("some value 1", suiteSession.getData().get("Test#1:param"));
+        Assert.assertEquals("Test#3 out param value", suiteSession.getData().get("Test#2:param"));
+        Assert.assertEquals("Test#4 out param value", suiteSession.getData().get("Test#3:param"));
+        Assert.assertEquals("default", suiteSession.getData().get("Test#4:param"));
+        Assert.assertEquals("default", suiteSession.getData().get("Test#5:param"));
+        Assert.assertEquals("default", suiteSession.getData().get("Test#6:param"));
+        Assert.assertEquals("default", suiteSession.getData().get("Test#7:param"));
+        Assert.assertEquals("default", suiteSession.getData().get("Test#8:param"));
+        Assert.assertEquals("default", suiteSession.getData().get("Test#9:param"));
+        Assert.assertEquals("default", suiteSession.getData().get("Test#10:param"));
         
         for(int i=1;i<=10;i++) {
-            Assert.assertEquals("Test#"+i+" out param value", suiteSession.getDataObject("Test#"+i+":outParam"));
+            Assert.assertEquals("Test#"+i+" out param value", suiteSession.getData().get("Test#"+i+":outParam"));
         }
     }
     
@@ -632,7 +632,7 @@ public class SuiteTestRunner {
         
         SuiteSession suiteSession = suiteRunner.getSuite().getSuiteSession();
         Assert.assertNotNull(suiteSession);
-        List<TestEvent> events = (List<TestEvent>) suiteSession.getDataObject("events");
+        List<TestEvent> events = (List<TestEvent>) suiteSession.getData().get("events");
         Assert.assertNotNull(events);
         
         verifySequence(events, TestEvent.collection(

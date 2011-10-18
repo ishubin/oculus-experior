@@ -28,5 +28,5 @@ import java.lang.annotation.Target;
 public @interface Test {
     String name();
 
-    String projectId();
+    String project();
 }

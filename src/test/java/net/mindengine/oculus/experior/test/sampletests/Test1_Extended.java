@@ -21,7 +21,7 @@ package net.mindengine.oculus.experior.test.sampletests;
 import net.mindengine.oculus.experior.annotations.InputParameter;
 import net.mindengine.oculus.experior.annotations.Test;
 
-@Test(name="Test 1 Extended", projectId="UnknownProject")
+@Test(name="Test 1 Extended", project="UnknownProject")
 public class Test1_Extended extends Test1 {
     
     @InputParameter(defaultValue="124214")

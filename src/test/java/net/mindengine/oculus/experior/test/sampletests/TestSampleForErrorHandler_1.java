@@ -24,7 +24,7 @@ import net.mindengine.oculus.experior.annotations.ErrorHandler;
 import net.mindengine.oculus.experior.annotations.Test;
 
 
-@Test(name="Test Sample for error handler", projectId="")
+@Test(name="Test Sample for error handler", project="")
 public class TestSampleForErrorHandler_1 extends BaseTest {
 
     @EntryAction

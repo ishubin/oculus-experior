@@ -47,10 +47,10 @@ public class TestSampleForStatusDependency {
     public void onTestStart(TestInformation testInformation) {
         SuiteSession suiteSession = testInformation.getTestRunner().getSuiteRunner().getSuite().getSuiteSession();
         
-        events = (List<TestEvent>)suiteSession.getDataObject("events");
+        events = (List<TestEvent>)suiteSession.getData().get("events");
         if(events==null) {
             events = new LinkedList<TestEvent>();
-            suiteSession.setDataObject("events", events);
+            suiteSession.getData().put("events", events);
         }
         
         this.testInformation = testInformation;

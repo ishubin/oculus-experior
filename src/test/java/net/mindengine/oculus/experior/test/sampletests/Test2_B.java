@@ -26,7 +26,7 @@ import net.mindengine.oculus.experior.annotations.EntryAction;
 import net.mindengine.oculus.experior.annotations.InputParameter;
 import net.mindengine.oculus.experior.annotations.Test;
 
-@Test(name="Test2_B", projectId="Unknown Project")
+@Test(name="Test2_B", project="Unknown Project")
 public class Test2_B extends BaseTest{
 
     

@@ -54,7 +54,7 @@ public class XmlTestParser {
 
         testDefinition.setMapping(XmlUtils.getNodeAttribute(testNode, "mapping"));
         testDefinition.setName(XmlUtils.getNodeAttribute(testNode, "name"));
-        testDefinition.setProjectId(XmlUtils.getNodeAttribute(testNode, "projectId"));
+        testDefinition.setProject(XmlUtils.getNodeAttribute(testNode, "project"));
 
         NodeList nodeList = testNode.getChildNodes();
 
@@ -123,8 +123,8 @@ public class XmlTestParser {
         writer.write(StringEscapeUtils.escapeXml(test.getMapping()));
         writer.write("\" name=\"");
         writer.write(StringEscapeUtils.escapeXml(test.getName()));
-        writer.write("\" projectId=\"");
-        writer.write(StringEscapeUtils.escapeXml(test.getProjectId()));
+        writer.write("\" project=\"");
+        writer.write(StringEscapeUtils.escapeXml(test.getProject()));
         writer.write("\">\n");
         
         if(test.getParameters()!=null) {

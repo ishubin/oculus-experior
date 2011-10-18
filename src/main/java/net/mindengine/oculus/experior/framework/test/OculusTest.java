@@ -37,6 +37,7 @@ import net.mindengine.oculus.experior.db.OculusSimpleJdbcDaoSupport;
 import net.mindengine.oculus.experior.db.ProjectBean;
 import net.mindengine.oculus.experior.db.TestBean;
 import net.mindengine.oculus.experior.db.TestRunBean;
+import net.mindengine.oculus.experior.exception.TestConfigurationException;
 import net.mindengine.oculus.experior.framework.report.DefaultReport;
 import net.mindengine.oculus.experior.reporter.DefaultReportCollector;
 import net.mindengine.oculus.experior.reporter.Report;
@@ -90,8 +91,10 @@ public abstract class OculusTest {
             testSession.getData().put("report", report);
         } else {
             report = (Report) testSession.getData().get("report");
+            if(report==null) {
+                throw new TestConfigurationException("Cannot find report in testSession");
+            }
         }
-
     }
 
     @AfterTest
@@ -123,8 +126,7 @@ public abstract class OculusTest {
             /*
              * Getting test from DB by its name and projectId
              */
-
-            TestBean test = daoSupport.getTestDAO().getTestByNameProject(testRunBean.getName(), testDefinition.getProjectId());
+            TestBean test = daoSupport.getTestDAO().getTestByNameProject(testRunBean.getName(), testDefinition.getProject());
             if (test != null) {
                 testRunBean.setTestId(test.getId());
             } else {
@@ -174,7 +176,7 @@ public abstract class OculusTest {
             }
 
             // Obtaining the projects id
-            ProjectBean projectBean = daoSupport.getProjectDAO().getProjectByPath(testDefinition.getProjectId());
+            ProjectBean projectBean = daoSupport.getProjectDAO().getProjectByPath(testDefinition.getProject());
             Long projectId = 0L;
             if (projectBean != null) {
                 projectId = projectBean.getId();
