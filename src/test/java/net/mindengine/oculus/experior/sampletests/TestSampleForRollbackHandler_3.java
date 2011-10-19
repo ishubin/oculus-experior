@@ -16,28 +16,35 @@
  * You should have received a copy of the GNU General Public License
  * along with Oculus Experior.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package net.mindengine.oculus.experior.test.sampletests;
-
-import java.util.Collection;
-import java.util.LinkedList;
+package net.mindengine.oculus.experior.sampletests;
 
 import net.mindengine.oculus.experior.annotations.Action;
 import net.mindengine.oculus.experior.annotations.EntryAction;
-import net.mindengine.oculus.experior.annotations.InputParameter;
-import net.mindengine.oculus.experior.annotations.Test;
+import net.mindengine.oculus.experior.annotations.RollbackHandler;
 
-@Test(name="Test2_B", project="Unknown Project")
-public class Test2_B extends BaseTest{
 
-    
-    public static final Collection<String> parameterInputValuesSequence = new LinkedList<String>() ;
-    
-    @InputParameter(defaultValue="def")
-    public String parameterInput;
-    
+public class TestSampleForRollbackHandler_3 extends BaseTest {
+
     @EntryAction
-    @Action(name="Action 1")
-    public void action1(){
-        parameterInputValuesSequence.add(parameterInput);
+    @Action(name="Action 1", next="action2", rollback="rollback1")
+    public void action1() {
+        sequence.add(TestEvent.event("action1"));
+    }
+    
+    @Action(name="Action 2", rollback="rollback2")
+    public void action2() {
+        sequence.add(TestEvent.event("action2"));
+    }
+    
+    
+    @RollbackHandler(name="Rollback 1")
+    public void rollback1() {
+        sequence.add(TestEvent.event("rollback1"));
+    }
+    
+    @RollbackHandler(name="Rollback 2")
+    public void rollback2() {
+        sequence.add(TestEvent.event("rollback2"));
+        throw new NullPointerException("test exeption");
     }
 }

@@ -16,54 +16,37 @@
  * You should have received a copy of the GNU General Public License
  * along with Oculus Experior.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package net.mindengine.oculus.experior.test.sampletests;
+package net.mindengine.oculus.experior.sampletests;
 
 import net.mindengine.oculus.experior.annotations.Action;
 import net.mindengine.oculus.experior.annotations.EntryAction;
-import net.mindengine.oculus.experior.annotations.RollbackHandler;
+import net.mindengine.oculus.experior.annotations.ErrorHandler;
+import net.mindengine.oculus.experior.annotations.Test;
 
 
-public class TestSampleForRollbackHandler_2 extends BaseTest {
+@Test(name="Test Sample for error handler 2", project="")
+public class TestSampleForErrorHandler_2 extends BaseTest {
 
     @EntryAction
-    @Action(name="Action 1", next="action2", rollback="rollback1")
+    @Action(name="Action 1", next="action2")
     public void action1() {
         sequence.add(TestEvent.event("action1"));
     }
     
-    @Action(name="Action 2", next="action3", rollback="rollback2")
+    @Action(name="Action 2", next="action3", onerror="errorHandler2")
     public void action2() {
         sequence.add(TestEvent.event("action2"));
+        throw new IllegalArgumentException("Some exeption");
     }
     
-    @Action(name="Action 3", next="action4", rollback="rollback3")
+    @ErrorHandler(name="Error handler 2")
+    public void errorHandler2(Throwable error) {
+        sequence.add(TestEvent.event("errorHandler2"));
+        throw new NullPointerException("This exeption is thrown from error-handler");
+    }
+    
+    @Action(name="Action 3")
     public void action3() {
         sequence.add(TestEvent.event("action3"));
-        throw new NullPointerException("test exeption");
-    }
-    
-    @Action(name="Action 4", rollback="rollback4")
-    public void action4() {
-        sequence.add(TestEvent.event("action4"));
-    }
-    
-    @RollbackHandler(name="Rollback 1")
-    public void rollback1() {
-        sequence.add(TestEvent.event("rollback1"));
-    }
-    
-    @RollbackHandler(name="Rollback 2")
-    public void rollback2() {
-        sequence.add(TestEvent.event("rollback2"));
-    }
-    
-    @RollbackHandler(name="Rollback 3")
-    public void rollback3() {
-        sequence.add(TestEvent.event("rollback3"));
-    }
-    
-    @RollbackHandler(name="Rollback 4")
-    public void rollback4() {
-        sequence.add(TestEvent.event("rollback4"));
     }
 }

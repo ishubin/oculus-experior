@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Oculus Experior.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package net.mindengine.oculus.experior.test;
+package net.mindengine.oculus.experior.test.suites;
 
 import java.util.LinkedList;
 import java.util.List;

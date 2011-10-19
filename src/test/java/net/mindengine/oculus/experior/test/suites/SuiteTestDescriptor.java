@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Oculus Experior.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package net.mindengine.oculus.experior.test;
+package net.mindengine.oculus.experior.test.suites;
 
 import junit.framework.Assert;
 import net.mindengine.oculus.experior.ExperiorConfig;
@@ -31,13 +31,13 @@ import net.mindengine.oculus.experior.annotations.events.BeforeAction;
 import net.mindengine.oculus.experior.annotations.events.BeforeErrorHandler;
 import net.mindengine.oculus.experior.annotations.events.BeforeRollback;
 import net.mindengine.oculus.experior.annotations.events.BeforeTest;
+import net.mindengine.oculus.experior.sampletests.Test1_Extended;
 import net.mindengine.oculus.experior.test.descriptors.EventDescriptor;
 import net.mindengine.oculus.experior.test.descriptors.EventDescriptorsContainer;
 import net.mindengine.oculus.experior.test.descriptors.FieldDescriptor;
 import net.mindengine.oculus.experior.test.descriptors.FieldDescriptorsContainer;
 import net.mindengine.oculus.experior.test.descriptors.TestDefinition;
 import net.mindengine.oculus.experior.test.descriptors.TestDescriptor;
-import net.mindengine.oculus.experior.test.sampletests.Test1_Extended;
 
 import org.junit.Test;
 

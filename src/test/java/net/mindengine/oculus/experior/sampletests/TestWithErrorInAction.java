@@ -16,39 +16,42 @@
  * You should have received a copy of the GNU General Public License
  * along with Oculus Experior.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package net.mindengine.oculus.experior.test.sampletests;
+package net.mindengine.oculus.experior.sampletests;
 
 import net.mindengine.oculus.experior.annotations.Action;
 import net.mindengine.oculus.experior.annotations.EntryAction;
-import net.mindengine.oculus.experior.annotations.InputParameter;
-import net.mindengine.oculus.experior.annotations.OutputParameter;
-import net.mindengine.oculus.experior.annotations.events.BeforeTest;
-import net.mindengine.oculus.experior.suite.Suite;
-import net.mindengine.oculus.experior.suite.SuiteSession;
+import net.mindengine.oculus.experior.annotations.Test;
+import net.mindengine.oculus.experior.annotations.events.OnTestFailure;
 import net.mindengine.oculus.experior.test.descriptors.TestInformation;
 
-public class TestSampleForParallelTesting {
+@Test(name="Test with error in action", project="")
+public class TestWithErrorInAction {
 
-    @InputParameter(defaultValue="default")
-    public String param;
+    public Integer actionNumber = 0;
     
-    @OutputParameter
-    public String outParam;
-    
-    String testName;
-    SuiteSession suiteSession;
-    @BeforeTest
-    public void beforeTest(TestInformation testInformation) {
-        Suite suite = testInformation.getTestRunner().getSuiteRunner().getSuite();
-        testName = testInformation.getTestName();
-        suiteSession = suite.getSuiteSession();
-    }
+    public TestInformation testInformation;
     
     @EntryAction
-    @Action
-    public void action() throws InterruptedException {
-        outParam = testName +" out param value"; 
-        suiteSession.getData().put(testName+":param", param);
-        suiteSession.getData().put(testName+":outParam", outParam);
+    @Action(name="Action 1", next="action2")
+    public void action1() {
+        actionNumber = 1;
     }
+    
+    @Action(name="Action 2", next="action3")
+    public void action2() {
+        actionNumber = 2;
+        
+        throw new NullPointerException("Some error");
+    }
+    
+    @Action(name="Action 3")
+    public void action3() {
+        actionNumber = 3;
+    }
+    
+    @OnTestFailure
+    public void onTestFailure(TestInformation testInformation) {
+        this.testInformation = testInformation;
+    }
+    
 }

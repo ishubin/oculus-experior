@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Oculus Experior.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package net.mindengine.oculus.experior.test.sampletests.injectedtests;
+package net.mindengine.oculus.experior.sampletests.injectedtests;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -27,8 +27,8 @@ import net.mindengine.oculus.experior.annotations.InputParameter;
 import net.mindengine.oculus.experior.annotations.OutputParameter;
 import net.mindengine.oculus.experior.annotations.events.AfterTest;
 import net.mindengine.oculus.experior.annotations.events.BeforeTest;
+import net.mindengine.oculus.experior.sampletests.TestEvent;
 import net.mindengine.oculus.experior.test.descriptors.TestInformation;
-import net.mindengine.oculus.experior.test.sampletests.TestEvent;
 
 public class RootTest {
     

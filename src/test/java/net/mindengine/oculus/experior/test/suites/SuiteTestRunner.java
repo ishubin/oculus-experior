@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Oculus Experior.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package net.mindengine.oculus.experior.test;
+package net.mindengine.oculus.experior.test.suites;
 
 import java.io.File;
 import java.util.Collection;
@@ -40,30 +40,31 @@ import net.mindengine.oculus.experior.annotations.events.BeforeTest;
 import net.mindengine.oculus.experior.exception.LoopedDependencyException;
 import net.mindengine.oculus.experior.exception.TestConfigurationException;
 import net.mindengine.oculus.experior.exception.TestInterruptedException;
+import net.mindengine.oculus.experior.sampletests.Test1;
+import net.mindengine.oculus.experior.sampletests.Test2_B;
+import net.mindengine.oculus.experior.sampletests.TestEvent;
+import net.mindengine.oculus.experior.sampletests.TestSampleForDataDependency;
+import net.mindengine.oculus.experior.sampletests.TestSampleForDataDependency_2;
+import net.mindengine.oculus.experior.sampletests.TestSampleForErrorHandler_1;
+import net.mindengine.oculus.experior.sampletests.TestSampleForErrorHandler_2;
+import net.mindengine.oculus.experior.sampletests.TestSampleForRollbackHandler_1;
+import net.mindengine.oculus.experior.sampletests.TestSampleForRollbackHandler_2;
+import net.mindengine.oculus.experior.sampletests.TestSampleForRollbackHandler_3;
+import net.mindengine.oculus.experior.sampletests.TestSampleWithError;
+import net.mindengine.oculus.experior.sampletests.TestWithErrorInAction;
+import net.mindengine.oculus.experior.sampletests.injectedtests.RootTest;
+import net.mindengine.oculus.experior.sampletests.injectedtests.SubTest1;
+import net.mindengine.oculus.experior.sampletests.injectedtests.SubTest2;
 import net.mindengine.oculus.experior.suite.Suite;
 import net.mindengine.oculus.experior.suite.SuiteRunner;
 import net.mindengine.oculus.experior.suite.SuiteSession;
 import net.mindengine.oculus.experior.suite.XmlSuiteParser;
 import net.mindengine.oculus.experior.suite.threads.ParallelSuiteRunner;
+import net.mindengine.oculus.experior.test.TestRunner;
 import net.mindengine.oculus.experior.test.descriptors.ActionInformation;
 import net.mindengine.oculus.experior.test.descriptors.TestDefinition;
 import net.mindengine.oculus.experior.test.descriptors.TestDescriptor;
 import net.mindengine.oculus.experior.test.descriptors.TestInformation;
-import net.mindengine.oculus.experior.test.sampletests.Test1;
-import net.mindengine.oculus.experior.test.sampletests.Test2_B;
-import net.mindengine.oculus.experior.test.sampletests.TestEvent;
-import net.mindengine.oculus.experior.test.sampletests.TestSampleForDataDependency;
-import net.mindengine.oculus.experior.test.sampletests.TestSampleForDataDependency_2;
-import net.mindengine.oculus.experior.test.sampletests.TestSampleForErrorHandler_1;
-import net.mindengine.oculus.experior.test.sampletests.TestSampleForErrorHandler_2;
-import net.mindengine.oculus.experior.test.sampletests.TestSampleForRollbackHandler_1;
-import net.mindengine.oculus.experior.test.sampletests.TestSampleForRollbackHandler_2;
-import net.mindengine.oculus.experior.test.sampletests.TestSampleForRollbackHandler_3;
-import net.mindengine.oculus.experior.test.sampletests.TestSampleWithError;
-import net.mindengine.oculus.experior.test.sampletests.TestWithErrorInAction;
-import net.mindengine.oculus.experior.test.sampletests.injectedtests.RootTest;
-import net.mindengine.oculus.experior.test.sampletests.injectedtests.SubTest1;
-import net.mindengine.oculus.experior.test.sampletests.injectedtests.SubTest2;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

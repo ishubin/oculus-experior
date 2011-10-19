@@ -16,23 +16,49 @@
  * You should have received a copy of the GNU General Public License
  * along with Oculus Experior.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package net.mindengine.oculus.experior.test.sampletests;
+package net.mindengine.oculus.experior.sampletests;
 
 import net.mindengine.oculus.experior.annotations.Action;
 import net.mindengine.oculus.experior.annotations.EntryAction;
-import net.mindengine.oculus.experior.annotations.OutputParameter;
+import net.mindengine.oculus.experior.annotations.InputParameter;
+import net.mindengine.oculus.experior.annotations.Temp;
 import net.mindengine.oculus.experior.annotations.Test;
 
-
-@Test(name="Test2_A", project="Unknown Project")
-public class Test2_A extends BaseTest{
+@Test(name="Test 1", project="Unknown Project")
+public class Test1 extends BaseTest{
     
-    @OutputParameter
-    public String parameterOutput;
+    
+    @InputParameter(defaultValue="defstr")
+    public String paramString;
+    
+    @InputParameter(defaultValue="1234")
+    public Long paramLong;
+    
+    @InputParameter(defaultValue="true")
+    public Boolean paramBoolean;
+    
+    @InputParameter(defaultValue="56")
+    private Integer paramInt;
+    
+    @Temp
+    public String tempComponent = "temp component"; 
     
     @EntryAction
-    @Action(name="Action 1A")
+    @Action(name="Action 1", next="action2")
     public void action1(){
-        parameterOutput = "test out value";
+        sequence.add(TestEvent.event("action1"));
+    }
+    
+    @Action()
+    public void action2(){
+        sequence.add(TestEvent.event("action2"));
+    }
+
+    public void setParamInt(Integer paramInt) {
+        this.paramInt = paramInt;
+    }
+
+    public Integer getParamInt() {
+        return paramInt;
     }
 }

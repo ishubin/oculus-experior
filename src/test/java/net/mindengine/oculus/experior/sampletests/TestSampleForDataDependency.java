@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Oculus Experior.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package net.mindengine.oculus.experior.test.sampletests;
+package net.mindengine.oculus.experior.sampletests;
 
 
 import net.mindengine.oculus.experior.annotations.Action;
@@ -24,9 +24,9 @@ import net.mindengine.oculus.experior.annotations.DataProvider;
 import net.mindengine.oculus.experior.annotations.DataSource;
 import net.mindengine.oculus.experior.annotations.EntryAction;
 import net.mindengine.oculus.experior.annotations.Test;
+import net.mindengine.oculus.experior.sampletests.components.Component1;
+import net.mindengine.oculus.experior.sampletests.components.Component2;
 import net.mindengine.oculus.experior.test.resolvers.dataprovider.DataSourceInformation;
-import net.mindengine.oculus.experior.test.sampletests.components.Component1;
-import net.mindengine.oculus.experior.test.sampletests.components.Component2;
 
 @Test(name="Test sample for DataDependency testing", project="")
 public class TestSampleForDataDependency {

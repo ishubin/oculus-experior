@@ -16,42 +16,41 @@
  * You should have received a copy of the GNU General Public License
  * along with Oculus Experior.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package net.mindengine.oculus.experior.test.sampletests;
+package net.mindengine.oculus.experior.sampletests;
 
 import net.mindengine.oculus.experior.annotations.Action;
 import net.mindengine.oculus.experior.annotations.EntryAction;
+import net.mindengine.oculus.experior.annotations.ErrorHandler;
 import net.mindengine.oculus.experior.annotations.Test;
-import net.mindengine.oculus.experior.annotations.events.OnTestFailure;
-import net.mindengine.oculus.experior.test.descriptors.TestInformation;
 
-@Test(name="Test with error in action", project="")
-public class TestWithErrorInAction {
 
-    public Integer actionNumber = 0;
-    
-    public TestInformation testInformation;
-    
+@Test(name="Test Sample for error handler", project="")
+public class TestSampleForErrorHandler_1 extends BaseTest {
+
     @EntryAction
-    @Action(name="Action 1", next="action2")
+    @Action(name="Action 1", next="action2", onerror="errorHandler1")
     public void action1() {
-        actionNumber = 1;
+        sequence.add(TestEvent.event("action1"));
     }
     
-    @Action(name="Action 2", next="action3")
+    @ErrorHandler(name="Error handler 1")
+    public void errorHandler1(Throwable error) {
+        sequence.add(TestEvent.event("errorHandler1"));
+    }
+    
+    @Action(name="Action 2", next="action3", onerror="errorHandler2")
     public void action2() {
-        actionNumber = 2;
-        
-        throw new NullPointerException("Some error");
+        sequence.add(TestEvent.event("action2"));
+        throw new IllegalArgumentException("Some exeption");
+    }
+    
+    @ErrorHandler(name="Error handler 2")
+    public void errorHandler2(Throwable throwable) {
+        sequence.add(TestEvent.event("errorHandler2"));
     }
     
     @Action(name="Action 3")
     public void action3() {
-        actionNumber = 3;
+        sequence.add(TestEvent.event("action3"));
     }
-    
-    @OnTestFailure
-    public void onTestFailure(TestInformation testInformation) {
-        this.testInformation = testInformation;
-    }
-    
 }

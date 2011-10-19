@@ -16,15 +16,28 @@
  * You should have received a copy of the GNU General Public License
  * along with Oculus Experior.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package net.mindengine.oculus.experior.test.sampletests;
+package net.mindengine.oculus.experior.sampletests;
 
+import java.util.Collection;
+import java.util.LinkedList;
+
+import net.mindengine.oculus.experior.annotations.Action;
+import net.mindengine.oculus.experior.annotations.EntryAction;
 import net.mindengine.oculus.experior.annotations.InputParameter;
 import net.mindengine.oculus.experior.annotations.Test;
 
-@Test(name="Test 1 Extended", project="UnknownProject")
-public class Test1_Extended extends Test1 {
-    
-    @InputParameter(defaultValue="124214")
-    public String anotherParam;
+@Test(name="Test2_B", project="Unknown Project")
+public class Test2_B extends BaseTest{
 
+    
+    public static final Collection<String> parameterInputValuesSequence = new LinkedList<String>() ;
+    
+    @InputParameter(defaultValue="def")
+    public String parameterInput;
+    
+    @EntryAction
+    @Action(name="Action 1")
+    public void action1(){
+        parameterInputValuesSequence.add(parameterInput);
+    }
 }

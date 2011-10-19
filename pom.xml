@@ -5,10 +5,16 @@
 	<artifactId>oculus-experior</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>Oculus Experior</name>
+	
+	<properties>
+		<test>net.mindengine.oculus.experior.test.suites.*</test>
+	</properties>
+	
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
+			<scope>test</scope>
 			<version>4.9</version>
 		</dependency>
 		<dependency>
