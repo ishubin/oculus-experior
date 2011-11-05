@@ -145,6 +145,7 @@ public class DefaultDataProviderResolver implements DataProviderResolver {
                  */
                 Method method = dataProviderDescriptor.getMethod();
                 Object component = null;
+                method.setAccessible(true);
                 if(method.getParameterTypes().length==1 && method.getParameterTypes()[0].equals(DataSourceInformation.class)) {
                     component = method.invoke(testRunner.getTestInstance(), information);
                 }

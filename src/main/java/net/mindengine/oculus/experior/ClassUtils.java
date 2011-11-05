@@ -114,12 +114,10 @@ public class ClassUtils {
      * @throws IllegalArgumentException
      */
     public static Object getFieldValue(Field field, Object instance) throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-        if (Modifier.isPublic(field.getModifiers())) {
-            return field.get(instance);
-        } else {
-            Method getter = getGetterMethod(field);
-            return getter.invoke(instance);
+        if (!Modifier.isPublic(field.getModifiers())) {
+            field.setAccessible(true);
         }
+        return field.get(instance);
     }
     /**
      * Sets the specified value to the field of specified object
@@ -133,12 +131,10 @@ public class ClassUtils {
      * @throws InvocationTargetException
      */
     public static void setFieldValue(Field field, Object object, Object value) throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-        if (Modifier.isPublic(field.getModifiers())) {
-            field.set(object, value);
-        } else {
-            Method setter = getSetterMethod(field);
-            setter.invoke(object, value);
+        if (!Modifier.isPublic(field.getModifiers())) {
+            field.setAccessible(true);
         }
+        field.set(object, value);
     }
     /**
      * Converts the string value to the type of the field and set the field with it.

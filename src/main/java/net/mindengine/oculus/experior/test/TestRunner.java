@@ -357,6 +357,7 @@ public class TestRunner {
         if (edc != null) {
             for (EventDescriptor eventDescriptor : edc.getDescriptors().values()) {
                 try {
+                    eventDescriptor.getMethod().setAccessible(true);
                     eventDescriptor.getMethod().invoke(testInstance, args);
                 } catch (IllegalArgumentException e) {
                     throw new TestConfigurationException(e);
@@ -443,6 +444,7 @@ public class TestRunner {
         if (edc != null) {
             for (EventDescriptor eventDescriptor : edc.getDescriptors().values()) {
                 try {
+                    eventDescriptor.getMethod().setAccessible(true);
                     eventDescriptor.getMethod().invoke(testInstance, args);
                 } catch (IllegalArgumentException e) {
                     throw new TestConfigurationException(e);

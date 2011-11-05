@@ -142,6 +142,7 @@ public class DefaultActionResolver implements ActionResolver{
         
         try {
             TestRunner.invokeEvents(BeforeAction.class, testRunner.getTestDescriptor(), testRunner.getTestInstance(), actionInformation);
+            method.setAccessible(true);
             Object result = method.invoke(testRunner.getTestInstance(), parameters);
             return result;
         } 

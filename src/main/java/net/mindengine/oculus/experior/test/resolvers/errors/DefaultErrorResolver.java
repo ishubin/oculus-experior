@@ -95,6 +95,7 @@ public class DefaultErrorResolver implements ErrorResolver{
 
             try {
                 TestRunner.invokeEvents(BeforeErrorHandler.class, testRunner.getTestDescriptor(), testRunner.getTestInstance(), errorInformation);
+                method.setAccessible(true);
                 method.invoke(testRunner.getTestInstance(), parameters);
             } catch (InvocationTargetException e) {
                 throw new TestInterruptedException(e.getCause());

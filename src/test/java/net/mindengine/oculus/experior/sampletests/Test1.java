@@ -50,15 +50,12 @@ public class Test1 extends BaseTest{
     }
     
     @Action()
-    public void action2(){
+    protected void action2(){
         sequence.add(TestEvent.event("action2"));
     }
 
-    public void setParamInt(Integer paramInt) {
-        this.paramInt = paramInt;
-    }
-
-    public Integer getParamInt() {
+    public int getParamInt() {
         return paramInt;
     }
+
 }

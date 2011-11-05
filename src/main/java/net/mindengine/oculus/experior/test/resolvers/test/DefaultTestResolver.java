@@ -73,6 +73,7 @@ public class DefaultTestResolver implements TestResolver {
                 OnException onExceptionAnnotation = method.getAnnotation(OnException.class);
                 if (onExceptionAnnotation.exception().equals(error.getClass())) {
                     try {
+                        method.setAccessible(true);
                         method.invoke(testRunner.getTestInstance(), testInformation);
                     } catch (Exception e) {
                         e.printStackTrace();

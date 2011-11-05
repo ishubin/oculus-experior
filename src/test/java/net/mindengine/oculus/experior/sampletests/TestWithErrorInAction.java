@@ -49,8 +49,9 @@ public class TestWithErrorInAction {
         actionNumber = 3;
     }
     
+    @SuppressWarnings("unused")
     @OnTestFailure
-    public void onTestFailure(TestInformation testInformation) {
+    private void onTestFailure(TestInformation testInformation) {
         this.testInformation = testInformation;
     }
     

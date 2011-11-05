@@ -88,6 +88,7 @@ public class DefaultRollbackResolver implements RollbackResolver {
             
             // Invoking method for the roll-back handler
             try {
+                rollbackDescriptor.getMethod().setAccessible(true);
                 rollbackDescriptor.getMethod().invoke(testRunner.getTestInstance(), parameters);
             } catch (IllegalArgumentException e) {
                 throw new TestConfigurationException(e);
