@@ -254,17 +254,17 @@ public abstract class OculusTest {
 
     @BeforeAction
     public void onBeforeAction(ActionInformation actionInformation) {
-        report.action(actionInformation.getActionName());
+        report.rootBranch(actionInformation.getActionName());
     }
 
     @BeforeRollback
     public void onBeforeRollback(RollbackInformation rollbackInformation) {
-        report.action(rollbackInformation.getName(), null, ReportLogo.ROLLBACK);
+        report.rootBranch(rollbackInformation.getName(), null, ReportLogo.ROLLBACK);
     }
 
     @BeforeErrorHandler
     public void onBeforeError(ErrorInformation errorInformation) {
-        report.action(errorInformation.getName());
+        report.rootBranch(errorInformation.getName());
     }
 
     @OnTestFailure

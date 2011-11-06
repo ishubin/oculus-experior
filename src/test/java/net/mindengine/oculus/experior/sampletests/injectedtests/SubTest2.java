@@ -19,7 +19,6 @@
 package net.mindengine.oculus.experior.sampletests.injectedtests;
 
 import net.mindengine.oculus.experior.annotations.Action;
-import net.mindengine.oculus.experior.annotations.EntryAction;
 import net.mindengine.oculus.experior.annotations.InputParameter;
 import net.mindengine.oculus.experior.annotations.events.AfterTest;
 import net.mindengine.oculus.experior.annotations.events.BeforeTest;
@@ -34,7 +33,6 @@ public class SubTest2 {
     @InputParameter(defaultValue="")
     public String param;
 
-    @EntryAction
     @Action
     public void action() {
         if(rootTest!=null) {

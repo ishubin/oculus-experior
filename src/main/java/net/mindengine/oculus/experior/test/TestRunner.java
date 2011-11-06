@@ -21,6 +21,7 @@ package net.mindengine.oculus.experior.test;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -72,12 +73,20 @@ public class TestRunner {
     public void runTest() throws TestConfigurationException, TestInterruptedException {
         preparation();
         instantiateTest();
-        
-        List<String> actionSequence = configuration.getActionResolver().getActionsSequence(testDescriptor);
-
         TestInformation testInformation = new TestInformation();
+        
+        List<List<EventDescriptor>> actionSequences = configuration.getActionResolver().getActionsSequences(testDescriptor);
+
+        List<String> estimatedActions = new LinkedList<String>();
+        for(List<EventDescriptor> sequence : actionSequences) {
+            for(EventDescriptor action : sequence) {
+                String actionName = configuration.getActionResolver().getActionInformation(testDescriptor, testInformation, action).getActionName();
+                estimatedActions.add(actionName);
+            }
+        }
+        
         testInformation.setTestRunner(this);
-        testInformation.setEstimatedActions(actionSequence);
+        testInformation.setEstimatedActions(estimatedActions);
         testInformation.setRunningActionNumber(-1);
         testInformation.setPhase(TestInformation.PHASE_RUNNING);
         testInformation.setStatus(TestInformation.STATUS_UNKOWN);
@@ -93,7 +102,7 @@ public class TestRunner {
             if(checkStatusDependency()) {
                 instantiateTestInputParameters();
                 instantiateTestComponents();
-                executeTestFlow(testInformation);
+                executeTestFlow(testInformation, actionSequences);
             }
             else {
                 postponeTest(testInformation);
@@ -213,9 +222,9 @@ public class TestRunner {
         configuration.getDataProviderResolver().resolveDataProviders(this, configuration.getDataDependencyResolver());
     }
 
-    protected void executeTestFlow(TestInformation testInformation) throws TestConfigurationException, TestInterruptedException {
+    protected void executeTestFlow(TestInformation testInformation, List<List<EventDescriptor>> actionSequences) throws TestConfigurationException, TestInterruptedException {
         if(configuration.getActionResolver()==null) throw new TestConfigurationException("ActionReslover is not specified");
-        EventDescriptor entryAction = configuration.getActionResolver().getEntryAction(testDescriptor);
+        
         testInformation.setStatus(TestInformation.STATUS_PASSED);
         
         if(configuration.getTestResolver()==null) {
@@ -232,14 +241,16 @@ public class TestRunner {
             }
         }
         
-        /**
-         * Invoking the first action. All other actions will be run recursively
-         */
-        
         Throwable errorToThrow = null;
-        
+        /*
+         * Running all sequences of actions 
+         */
         try {
-            runAction(entryAction, testInformation);
+            for(List<EventDescriptor> sequence: actionSequences) {
+                for(EventDescriptor action : sequence) {
+                    runAction(action, testInformation);
+                }
+            }
         }
         catch (TestInterruptedException e) {
             errorToThrow = e.getCause();
@@ -431,11 +442,7 @@ public class TestRunner {
         if(rollback!=null) {
             rollbackSequence.add(rollback);
         }
-        //Invoking next action
-        EventDescriptor nextActionDescriptor = configuration.getActionResolver().getNextAction(testDescriptor, actionDescriptor);
-        if(nextActionDescriptor!=null) {
-            runAction(nextActionDescriptor, testInformation);
-        }
+        
     }
 
     

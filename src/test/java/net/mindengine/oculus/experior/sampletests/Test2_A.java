@@ -19,7 +19,6 @@
 package net.mindengine.oculus.experior.sampletests;
 
 import net.mindengine.oculus.experior.annotations.Action;
-import net.mindengine.oculus.experior.annotations.EntryAction;
 import net.mindengine.oculus.experior.annotations.OutputParameter;
 import net.mindengine.oculus.experior.annotations.Test;
 
@@ -30,7 +29,6 @@ public class Test2_A extends BaseTest{
     @OutputParameter
     public String parameterOutput;
     
-    @EntryAction
     @Action(name="Action 1A")
     public void action1(){
         parameterOutput = "test out value";

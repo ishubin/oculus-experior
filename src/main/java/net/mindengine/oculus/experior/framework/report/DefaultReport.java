@@ -62,12 +62,12 @@ public class DefaultReport implements Report {
         this.collector = collector;
     }
 
-    public void action(String name) {
-        action(name, null, ReportLogo.ACTION);
+    public void rootBranch(String name) {
+        rootBranch(name, null, ReportLogo.ACTION);
     }
 
-    public void action(String name, String details, ReportLogo logo) {
-        breakAction();
+    public void rootBranch(String name, String details, ReportLogo logo) {
+        breakRootBranch();
         ReportNode node = new ComponentReportNode();
         node.setName(name);
         node.setText(details);
@@ -76,11 +76,11 @@ public class DefaultReport implements Report {
         collector.gotoNode(node);
     }
 
-    public void subAction(String name) {
-        subAction(name, ReportLogo.COMPONENT);
+    public void branch(String name) {
+        branch(name, ReportLogo.COMPONENT);
     }
 
-    public void subAction(String name, ReportLogo logo) {
+    public void branch(String name, ReportLogo logo) {
         ReportNode node = new ComponentReportNode();
         node.setName(name);
         node.setLogo(logo);
@@ -88,11 +88,11 @@ public class DefaultReport implements Report {
         collector.gotoNode(node);
     }
 
-    public void breakSubAction() {
+    public void breakBranch() {
         collector.goUp();
     }
 
-    public void breakAction() {
+    public void breakRootBranch() {
         collector.gotoRoot();
     }
 
@@ -159,7 +159,7 @@ public class DefaultReport implements Report {
         collector.addNode(createTextReportNode(msg, details, logo, ReportNode.WARN));
     }
 
-    public void setActionDescription(String text) {
+    public void setBranchDescription(String text) {
         ReportNode node = collector.getCaret();
         node.setText(text);
     }

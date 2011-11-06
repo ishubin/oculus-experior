@@ -19,7 +19,6 @@
 package net.mindengine.oculus.experior.sampletests;
 
 import net.mindengine.oculus.experior.annotations.Action;
-import net.mindengine.oculus.experior.annotations.EntryAction;
 import net.mindengine.oculus.experior.annotations.Test;
 import net.mindengine.oculus.experior.annotations.events.OnTestFailure;
 import net.mindengine.oculus.experior.test.descriptors.TestInformation;
@@ -31,7 +30,6 @@ public class TestWithErrorInAction {
     
     public TestInformation testInformation;
     
-    @EntryAction
     @Action(name="Action 1", next="action2")
     public void action1() {
         actionNumber = 1;

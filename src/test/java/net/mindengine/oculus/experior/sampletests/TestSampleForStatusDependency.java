@@ -22,7 +22,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import net.mindengine.oculus.experior.annotations.Action;
-import net.mindengine.oculus.experior.annotations.EntryAction;
 import net.mindengine.oculus.experior.annotations.InputParameter;
 import net.mindengine.oculus.experior.annotations.events.AfterTest;
 import net.mindengine.oculus.experior.annotations.events.BeforeTest;
@@ -57,7 +56,6 @@ public class TestSampleForStatusDependency {
         events.add(TestEvent.event("BeforeTest:"+testInformation.getTestName()+":status="+testInformation.getStatus()+":param="+param));
     }
     
-    @EntryAction
     @Action
     public void action() {
         events.add(TestEvent.event("Action:"+testInformation.getTestName()));

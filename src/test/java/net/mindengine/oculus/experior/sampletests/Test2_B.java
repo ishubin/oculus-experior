@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import net.mindengine.oculus.experior.annotations.Action;
-import net.mindengine.oculus.experior.annotations.EntryAction;
 import net.mindengine.oculus.experior.annotations.InputParameter;
 import net.mindengine.oculus.experior.annotations.Test;
 
@@ -35,7 +34,6 @@ public class Test2_B extends BaseTest{
     @InputParameter(defaultValue="def")
     public String parameterInput;
     
-    @EntryAction
     @Action(name="Action 1")
     public void action1(){
         parameterInputValuesSequence.add(parameterInput);

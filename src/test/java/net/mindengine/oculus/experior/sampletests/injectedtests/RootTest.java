@@ -22,7 +22,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import net.mindengine.oculus.experior.annotations.Action;
-import net.mindengine.oculus.experior.annotations.EntryAction;
 import net.mindengine.oculus.experior.annotations.InputParameter;
 import net.mindengine.oculus.experior.annotations.OutputParameter;
 import net.mindengine.oculus.experior.annotations.events.AfterTest;
@@ -41,7 +40,6 @@ public class RootTest {
     @OutputParameter
     public String outParam;
     
-    @EntryAction
     @Action
     public void action() {
         events.add(TestEvent.event("RootTest.action"));

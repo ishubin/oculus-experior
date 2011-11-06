@@ -21,7 +21,6 @@ package net.mindengine.oculus.experior.test.suites;
 import junit.framework.Assert;
 import net.mindengine.oculus.experior.ExperiorConfig;
 import net.mindengine.oculus.experior.annotations.Action;
-import net.mindengine.oculus.experior.annotations.EntryAction;
 import net.mindengine.oculus.experior.annotations.InputParameter;
 import net.mindengine.oculus.experior.annotations.events.AfterAction;
 import net.mindengine.oculus.experior.annotations.events.AfterErrorHandler;
@@ -98,7 +97,6 @@ public class SuiteTestDescriptor {
         Assert.assertEquals("Test 1 Extended", testDescriptor.getTestName());
         Assert.assertEquals("UnknownProject", testDescriptor.getProjectId());
         
-        verifyEvent(testDescriptor, EntryAction.class, "action1");
         verifyEvent(testDescriptor, Action.class, "action1");
         verifyEvent(testDescriptor, Action.class, "action2");
         verifyEvent(testDescriptor, BeforeTest.class, "beforeTest");

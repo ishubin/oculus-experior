@@ -35,10 +35,6 @@ import net.mindengine.oculus.experior.test.descriptors.TestInformation;
  */
 public interface ActionResolver {
     
-    public EventDescriptor getEntryAction(TestDescriptor testDescriptor) throws TestConfigurationException;
-    
-    public EventDescriptor getNextAction(TestDescriptor testDescriptor, EventDescriptor currentAction) throws TestConfigurationException;
-    
     /**
      * Invokes the specified action
      * @param testRunner
@@ -51,14 +47,22 @@ public interface ActionResolver {
      */
     public Object runAction(TestRunner testRunner, EventDescriptor action, TestInformation testInformation, ActionInformation actionInformation) throws TestConfigurationException, TestInterruptedException;
     
+    
     /**
-     * Returns sequence of actions as a java collection. This method also verifies if there is an indefinite loop in actions sequence  
+     * Returns list of independent sequences of actions as a list. This method also verifies if there is an indefinite loop in actions sequences  
      * @param testDescriptor
-     * @return Sequence of actions for the specified test
+     * @return List of independent sequences of actions for the specified test
      * @throws TestConfigurationException
      */
-    public List<String> getActionsSequence(TestDescriptor testDescriptor) throws TestConfigurationException;
+    public List<List<EventDescriptor>> getActionsSequences(TestDescriptor testDescriptor) throws TestConfigurationException;
 
+    /**
+     * Creates {@link ActionInformation} object for the specified action
+     * @param testDescriptor
+     * @param testInformation
+     * @param actionDescriptor
+     * @return
+     */
     public ActionInformation getActionInformation(TestDescriptor testDescriptor, TestInformation testInformation, EventDescriptor actionDescriptor);
 
 }

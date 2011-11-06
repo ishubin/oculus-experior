@@ -22,7 +22,6 @@ package net.mindengine.oculus.experior.sampletests;
 import net.mindengine.oculus.experior.annotations.Action;
 import net.mindengine.oculus.experior.annotations.DataProvider;
 import net.mindengine.oculus.experior.annotations.DataSource;
-import net.mindengine.oculus.experior.annotations.EntryAction;
 import net.mindengine.oculus.experior.annotations.Test;
 import net.mindengine.oculus.experior.sampletests.components.Component1;
 import net.mindengine.oculus.experior.sampletests.components.Component2;
@@ -59,7 +58,6 @@ public class TestSampleForDataDependency {
     public Component1 argument2;
     public String action2Argument;
     
-    @EntryAction
     @Action(name="Action", next="action2")
     public String action(@DataSource(provider="intProvider2") Integer arg1, @DataSource(dependencies={"field:someStringField"}) Component1 arg2) {
         this.argument1 = arg1;

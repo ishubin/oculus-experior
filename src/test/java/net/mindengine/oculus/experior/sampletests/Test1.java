@@ -19,7 +19,6 @@
 package net.mindengine.oculus.experior.sampletests;
 
 import net.mindengine.oculus.experior.annotations.Action;
-import net.mindengine.oculus.experior.annotations.EntryAction;
 import net.mindengine.oculus.experior.annotations.InputParameter;
 import net.mindengine.oculus.experior.annotations.Temp;
 import net.mindengine.oculus.experior.annotations.Test;
@@ -43,7 +42,7 @@ public class Test1 extends BaseTest{
     @Temp
     public String tempComponent = "temp component"; 
     
-    @EntryAction
+    
     @Action(name="Action 1", next="action2")
     public void action1(){
         sequence.add(TestEvent.event("action1"));

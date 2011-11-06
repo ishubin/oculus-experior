@@ -19,7 +19,6 @@
 package net.mindengine.oculus.experior.sampletests;
 
 import net.mindengine.oculus.experior.annotations.Action;
-import net.mindengine.oculus.experior.annotations.EntryAction;
 import net.mindengine.oculus.experior.annotations.ErrorHandler;
 import net.mindengine.oculus.experior.annotations.Test;
 
@@ -27,7 +26,6 @@ import net.mindengine.oculus.experior.annotations.Test;
 @Test(name="Test Sample for error handler 2", project="")
 public class TestSampleForErrorHandler_2 extends BaseTest {
 
-    @EntryAction
     @Action(name="Action 1", next="action2")
     public void action1() {
         sequence.add(TestEvent.event("action1"));

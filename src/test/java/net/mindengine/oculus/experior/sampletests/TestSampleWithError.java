@@ -19,14 +19,12 @@
 package net.mindengine.oculus.experior.sampletests;
 
 import net.mindengine.oculus.experior.annotations.Action;
-import net.mindengine.oculus.experior.annotations.EntryAction;
 import net.mindengine.oculus.experior.annotations.events.OnException;
 import net.mindengine.oculus.experior.annotations.events.OnTestFailure;
 import net.mindengine.oculus.experior.test.descriptors.TestInformation;
 
 public class TestSampleWithError {
 
-    @EntryAction
     @Action
     public void action() {
         throw new NullPointerException("Some test exception");

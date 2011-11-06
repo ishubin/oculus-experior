@@ -51,6 +51,7 @@ import net.mindengine.oculus.experior.sampletests.TestSampleForRollbackHandler_1
 import net.mindengine.oculus.experior.sampletests.TestSampleForRollbackHandler_2;
 import net.mindengine.oculus.experior.sampletests.TestSampleForRollbackHandler_3;
 import net.mindengine.oculus.experior.sampletests.TestSampleWithError;
+import net.mindengine.oculus.experior.sampletests.TestWithActionCrossDependency;
 import net.mindengine.oculus.experior.sampletests.TestWithErrorInAction;
 import net.mindengine.oculus.experior.sampletests.injectedtests.RootTest;
 import net.mindengine.oculus.experior.sampletests.injectedtests.SubTest1;
@@ -237,6 +238,16 @@ public class SuiteTestRunner {
         
         Assert.assertNotNull(test.rollbackHandlerArgument);
         Assert.assertEquals("Test field data", test.rollbackHandlerArgument.getField());
+    }
+    
+    @Test(expected=TestConfigurationException.class)
+    public void testWithActionCrossReferenceShouldGiveError() throws TestConfigurationException, TestInterruptedException {
+        TestRunner testRunner = new TestRunner();
+        TestDefinition td = testDefinition(TestWithActionCrossDependency.class);
+        testRunner.setTestDescriptor(TestDescriptor.create(td, ExperiorConfig.getInstance().getTestRunnerConfiguration()));
+        testRunner.setConfiguration(ExperiorConfig.getInstance().getTestRunnerConfiguration());
+        testRunner.setTestDefinition(td);
+        testRunner.runTest();
     }
     
     

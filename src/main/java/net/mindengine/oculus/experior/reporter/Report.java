@@ -24,17 +24,27 @@ import net.mindengine.oculus.experior.reporter.nodes.ReportNode;
 
 public interface Report {
 
-    public void action(String name);
+    /**
+     * Breaks all current branches and creates a branch at a root level
+     * @param name Name of the branch
+     */
+    public void rootBranch(String name);
 
-    public void action(String name, String details, ReportLogo logo);
+    /**
+     * Breaks all current branches and creates a branch at a root level
+     * @param name
+     * @param details
+     * @param logo
+     */
+    public void rootBranch(String name, String details, ReportLogo logo);
 
-    public void subAction(String name);
+    public void branch(String name);
 
-    public void subAction(String name, ReportLogo logo);
+    public void branch(String name, ReportLogo logo);
 
-    public void breakSubAction();
+    public void breakBranch();
 
-    public void breakAction();
+    public void breakRootBranch();
 
     public void error(String msg);
 
@@ -54,7 +64,7 @@ public interface Report {
 
     public void warn(String msg, String details, ReportLogo logo);
 
-    public void setActionDescription(String text);
+    public void setBranchDescription(String text);
 
     public ReportNode getReportNode();
 

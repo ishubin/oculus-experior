@@ -21,7 +21,6 @@ package net.mindengine.oculus.experior.sampletests;
 import net.mindengine.oculus.experior.annotations.Action;
 import net.mindengine.oculus.experior.annotations.DataProvider;
 import net.mindengine.oculus.experior.annotations.DataSource;
-import net.mindengine.oculus.experior.annotations.EntryAction;
 import net.mindengine.oculus.experior.annotations.ErrorHandler;
 import net.mindengine.oculus.experior.annotations.RollbackHandler;
 import net.mindengine.oculus.experior.sampletests.components.Component1;
@@ -44,8 +43,6 @@ public class TestSampleForDataDependency_2 {
         return component1;
     }
     
-    
-    @EntryAction
     @Action(onerror="errorHandler", rollback="rollbackHandler")
     public void action() {
         throw new NullPointerException("Test message");
