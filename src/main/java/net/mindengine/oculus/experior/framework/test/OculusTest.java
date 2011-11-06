@@ -201,10 +201,6 @@ public abstract class OculusTest {
     }
 
     private void exportTestRunParameters(OculusSimpleJdbcDaoSupport daoSupport, Long testRunId, TestDescriptor testDescriptor) throws SQLException {
-        // daoSupport.getTestRunDAO().createTestRunParameters(testRunBean.getId(),
-        // name, value, input);
-        // testDescriptor.getInputParameters();
-
         /*
          * Saving input parameter values
          */

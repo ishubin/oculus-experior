@@ -77,13 +77,14 @@ public class DefaultReport implements Report {
     }
 
     public void branch(String name) {
-        branch(name, ReportLogo.COMPONENT);
+        branch(name, null, ReportLogo.COMPONENT);
     }
 
-    public void branch(String name, ReportLogo logo) {
+    public void branch(String name, String description, ReportLogo logo) {
         ReportNode node = new ComponentReportNode();
         node.setName(name);
         node.setLogo(logo);
+        node.setText(description);
         collector.addNode(node);
         collector.gotoNode(node);
     }

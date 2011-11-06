@@ -32,18 +32,34 @@ public interface Report {
 
     /**
      * Breaks all current branches and creates a branch at a root level
-     * @param name
-     * @param details
+     * @param name Name of the branch
+     * @param description Short description of the branch
      * @param logo
      */
-    public void rootBranch(String name, String details, ReportLogo logo);
+    public void rootBranch(String name, String description, ReportLogo logo);
 
+    /**
+     * Creates new branch and attaches it to the current branch
+     * @param name Name of the branch
+     */
     public void branch(String name);
 
-    public void branch(String name, ReportLogo logo);
+    /**
+     * Creates new branch and attaches it to the current branch
+     * @param name Name of the branch
+     * @param description Short description of the branch
+     * @param logo
+     */
+    public void branch(String name, String description, ReportLogo logo);
 
+    /**
+     * Breaks current branch and puts branch caret to a higher branch
+     */
     public void breakBranch();
 
+    /**
+     * Breaks all branches and puts branch caret to a root level
+     */
     public void breakRootBranch();
 
     public void error(String msg);
@@ -75,5 +91,9 @@ public interface Report {
      */
     public Collection<ReportNode> collectErrorNodes();
 
+    /**
+     * Collects all reason of failures within all report branches
+     * @return List of failure reasons from all report branches
+     */
     public Collection<String> collectReasons();
 }

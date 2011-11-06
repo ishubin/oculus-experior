@@ -32,6 +32,7 @@ public class ExceptionReportNode extends ReportNode {
 
         setText(throwable.getMessage());
         setName(throwable.getClass().getName());
+        
         // Adding stack trace to the details
         StringBuffer str = new StringBuffer();
         StackTraceElement[] stack = throwable.getStackTrace();
@@ -39,11 +40,13 @@ public class ExceptionReportNode extends ReportNode {
             str.append(stack[i]);
             str.append(ReportDesign.breakline());
         }
+        
         DescriptionReportNode detailsNode = new DescriptionReportNode();
         detailsNode.setText(ReportDesign.stackTrace(str.toString()));
         getChildren().add(detailsNode);
+        
     }
-
+    
     public Throwable getThrowable() {
         return throwable;
     }

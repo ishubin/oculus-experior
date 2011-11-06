@@ -21,23 +21,43 @@ package net.mindengine.oculus.experior.reporter;
 import net.mindengine.oculus.experior.reporter.nodes.ReportNode;
 
 /**
- * Used to browse in the tree hierarchy of the report nodes
+ * Used to browse and modify the tree hierarchy of the report nodes
  * 
  * @author Ivan Shubin
  * 
  */
 public interface ReportCollector {
 
+    /**
+     * Adds report node to a current branch
+     * @param node New node to be added into current branch
+     */
     public void addNode(ReportNode node);
 
+    /**
+     * Select the specified node as a current branch
+     * @param node Node to be used as a current branch
+     */
     public void gotoNode(ReportNode node);
 
+    /**
+     * Select root level report branch 
+     */
     public void gotoRoot();
 
+    /**
+     * 
+     * @return Current report node
+     */
     public ReportNode getCaret();
 
+    /**
+     * Removes all report nodes and all report branches
+     */
     public void clearReport();
 
+    /**
+     * Puts the report branch caret to one level higher
+     */
     public void goUp();
-
 }

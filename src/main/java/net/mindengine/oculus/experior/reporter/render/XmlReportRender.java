@@ -114,7 +114,7 @@ public class XmlReportRender implements ReportRender {
     private ReportNode parse(Node xmlNode) throws Exception {
 
         if (!"r".equals(xmlNode.getNodeName()))
-            throw new Exception("Error the report has errors");
+            throw new Exception("The report has errors");
 
         ReportNode rn;
 
