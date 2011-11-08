@@ -16,17 +16,25 @@
  * You should have received a copy of the GNU General Public License
  * along with Oculus Experior.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package net.mindengine.oculus.experior.sampletests.components;
+package net.mindengine.oculus.experior.samples;
 
-public class Component2 {
+import java.util.Collection;
+import java.util.LinkedList;
 
-    private Component1 component1;
+import net.mindengine.oculus.experior.annotations.Action;
+import net.mindengine.oculus.experior.annotations.InputParameter;
 
-    public void setComponent1(Component1 component1) {
-        this.component1 = component1;
-    }
+@net.mindengine.oculus.experior.annotations.Test(name="Test2_B", project="Unknown Project")
+public class Sample2_B extends BaseSample{
 
-    public Component1 getComponent1() {
-        return component1;
+    
+    public static final Collection<String> parameterInputValuesSequence = new LinkedList<String>() ;
+    
+    @InputParameter(defaultValue="def")
+    public String parameterInput;
+    
+    @Action(name="Action 1")
+    public void action1(){
+        parameterInputValuesSequence.add(parameterInput);
     }
 }

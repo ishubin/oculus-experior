@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Oculus Experior.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package net.mindengine.oculus.experior.sampletests;
+package net.mindengine.oculus.experior.samples;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -41,56 +41,56 @@ import net.mindengine.oculus.experior.test.descriptors.TestInformation;
  * @author Ivan Shubin
  * 
  */
-public class BaseTest {
+public class BaseSample {
 
     // Here we will store the sequence of all method invocations
-    protected Collection<TestEvent> sequence = new LinkedList<TestEvent>();
+    protected Collection<SampleEvent> sequence = new LinkedList<SampleEvent>();
 
     @BeforeAction
     public void beforeAction(ActionInformation actionInformation) {
-        sequence.add(TestEvent.event(BeforeAction.class, actionInformation.getActionMethod().getName(), actionInformation));
+        sequence.add(SampleEvent.event(BeforeAction.class, actionInformation.getActionMethod().getName(), actionInformation));
     }
 
     @AfterAction
     public void afterAction(ActionInformation actionInformation) {
-        sequence.add(TestEvent.event(AfterAction.class, actionInformation.getActionMethod().getName(), actionInformation));
+        sequence.add(SampleEvent.event(AfterAction.class, actionInformation.getActionMethod().getName(), actionInformation));
     }
 
     @BeforeTest
     public void beforeTest(TestInformation testInformation) {
-        sequence.add(TestEvent.event(BeforeTest.class, testInformation));
+        sequence.add(SampleEvent.event(BeforeTest.class, testInformation));
     }
     
     @AfterTest
     public void afterTest(TestInformation testInformation) {
-        sequence.add(TestEvent.event(AfterTest.class, testInformation));
+        sequence.add(SampleEvent.event(AfterTest.class, testInformation));
     }
     
     @BeforeRollback
     public void beforeRollback(RollbackInformation rollbackInformation) {
-        sequence.add(TestEvent.event(BeforeRollback.class, rollbackInformation.getMethod().getName(), rollbackInformation));
+        sequence.add(SampleEvent.event(BeforeRollback.class, rollbackInformation.getMethod().getName(), rollbackInformation));
     }
     
     @AfterRollback
     public void afterRollback(RollbackInformation rollbackInformation) {
-        sequence.add(TestEvent.event(AfterRollback.class, rollbackInformation.getMethod().getName(), rollbackInformation));
+        sequence.add(SampleEvent.event(AfterRollback.class, rollbackInformation.getMethod().getName(), rollbackInformation));
     }
     
     @AfterErrorHandler
     public void afterErrorHandler(ErrorInformation errorInformation){
-        sequence.add(TestEvent.event(AfterErrorHandler.class, errorInformation.getMethod().getName(), errorInformation));
+        sequence.add(SampleEvent.event(AfterErrorHandler.class, errorInformation.getMethod().getName(), errorInformation));
     }
     
     @BeforeErrorHandler
     public void beforeErrorHandler(ErrorInformation errorInformation){
-        sequence.add(TestEvent.event(BeforeErrorHandler.class, errorInformation.getMethod().getName(), errorInformation));
+        sequence.add(SampleEvent.event(BeforeErrorHandler.class, errorInformation.getMethod().getName(), errorInformation));
     }
 
-    public Collection<TestEvent> getSequence() {
+    public Collection<SampleEvent> getSequence() {
         return sequence;
     }
 
-    public void setSequence(Collection<TestEvent> sequence) {
+    public void setSequence(Collection<SampleEvent> sequence) {
         this.sequence = sequence;
     }
     

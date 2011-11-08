@@ -1,8 +1,8 @@
-package net.mindengine.oculus.experior.sampletests;
+package net.mindengine.oculus.experior.samples;
 
 import net.mindengine.oculus.experior.annotations.Action;
 
-public class TestWithActionCrossDependency {
+public class SampleWithActionCrossDependency {
 
     @Action(next="action3")
     public void action1(){

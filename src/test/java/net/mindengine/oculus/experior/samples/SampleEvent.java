@@ -16,55 +16,55 @@
  * You should have received a copy of the GNU General Public License
  * along with Oculus Experior.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package net.mindengine.oculus.experior.sampletests;
+package net.mindengine.oculus.experior.samples;
 
 import java.util.Collection;
 import java.util.LinkedList;
 
-public class TestEvent {
+public class SampleEvent {
 
     private Class<?> event; //class for the event annotation
     private String name; //Not needed in case if the event was specified
     private String method;
     private Object[] eventObjects;
     
-    private TestEvent(){
+    private SampleEvent(){
     }
     
-    public static Collection<TestEvent> collection(TestEvent...events){
-        Collection<TestEvent> c = new LinkedList<TestEvent>();
-        for (TestEvent testEvent : events){
+    public static Collection<SampleEvent> collection(SampleEvent...events){
+        Collection<SampleEvent> c = new LinkedList<SampleEvent>();
+        for (SampleEvent testEvent : events){
             c.add(testEvent);
         }
         return c;
     }
     
     
-    public static TestEvent event(Class<?> event, String method, Object...eventObjects){
-        TestEvent te = new TestEvent();
+    public static SampleEvent event(Class<?> event, String method, Object...eventObjects){
+        SampleEvent te = new SampleEvent();
         te.setEvent(event);
         te.setMethod(method);
         te.setEventObjects(eventObjects);
         return te;
     }
     
-    public static TestEvent event(Class<?> event, Object...eventObjects){
-        TestEvent te = new TestEvent();
+    public static SampleEvent event(Class<?> event, Object...eventObjects){
+        SampleEvent te = new SampleEvent();
         te.setEvent(event);
         te.setEventObjects(eventObjects);
         return te;
     }
     
-    public static TestEvent event(String name, String method, Object...eventObjects){
-        TestEvent te = new TestEvent();
+    public static SampleEvent event(String name, String method, Object...eventObjects){
+        SampleEvent te = new SampleEvent();
         te.setName(name);
         te.setMethod(method);
         te.setEventObjects(eventObjects);
         return te;
     }
     
-    public static TestEvent event(String name, Object...eventObjects){
-        TestEvent te = new TestEvent();
+    public static SampleEvent event(String name, Object...eventObjects){
+        SampleEvent te = new SampleEvent();
         te.setName(name);
         te.setEventObjects(eventObjects);
         return te;

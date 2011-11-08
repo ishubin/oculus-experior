@@ -16,31 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with Oculus Experior.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package net.mindengine.oculus.experior.sampletests;
+package net.mindengine.oculus.experior.samples;
 
-import net.mindengine.oculus.experior.annotations.Action;
-import net.mindengine.oculus.experior.annotations.events.OnException;
-import net.mindengine.oculus.experior.annotations.events.OnTestFailure;
-import net.mindengine.oculus.experior.test.descriptors.TestInformation;
+import net.mindengine.oculus.experior.annotations.InputParameter;
 
-public class TestSampleWithError {
 
-    @Action
-    public void action() {
-        throw new NullPointerException("Some test exception");
-    }
+@net.mindengine.oculus.experior.annotations.Test(name="Test 1 Extended", project="UnknownProject")
+public class Sample1_Extended extends Sample1 {
     
-    
-    public TestInformation onExceptionArgument;
-    public TestInformation onTestFailureArgument;
-    
-    @OnException(exception=NullPointerException.class)
-    public void onException(TestInformation testInformation) {
-        onExceptionArgument = testInformation;
-    }
-    
-    @OnTestFailure
-    public void onTestFailure(TestInformation testInformation) {
-        onTestFailureArgument = testInformation;
-    }
+    @InputParameter(defaultValue="124214")
+    public String anotherParam;
+
 }

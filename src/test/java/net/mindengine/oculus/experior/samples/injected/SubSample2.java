@@ -16,19 +16,19 @@
  * You should have received a copy of the GNU General Public License
  * along with Oculus Experior.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package net.mindengine.oculus.experior.sampletests.injectedtests;
+package net.mindengine.oculus.experior.samples.injected;
 
 import net.mindengine.oculus.experior.annotations.Action;
 import net.mindengine.oculus.experior.annotations.InputParameter;
 import net.mindengine.oculus.experior.annotations.events.AfterTest;
 import net.mindengine.oculus.experior.annotations.events.BeforeTest;
-import net.mindengine.oculus.experior.sampletests.TestEvent;
+import net.mindengine.oculus.experior.samples.SampleEvent;
 import net.mindengine.oculus.experior.test.TestRunner;
 import net.mindengine.oculus.experior.test.descriptors.TestInformation;
 
-public class SubTest2 {
+public class SubSample2 {
 
-    private RootTest rootTest;
+    private RootSample rootTest;
     
     @InputParameter(defaultValue="")
     public String param;
@@ -36,7 +36,7 @@ public class SubTest2 {
     @Action
     public void action() {
         if(rootTest!=null) {
-            rootTest.events.add(TestEvent.event("SubTest2.action"));
+            rootTest.events.add(SampleEvent.event("SubTest2.action"));
         }
     }
     
@@ -44,8 +44,8 @@ public class SubTest2 {
     public void onTestStart(TestInformation testInformation) {
         TestRunner parentTestRunnner = testInformation.getTestRunner().getParent();
         if(parentTestRunnner!=null) {
-            rootTest = (RootTest) parentTestRunnner.getTestInstance();
-            rootTest.events.add(TestEvent.event("SubTest2.beforeTest"));
+            rootTest = (RootSample) parentTestRunnner.getTestInstance();
+            rootTest.events.add(SampleEvent.event("SubTest2.beforeTest"));
         }
     }
     
@@ -53,8 +53,8 @@ public class SubTest2 {
     public void onTestFinished(TestInformation testInformation) {
         TestRunner parentTestRunnner = testInformation.getTestRunner().getParent();
         if(parentTestRunnner!=null) {
-            rootTest = (RootTest) parentTestRunnner.getTestInstance();
-            rootTest.events.add(TestEvent.event("SubTest2.afterTest"));
+            rootTest = (RootSample) parentTestRunnner.getTestInstance();
+            rootTest.events.add(SampleEvent.event("SubTest2.afterTest"));
         }
     }
 }

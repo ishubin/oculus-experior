@@ -16,35 +16,44 @@
  * You should have received a copy of the GNU General Public License
  * along with Oculus Experior.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package net.mindengine.oculus.experior.sampletests;
+package net.mindengine.oculus.experior.samples;
 
 import net.mindengine.oculus.experior.annotations.Action;
-import net.mindengine.oculus.experior.annotations.ErrorHandler;
-import net.mindengine.oculus.experior.annotations.Test;
+import net.mindengine.oculus.experior.annotations.InputParameter;
+import net.mindengine.oculus.experior.annotations.Temp;
 
-
-@Test(name="Test Sample for error handler 2", project="")
-public class TestSampleForErrorHandler_2 extends BaseTest {
-
+@net.mindengine.oculus.experior.annotations.Test(name="Test 1", project="Unknown Project")
+public class Sample1 extends BaseSample{
+    
+    
+    @InputParameter(defaultValue="defstr")
+    public String paramString;
+    
+    @InputParameter(defaultValue="1234")
+    public Long paramLong;
+    
+    @InputParameter(defaultValue="true")
+    public Boolean paramBoolean;
+    
+    @InputParameter(defaultValue="56")
+    private Integer paramInt;
+    
+    @Temp
+    public String tempComponent = "temp component"; 
+    
+    
     @Action(name="Action 1", next="action2")
-    public void action1() {
-        sequence.add(TestEvent.event("action1"));
+    public void action1(){
+        sequence.add(SampleEvent.event("action1"));
     }
     
-    @Action(name="Action 2", next="action3", onerror="errorHandler2")
-    public void action2() {
-        sequence.add(TestEvent.event("action2"));
-        throw new IllegalArgumentException("Some exeption");
+    @Action()
+    protected void action2(){
+        sequence.add(SampleEvent.event("action2"));
     }
-    
-    @ErrorHandler(name="Error handler 2")
-    public void errorHandler2(Throwable error) {
-        sequence.add(TestEvent.event("errorHandler2"));
-        throw new NullPointerException("This exeption is thrown from error-handler");
+
+    public int getParamInt() {
+        return paramInt;
     }
-    
-    @Action(name="Action 3")
-    public void action3() {
-        sequence.add(TestEvent.event("action3"));
-    }
+
 }

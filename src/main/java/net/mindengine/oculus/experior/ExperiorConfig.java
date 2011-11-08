@@ -70,9 +70,8 @@ public class ExperiorConfig {
         properties = new Properties();
         
         
-        File file = new File(Thread.currentThread()
-                .getContextClassLoader()
-                .getResource("experior.properties")
+        File file = new File(getClass()
+                .getResource("/experior.properties")
                 .getFile());
 
         logger.info("Loading properties from " + file.getAbsolutePath());

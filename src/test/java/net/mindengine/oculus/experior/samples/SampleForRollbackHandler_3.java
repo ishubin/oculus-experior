@@ -16,46 +16,33 @@
  * You should have received a copy of the GNU General Public License
  * along with Oculus Experior.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package net.mindengine.oculus.experior.sampletests;
+package net.mindengine.oculus.experior.samples;
 
 import net.mindengine.oculus.experior.annotations.Action;
 import net.mindengine.oculus.experior.annotations.RollbackHandler;
 
 
-public class TestSampleForRollbackHandler_1 extends BaseTest {
+public class SampleForRollbackHandler_3 extends BaseSample {
 
     @Action(name="Action 1", next="action2", rollback="rollback1")
     public void action1() {
-        sequence.add(TestEvent.event("action1"));
+        sequence.add(SampleEvent.event("action1"));
     }
     
-    @Action(name="Action 2", next="action3", rollback="rollback2")
+    @Action(name="Action 2", rollback="rollback2")
     public void action2() {
-        sequence.add(TestEvent.event("action2"));
+        sequence.add(SampleEvent.event("action2"));
     }
     
-    @Action(name="Action 3", next="action4")
-    public void action3() {
-        sequence.add(TestEvent.event("action3"));
-    }
-    
-    @Action(name="Action 4", rollback="rollback4")
-    public void action4() {
-        sequence.add(TestEvent.event("action4"));
-    }
     
     @RollbackHandler(name="Rollback 1")
     public void rollback1() {
-        sequence.add(TestEvent.event("rollback1"));
+        sequence.add(SampleEvent.event("rollback1"));
     }
     
     @RollbackHandler(name="Rollback 2")
     public void rollback2() {
-        sequence.add(TestEvent.event("rollback2"));
-    }
-    
-    @RollbackHandler(name="Rollback 4")
-    public void rollback4() {
-        sequence.add(TestEvent.event("rollback4"));
+        sequence.add(SampleEvent.event("rollback2"));
+        throw new NullPointerException("test exeption");
     }
 }

@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Oculus Experior.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package net.mindengine.oculus.experior.test.suites;
+package net.mindengine.oculus.experior.tests;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -37,7 +37,7 @@ import net.mindengine.oculus.experior.framework.verification.text.TextVerificato
 
 import org.junit.Test;
 
-public class SuiteVerificators {
+public class VerificatorTest {
 
     @Test
     public void numberIntegerVerificatorCheck() {

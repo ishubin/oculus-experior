@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Oculus Experior.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package net.mindengine.oculus.experior.test.suites;
+package net.mindengine.oculus.experior.tests;
 
 import junit.framework.Assert;
 import net.mindengine.oculus.experior.ExperiorConfig;
@@ -30,7 +30,7 @@ import net.mindengine.oculus.experior.annotations.events.BeforeAction;
 import net.mindengine.oculus.experior.annotations.events.BeforeErrorHandler;
 import net.mindengine.oculus.experior.annotations.events.BeforeRollback;
 import net.mindengine.oculus.experior.annotations.events.BeforeTest;
-import net.mindengine.oculus.experior.sampletests.Test1_Extended;
+import net.mindengine.oculus.experior.samples.Sample1_Extended;
 import net.mindengine.oculus.experior.test.descriptors.EventDescriptor;
 import net.mindengine.oculus.experior.test.descriptors.EventDescriptorsContainer;
 import net.mindengine.oculus.experior.test.descriptors.FieldDescriptor;
@@ -40,7 +40,7 @@ import net.mindengine.oculus.experior.test.descriptors.TestDescriptor;
 
 import org.junit.Test;
 
-public class SuiteTestDescriptor {
+public class TestDescriptorTest {
 
     public FieldDescriptor getFieldDescriptor(TestDescriptor testDescriptor, Class<?> annotationClass, String fieldName) {
         FieldDescriptorsContainer container = testDescriptor.getFieldContainer().get(annotationClass);
@@ -71,7 +71,7 @@ public class SuiteTestDescriptor {
     @Test
     public void testDescriptorsCollecting() {
         TestDefinition testDefinition = new TestDefinition();
-        testDefinition.setMapping("classpath:" + Test1_Extended.class.getName());
+        testDefinition.setMapping("classpath:" + Sample1_Extended.class.getName());
 
         TestDescriptor testDescriptor = TestDescriptor.create(testDefinition, ExperiorConfig.getInstance().getTestRunnerConfiguration());
         FieldDescriptor fieldDescriptor = getFieldDescriptor(testDescriptor, InputParameter.class, "paramString");

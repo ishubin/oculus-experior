@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suite name="Dependency suite" runnerId="1">
 
-	<test id="3" name="Test#3" mapping="net.mindengine.oculus.experior.sampletests.TestSampleForStatusDependency">
+	<test id="3" name="Test#3" mapping="net.mindengine.oculus.experior.samples.SampleForStatusDependency">
     	<parameter name="throwError">true</parameter>
     	<depends>
 			<test>2</test>
 		</depends>
     </test>
 
-	<test id="1" name="Test#1" mapping="net.mindengine.oculus.experior.sampletests.TestSampleForStatusDependency">
+	<test id="1" name="Test#1" mapping="net.mindengine.oculus.experior.samples.SampleForStatusDependency">
 		<parameter name="throwError">false</parameter>
 		<depends>
 			<test>3</test>
@@ -16,11 +16,11 @@
 		</depends>
     </test>
 
-    <test id="2" name="Test#2" mapping="net.mindengine.oculus.experior.sampletests.TestSampleForStatusDependency">
+    <test id="2" name="Test#2" mapping="net.mindengine.oculus.experior.samples.SampleForStatusDependency">
     	<parameter name="throwError">false</parameter>
     </test>
     
-    <test id="4" name="Test#4" mapping="net.mindengine.oculus.experior.sampletests.TestSampleForStatusDependency">
+    <test id="4" name="Test#4" mapping="net.mindengine.oculus.experior.samples.SampleForStatusDependency">
     	<parameter name="throwError">false</parameter>
     </test>
     

@@ -16,41 +16,38 @@
  * You should have received a copy of the GNU General Public License
  * along with Oculus Experior.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package net.mindengine.oculus.experior.sampletests;
+package net.mindengine.oculus.experior.samples;
 
 import net.mindengine.oculus.experior.annotations.Action;
-import net.mindengine.oculus.experior.annotations.Test;
-import net.mindengine.oculus.experior.annotations.events.OnTestFailure;
-import net.mindengine.oculus.experior.test.descriptors.TestInformation;
+import net.mindengine.oculus.experior.annotations.ErrorHandler;
 
-@Test(name="Test with error in action", project="")
-public class TestWithErrorInAction {
 
-    public Integer actionNumber = 0;
-    
-    public TestInformation testInformation;
-    
-    @Action(name="Action 1", next="action2")
+@net.mindengine.oculus.experior.annotations.Test(name="Test Sample for error handler", project="")
+public class SampleForErrorHandler_1 extends BaseSample {
+
+    @Action(name="Action 1", next="action2", onerror="errorHandler1")
     public void action1() {
-        actionNumber = 1;
+        sequence.add(SampleEvent.event("action1"));
     }
     
-    @Action(name="Action 2", next="action3")
+    @ErrorHandler(name="Error handler 1")
+    public void errorHandler1(Throwable error) {
+        sequence.add(SampleEvent.event("errorHandler1"));
+    }
+    
+    @Action(name="Action 2", next="action3", onerror="errorHandler2")
     public void action2() {
-        actionNumber = 2;
-        
-        throw new NullPointerException("Some error");
+        sequence.add(SampleEvent.event("action2"));
+        throw new IllegalArgumentException("Some exeption");
+    }
+    
+    @ErrorHandler(name="Error handler 2")
+    public void errorHandler2(Throwable throwable) {
+        sequence.add(SampleEvent.event("errorHandler2"));
     }
     
     @Action(name="Action 3")
     public void action3() {
-        actionNumber = 3;
+        sequence.add(SampleEvent.event("action3"));
     }
-    
-    @SuppressWarnings("unused")
-    @OnTestFailure
-    private void onTestFailure(TestInformation testInformation) {
-        this.testInformation = testInformation;
-    }
-    
 }

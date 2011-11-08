@@ -16,15 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with Oculus Experior.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package net.mindengine.oculus.experior.sampletests;
+package net.mindengine.oculus.experior.samples;
 
 import net.mindengine.oculus.experior.annotations.Action;
 import net.mindengine.oculus.experior.annotations.OutputParameter;
-import net.mindengine.oculus.experior.annotations.Test;
 
 
-@Test(name="Test2_A", project="Unknown Project")
-public class Test2_A extends BaseTest{
+@net.mindengine.oculus.experior.annotations.Test(name="Test2_A", project="Unknown Project")
+public class Sample2_A extends BaseSample{
     
     @OutputParameter
     public String parameterOutput;

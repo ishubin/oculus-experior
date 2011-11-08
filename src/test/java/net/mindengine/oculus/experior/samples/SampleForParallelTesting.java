@@ -16,44 +16,37 @@
  * You should have received a copy of the GNU General Public License
  * along with Oculus Experior.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package net.mindengine.oculus.experior.sampletests.injectedtests;
-
-import java.util.LinkedList;
-import java.util.List;
+package net.mindengine.oculus.experior.samples;
 
 import net.mindengine.oculus.experior.annotations.Action;
 import net.mindengine.oculus.experior.annotations.InputParameter;
 import net.mindengine.oculus.experior.annotations.OutputParameter;
-import net.mindengine.oculus.experior.annotations.events.AfterTest;
 import net.mindengine.oculus.experior.annotations.events.BeforeTest;
-import net.mindengine.oculus.experior.sampletests.TestEvent;
+import net.mindengine.oculus.experior.suite.Suite;
+import net.mindengine.oculus.experior.suite.SuiteSession;
 import net.mindengine.oculus.experior.test.descriptors.TestInformation;
 
-public class RootTest {
-    
-    //Used for validation of event sequence in junit test
-    public List<TestEvent> events = new LinkedList<TestEvent>();
-    
-    @InputParameter(defaultValue="test value from root-test")
+public class SampleForParallelTesting {
+
+    @InputParameter(defaultValue="default")
     public String param;
     
     @OutputParameter
     public String outParam;
     
-    @Action
-    public void action() {
-        events.add(TestEvent.event("RootTest.action"));
-        outParam = "out test value from root-test";
-    }
-    
+    String testName;
+    SuiteSession suiteSession;
     @BeforeTest
-    public void onTestStart(TestInformation testInformation) {
-        events.add(TestEvent.event("RootTest.beforeTest"));
+    public void beforeTest(TestInformation testInformation) {
+        Suite suite = testInformation.getTestRunner().getSuiteRunner().getSuite();
+        testName = testInformation.getTestName();
+        suiteSession = suite.getSuiteSession();
     }
     
-    @AfterTest
-    public void onTestFinished(TestInformation testInformation) {
-        events.add(TestEvent.event("RootTest.afterTest"));
+    @Action
+    public void action() throws InterruptedException {
+        outParam = testName +" out param value"; 
+        suiteSession.getData().put(testName+":param", param);
+        suiteSession.getData().put(testName+":outParam", outParam);
     }
-
 }

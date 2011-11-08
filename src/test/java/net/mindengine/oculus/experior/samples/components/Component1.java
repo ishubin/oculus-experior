@@ -16,33 +16,17 @@
  * You should have received a copy of the GNU General Public License
  * along with Oculus Experior.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package net.mindengine.oculus.experior.sampletests;
+package net.mindengine.oculus.experior.samples.components;
 
-import net.mindengine.oculus.experior.annotations.Action;
-import net.mindengine.oculus.experior.annotations.RollbackHandler;
+public class Component1 {
 
+    private String field;
 
-public class TestSampleForRollbackHandler_3 extends BaseTest {
-
-    @Action(name="Action 1", next="action2", rollback="rollback1")
-    public void action1() {
-        sequence.add(TestEvent.event("action1"));
+    public String getField() {
+        return field;
     }
-    
-    @Action(name="Action 2", rollback="rollback2")
-    public void action2() {
-        sequence.add(TestEvent.event("action2"));
-    }
-    
-    
-    @RollbackHandler(name="Rollback 1")
-    public void rollback1() {
-        sequence.add(TestEvent.event("rollback1"));
-    }
-    
-    @RollbackHandler(name="Rollback 2")
-    public void rollback2() {
-        sequence.add(TestEvent.event("rollback2"));
-        throw new NullPointerException("test exeption");
+
+    public void setField(String field) {
+        this.field = field;
     }
 }

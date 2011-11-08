@@ -16,26 +16,40 @@
  * You should have received a copy of the GNU General Public License
  * along with Oculus Experior.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package net.mindengine.oculus.experior.sampletests;
-
-import java.util.Collection;
-import java.util.LinkedList;
+package net.mindengine.oculus.experior.samples;
 
 import net.mindengine.oculus.experior.annotations.Action;
-import net.mindengine.oculus.experior.annotations.InputParameter;
-import net.mindengine.oculus.experior.annotations.Test;
+import net.mindengine.oculus.experior.annotations.events.OnTestFailure;
+import net.mindengine.oculus.experior.test.descriptors.TestInformation;
 
-@Test(name="Test2_B", project="Unknown Project")
-public class Test2_B extends BaseTest{
+@net.mindengine.oculus.experior.annotations.Test(name="Test with error in action", project="")
+public class SampleWithErrorInAction {
 
+    public Integer actionNumber = 0;
     
-    public static final Collection<String> parameterInputValuesSequence = new LinkedList<String>() ;
+    public TestInformation testInformation;
     
-    @InputParameter(defaultValue="def")
-    public String parameterInput;
-    
-    @Action(name="Action 1")
-    public void action1(){
-        parameterInputValuesSequence.add(parameterInput);
+    @Action(name="Action 1", next="action2")
+    public void action1() {
+        actionNumber = 1;
     }
+    
+    @Action(name="Action 2", next="action3")
+    public void action2() {
+        actionNumber = 2;
+        
+        throw new NullPointerException("Some error");
+    }
+    
+    @Action(name="Action 3")
+    public void action3() {
+        actionNumber = 3;
+    }
+    
+    @SuppressWarnings("unused")
+    @OnTestFailure
+    private void onTestFailure(TestInformation testInformation) {
+        this.testInformation = testInformation;
+    }
+    
 }
