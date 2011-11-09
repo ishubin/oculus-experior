@@ -42,7 +42,7 @@ public class TestInformation {
     private Throwable failureCause;
     private TestRunner testRunner;
     private int status = STATUS_PASSED;
-    
+    private TestDefinition testDefinition;
     
     /**
      * Specifies the current phase in which the test is in. Will be used for the
@@ -114,6 +114,14 @@ public class TestInformation {
 
     public void setRunningActionNumber(int runningActionNumber) {
         this.runningActionNumber = runningActionNumber;
+    }
+
+    public void setTestDefinition(TestDefinition testDefinition) {
+        this.testDefinition = testDefinition;
+    }
+
+    public TestDefinition getTestDefinition() {
+        return testDefinition;
     }
 
 }

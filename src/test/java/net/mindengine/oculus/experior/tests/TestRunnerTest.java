@@ -80,7 +80,7 @@ public class TestRunnerTest {
      * <ul>
      *  <li>BeforeTest</li>
      *  <li>BeforeAction</li>
-     *  <li>Action method invokation</li>
+     *  <li>Action method invocation</li>
      *  <li>AfterTest</li>
      *  <li>AfterAction</li>
      * </ul> 

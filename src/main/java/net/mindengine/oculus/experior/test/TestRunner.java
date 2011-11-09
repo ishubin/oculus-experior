@@ -90,6 +90,7 @@ public class TestRunner {
         testInformation.setRunningActionNumber(-1);
         testInformation.setPhase(TestInformation.PHASE_RUNNING);
         testInformation.setStatus(TestInformation.STATUS_UNKOWN);
+        testInformation.setTestDefinition(testDefinition);
         testDefinition.setTestInformation(testInformation);
         
         /*
