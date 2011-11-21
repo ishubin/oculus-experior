@@ -68,7 +68,6 @@ public class TestDefinition implements Serializable {
     private Map<String, TestParameter> parameters = new HashMap<String, TestParameter>();
     private Collection<TestDependency> parameterDependencies = new LinkedList<TestDependency>();
     private Collection<Long> dependencies;
-    private Class<?> testClass;
     
     private TestInformation testInformation;
 
@@ -138,7 +137,10 @@ public class TestDefinition implements Serializable {
         this.parameters = parameters;
     }
 
-    public Class<?> getTestClass() {
+    
+    private transient Class<?> testClass;
+    
+    public Class<?> fetchTestClass() {
         if (testClass == null) {
             try {
                 if (mapping == null)
@@ -206,10 +208,6 @@ public class TestDefinition implements Serializable {
             }
         }
         return tests;
-    }
-
-    public void setTestClass(Class<?> testClass) {
-        this.testClass = testClass;
     }
 
     public String getMapping() {

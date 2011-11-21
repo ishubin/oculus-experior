@@ -47,8 +47,8 @@ import net.mindengine.oculus.experior.samples.SampleForErrorHandler_2;
 import net.mindengine.oculus.experior.samples.SampleForRollbackHandler_1;
 import net.mindengine.oculus.experior.samples.SampleForRollbackHandler_2;
 import net.mindengine.oculus.experior.samples.SampleForRollbackHandler_3;
-import net.mindengine.oculus.experior.samples.SampleWithError;
 import net.mindengine.oculus.experior.samples.SampleWithActionCrossDependency;
+import net.mindengine.oculus.experior.samples.SampleWithError;
 import net.mindengine.oculus.experior.samples.SampleWithErrorInAction;
 import net.mindengine.oculus.experior.samples.injected.RootSample;
 import net.mindengine.oculus.experior.samples.injected.SubSample1;
@@ -661,7 +661,7 @@ public class TestRunnerTest {
     public TestDefinition testDefinition(Class<?>testClass) {
         TestDefinition testDefinition = new TestDefinition();
         testDefinition.setName("Basic test");
-        testDefinition.setTestClass(testClass);
+        testDefinition.setMapping("classpath:"+testClass.getName());
         return testDefinition;
     }
 
