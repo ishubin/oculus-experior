@@ -138,14 +138,14 @@ public class TestRunner {
     private boolean checkStatusDependency() throws TestConfigurationException {
         if(testDefinition.getDependencies()!=null) {
             for(Long id : testDefinition.getDependencies()) {
-                TestDefinition testDefinition = suiteRunner.getSuite().getTestsMap().get(id);
-                if(testDefinition==null) {
+                TestDefinition dependentTestDefinition = suiteRunner.getSuite().getTestsMap().get(id);
+                if(dependentTestDefinition==null) {
                     throw new TestConfigurationException("Can't find test with id = "+id);
                 }
-                if(testDefinition.getTestInformation()==null) {
-                    throw new TestConfigurationException("Can't find testInformation for test: "+testDefinition.getMapping());
+                if(dependentTestDefinition.getTestInformation()==null) {
+                    throw new TestConfigurationException("Can't find testInformation for test: "+dependentTestDefinition.getMapping());
                 }
-                if(!(testDefinition.getTestInformation().getStatus() == TestInformation.STATUS_PASSED || testDefinition.getTestInformation().getStatus() == TestInformation.STATUS_WARNING)) {
+                if(!(dependentTestDefinition.getTestInformation().getStatus() == TestInformation.STATUS_PASSED || dependentTestDefinition.getTestInformation().getStatus() == TestInformation.STATUS_WARNING)) {
                     return false;
                 }
             }

@@ -15,11 +15,17 @@
  ******************************************************************************/
 package net.mindengine.oculus.experior.suite;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
 
 import net.mindengine.oculus.experior.db.SuiteRunBean;
 import net.mindengine.oculus.experior.db.TestRunBean;
@@ -40,23 +46,28 @@ public class Suite extends SuiteRunBean {
      */
     private static final long serialVersionUID = 6375992664847201928L;
 
+    
     private Map<String, String> parameters = new HashMap<String, String>();
 
+    @JsonIgnore
     private SuiteSession suiteSession;
     /**
      * Set of tests with key = test custom id and value = test descriptor Used
      * to quickly fetch the test by its customId
      */
+    @JsonIgnore
     private Map<Long, TestDefinition> testsMap = new HashMap<Long, TestDefinition>();
 
     /**
      * Used to store the order of tests
      */
+    @JsonIgnore
     private List<TestDefinition> tests = new LinkedList<TestDefinition>();
 
     /**
      * Contains all parameters for all tests which were finished
      */
+    @JsonIgnore
     private Map<Long, Map<String, Object>> testsParameterValues = new HashMap<Long, Map<String, Object>>();
 
 
@@ -64,6 +75,7 @@ public class Suite extends SuiteRunBean {
      * A list of test runs. Will be filled with latest test run at the end of
      * each test.
      */
+    @JsonIgnore
     private List<TestRunBean> testRuns;
 
     /**
@@ -112,7 +124,7 @@ public class Suite extends SuiteRunBean {
     public void setTestsMap(Map<Long, TestDefinition> tests) {
         this.testsMap = tests;
     }
-    
+      
     public void setParameters(Map<String, String> parameters) {
         this.parameters = parameters;
     }
@@ -160,6 +172,14 @@ public class Suite extends SuiteRunBean {
 
     public SuiteSession getSuiteSession() {
         return suiteSession;
+    }
+    
+    
+    public static void main(String[] args) throws JsonParseException, JsonMappingException, IOException {
+        String str ="{\"name\":\"h\"}";
+        ObjectMapper mapper = new ObjectMapper();
+        
+        mapper.readValue(str, TestDefinition.class);
     }
 
 }

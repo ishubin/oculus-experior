@@ -137,33 +137,27 @@ public class TestDefinition implements Serializable {
         this.parameters = parameters;
     }
 
-    
-    private transient Class<?> testClass;
-    
     public Class<?> fetchTestClass() {
-        if (testClass == null) {
-            try {
-                if (mapping == null)
-                    throw new NullPointerException("The mapping for " + toString() + " is not specified");
+        try {
+            if (mapping == null)
+                throw new NullPointerException("The mapping for " + toString() + " is not specified");
 
-                int pos = mapping.indexOf(":");
-                String path = null;
-                String testLoaderName = null;
-                if (pos > 0) {
-                    // fetching the specified test loader
-                    testLoaderName = mapping.substring(0, pos);
-                    path = mapping.substring(pos + 1);
-                } else {
-                    // Using the default test loader
-                    testLoaderName = TestLoaderFactory.getTestLoaderFactory().getDefaultTestLoaderName();
-                    path = mapping;
-                }
-                testClass = TestLoaderFactory.forTestLoader(testLoaderName).loadTestClass(path);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+            int pos = mapping.indexOf(":");
+            String path = null;
+            String testLoaderName = null;
+            if (pos > 0) {
+                // fetching the specified test loader
+                testLoaderName = mapping.substring(0, pos);
+                path = mapping.substring(pos + 1);
+            } else {
+                // Using the default test loader
+                testLoaderName = TestLoaderFactory.getTestLoaderFactory().getDefaultTestLoaderName();
+                path = mapping;
             }
+            return TestLoaderFactory.forTestLoader(testLoaderName).loadTestClass(path);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        return testClass;
     }
     
     public static void checkCrossReferences(List<TestDefinition> testList) throws LoopedDependencyException {
