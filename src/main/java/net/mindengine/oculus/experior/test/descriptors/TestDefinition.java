@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 
 import net.mindengine.oculus.experior.exception.LoopedDependencyException;
-import net.mindengine.oculus.experior.suite.Suite;
 import net.mindengine.oculus.experior.test.testloader.TestLoaderFactory;
 
 /**
@@ -61,7 +60,6 @@ public class TestDefinition implements Serializable {
      * 
      */
     private String mapping;
-    private Suite suite;
     private String name;
     private String description; // Used for more information about the test run
     private String project;
@@ -103,13 +101,6 @@ public class TestDefinition implements Serializable {
         this.customId = customId;
     }
 
-    public Suite getSuite() {
-        return suite;
-    }
-
-    public void setSuite(Suite suite) {
-        this.suite = suite;
-    }
 
     public String getName() {
         return name;

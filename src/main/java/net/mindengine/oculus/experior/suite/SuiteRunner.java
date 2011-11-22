@@ -83,7 +83,6 @@ public class SuiteRunner {
                 }
                 if (bProceedTest && bProceedSuite) {
                     try {
-                        testDefinition.setSuite(suite);
                         TestRunner testRunner = new TestRunner();
                         testRunner.setTestDescriptor(TestDescriptor.create(testDefinition, getTestRunnerConfiguration()));
                         testRunner.setTestRunListener(testRunListener);

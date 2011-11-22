@@ -97,7 +97,6 @@ public class Suite extends SuiteRunBean {
          */
         collectNestedTestsToTestMap(testDefinition);
         tests.add(testDefinition);
-        testDefinition.setSuite(this);
     }
     
     
