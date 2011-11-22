@@ -238,5 +238,5 @@ public class TestDefinition implements Serializable {
     public Collection<Long> getDependencies() {
         return dependencies;
     }
-
+    
 }

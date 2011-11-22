@@ -15,7 +15,6 @@
  ******************************************************************************/
 package net.mindengine.oculus.experior.suite;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -26,10 +25,6 @@ import net.mindengine.oculus.experior.db.SuiteRunBean;
 import net.mindengine.oculus.experior.db.TestRunBean;
 import net.mindengine.oculus.experior.exception.TestIsNotDefinedException;
 import net.mindengine.oculus.experior.test.descriptors.TestDefinition;
-
-import org.codehaus.jackson.JsonParseException;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
 
 /**
  * Represents a set of tests.
@@ -164,14 +159,6 @@ public class Suite extends SuiteRunBean {
 
     public SuiteSession getSuiteSession() {
         return suiteSession;
-    }
-    
-    
-    public static void main(String[] args) throws JsonParseException, JsonMappingException, IOException {
-        String str ="{\"name\":\"h\"}";
-        ObjectMapper mapper = new ObjectMapper();
-        
-        mapper.readValue(str, TestDefinition.class);
     }
 
 }

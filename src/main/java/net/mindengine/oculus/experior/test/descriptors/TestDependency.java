@@ -28,7 +28,7 @@ public class TestDependency implements Serializable {
 
     /**
      * The id of the prerequisite test. (Usually it is a customId of test in
-     * oculus.testrunframework.test.TestDescriptor class)
+     * {@link TestDefinition} class)
      */
     private Long prerequisiteTestId;
 
