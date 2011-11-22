@@ -16,8 +16,10 @@
 package net.mindengine.oculus.experior.suite;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import net.mindengine.oculus.experior.SuiteInterruptListener;
 import net.mindengine.oculus.experior.TestRunListener;
@@ -33,8 +35,11 @@ public class SuiteRunner {
     private TestRunListener testRunListener;
     private SuiteInterruptListener suiteInterruptListener;
     private TestRunnerConfiguration testRunnerConfiguration;
+    private Map<Long, TestRunner> testRunnersMap;
 
     public void runSuite() throws TestConfigurationException {
+
+        setTestRunnersMap(new HashMap<Long, TestRunner>());
         
         if(testRunnerConfiguration==null) {
             throw new IllegalArgumentException("TestRunConfiguration is not provided");
@@ -85,6 +90,8 @@ public class SuiteRunner {
                         testRunner.setTestDefinition(testDefinition);
                         testRunner.setSuiteRunner(this);
                         testRunner.setConfiguration(getTestRunnerConfiguration());
+                        
+                        testRunnersMap.put(testDefinition.getCustomId(), testRunner);
                         testRunner.runTest();
                     } catch (Throwable e) {
                         e.printStackTrace();
@@ -133,6 +140,14 @@ public class SuiteRunner {
 
     public TestRunnerConfiguration getTestRunnerConfiguration() {
         return testRunnerConfiguration;
+    }
+
+    public void setTestRunnersMap(Map<Long, TestRunner> testRunnersMap) {
+        this.testRunnersMap = testRunnersMap;
+    }
+
+    public Map<Long, TestRunner> getTestRunnersMap() {
+        return testRunnersMap;
     }
 
 }

@@ -51,6 +51,7 @@ public class TestRunner {
     
     // Used to store events which should be invoked when the test is finished
     private Stack<EventDescriptor> rollbackSequence;
+    private TestInformation testInformation;
 
     /**
      * Runs the test. In order to launch this method the test runner should
@@ -70,14 +71,13 @@ public class TestRunner {
     public void runTest() throws TestConfigurationException, TestInterruptedException {
         preparation();
         instantiateTest();
-        TestInformation testInformation = new TestInformation();
         
         List<List<EventDescriptor>> actionSequences = configuration.getActionResolver().getActionsSequences(testDescriptor);
 
         List<String> estimatedActions = new LinkedList<String>();
         for(List<EventDescriptor> sequence : actionSequences) {
             for(EventDescriptor action : sequence) {
-                String actionName = configuration.getActionResolver().getActionInformation(testDescriptor, testInformation, action).getActionName();
+                String actionName = configuration.getActionResolver().getActionInformation(testDescriptor, getTestInformation(), action).getActionName();
                 estimatedActions.add(actionName);
             }
         }
@@ -88,7 +88,6 @@ public class TestRunner {
         testInformation.setPhase(TestInformation.PHASE_RUNNING);
         testInformation.setStatus(TestInformation.STATUS_UNKOWN);
         testInformation.setTestDefinition(testDefinition);
-        testDefinition.setTestInformation(testInformation);
         
         /*
          * In case if any status dependencies are defined testRunner should check that all of those prerequisite tests were passed.
@@ -100,10 +99,10 @@ public class TestRunner {
             if(checkStatusDependency()) {
                 instantiateTestInputParameters();
                 instantiateTestComponents();
-                executeTestFlow(testInformation, actionSequences);
+                executeTestFlow(actionSequences);
             }
             else {
-                postponeTest(testInformation);
+                postponeTest();
             }
         } catch (TestConfigurationException e) {
             throw e;
@@ -114,7 +113,7 @@ public class TestRunner {
         }
     }
 
-    private void postponeTest(TestInformation testInformation) throws TestConfigurationException, TestInterruptedException {
+    private void postponeTest() throws TestConfigurationException, TestInterruptedException {
         testInformation.setStatus(TestInformation.STATUS_POSTPONED);
         try {
             getConfiguration().getTestResolver().beforeTest(this, testInformation);
@@ -138,14 +137,17 @@ public class TestRunner {
     private boolean checkStatusDependency() throws TestConfigurationException {
         if(testDefinition.getDependencies()!=null) {
             for(Long id : testDefinition.getDependencies()) {
-                TestDefinition dependentTestDefinition = suiteRunner.getSuite().getTestsMap().get(id);
-                if(dependentTestDefinition==null) {
+                TestRunner depTestRunner = suiteRunner.getTestRunnersMap().get(id);
+                
+                if(depTestRunner==null) {
                     throw new TestConfigurationException("Can't find test with id = "+id);
                 }
-                if(dependentTestDefinition.getTestInformation()==null) {
-                    throw new TestConfigurationException("Can't find testInformation for test: "+dependentTestDefinition.getMapping());
+                
+                TestInformation depTestInformation = depTestRunner.getTestInformation();
+                if(depTestInformation==null) {
+                    throw new TestConfigurationException("Can't find testInformation for test: "+depTestRunner.getTestDefinition().getMapping());
                 }
-                if(!(dependentTestDefinition.getTestInformation().getStatus() == TestInformation.STATUS_PASSED || dependentTestDefinition.getTestInformation().getStatus() == TestInformation.STATUS_WARNING)) {
+                if(!(depTestInformation.getStatus() == TestInformation.STATUS_PASSED || depTestInformation.getStatus() == TestInformation.STATUS_WARNING)) {
                     return false;
                 }
             }
@@ -168,6 +170,7 @@ public class TestRunner {
     }
 
     protected void preparation() throws TestConfigurationException {
+        testInformation = new TestInformation();
         
         actionResults = new HashMap<String, Object>();
         if (testDefinition == null) {
@@ -220,7 +223,7 @@ public class TestRunner {
         configuration.getDataProviderResolver().resolveDataProviders(this, configuration.getDataDependencyResolver());
     }
 
-    protected void executeTestFlow(TestInformation testInformation, List<List<EventDescriptor>> actionSequences) throws TestConfigurationException, TestInterruptedException {
+    protected void executeTestFlow(List<List<EventDescriptor>> actionSequences) throws TestConfigurationException, TestInterruptedException {
         if(configuration.getActionResolver()==null) throw new TestConfigurationException("ActionReslover is not specified");
         
         testInformation.setStatus(TestInformation.STATUS_PASSED);
@@ -547,6 +550,14 @@ public class TestRunner {
 
     public Map<String, Object> getActionResults() {
         return actionResults;
+    }
+
+    public void setTestInformation(TestInformation testInformation) {
+        this.testInformation = testInformation;
+    }
+
+    public TestInformation getTestInformation() {
+        return testInformation;
     }
 
 }
