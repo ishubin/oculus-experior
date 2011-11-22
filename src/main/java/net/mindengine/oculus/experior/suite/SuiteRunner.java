@@ -36,6 +36,7 @@ public class SuiteRunner {
     private SuiteInterruptListener suiteInterruptListener;
     private TestRunnerConfiguration testRunnerConfiguration;
     private Map<Long, TestRunner> testRunnersMap;
+    private SuiteSession suiteSession;
 
     public void runSuite() throws TestConfigurationException {
 
@@ -49,7 +50,7 @@ public class SuiteRunner {
          * tests are completed
          */
         suite.setStartTime(new Date());
-        suite.setSuiteSession(new SuiteSession());
+        setSuiteSession(new SuiteSession());
         
         if (suiteListener != null) {
             suiteListener.onSuiteStarted(this);
@@ -147,6 +148,14 @@ public class SuiteRunner {
 
     public Map<Long, TestRunner> getTestRunnersMap() {
         return testRunnersMap;
+    }
+
+    public void setSuiteSession(SuiteSession suiteSession) {
+        this.suiteSession = suiteSession;
+    }
+
+    public SuiteSession getSuiteSession() {
+        return suiteSession;
     }
 
 }

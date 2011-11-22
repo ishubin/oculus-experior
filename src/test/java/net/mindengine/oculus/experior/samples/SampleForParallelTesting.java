@@ -19,7 +19,6 @@ import net.mindengine.oculus.experior.annotations.Action;
 import net.mindengine.oculus.experior.annotations.InputParameter;
 import net.mindengine.oculus.experior.annotations.OutputParameter;
 import net.mindengine.oculus.experior.annotations.events.BeforeTest;
-import net.mindengine.oculus.experior.suite.Suite;
 import net.mindengine.oculus.experior.suite.SuiteSession;
 import net.mindengine.oculus.experior.test.descriptors.TestInformation;
 
@@ -35,9 +34,8 @@ public class SampleForParallelTesting {
     SuiteSession suiteSession;
     @BeforeTest
     public void beforeTest(TestInformation testInformation) {
-        Suite suite = testInformation.getTestRunner().getSuiteRunner().getSuite();
         testName = testInformation.getTestName();
-        suiteSession = suite.getSuiteSession();
+        suiteSession = testInformation.getTestRunner().getSuiteRunner().getSuiteSession();
     }
     
     @Action

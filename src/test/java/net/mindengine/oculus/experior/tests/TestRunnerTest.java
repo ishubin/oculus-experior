@@ -557,7 +557,7 @@ public class TestRunnerTest {
         suiteRunner.runSuite();
         
         
-        SuiteSession suiteSession = suiteRunner.getSuite().getSuiteSession();
+        SuiteSession suiteSession = suiteRunner.getSuiteSession();
         
         Assert.assertNotNull(suiteSession);
         
@@ -598,7 +598,7 @@ public class TestRunnerTest {
         }
         
         Assert.assertNotNull(realException);
-        SuiteSession suiteSession = suiteRunner.getSuite().getSuiteSession();
+        SuiteSession suiteSession = suiteRunner.getSuiteSession();
         Assert.assertNotNull(suiteSession);
         Assert.assertEquals(0, suiteSession.getData().size());
     }
@@ -620,7 +620,7 @@ public class TestRunnerTest {
         }
         
         Assert.assertNotNull(realException);
-        SuiteSession suiteSession = suiteRunner.getSuite().getSuiteSession();
+        SuiteSession suiteSession = suiteRunner.getSuiteSession();
         Assert.assertNotNull(suiteSession);
         Assert.assertEquals(0, suiteSession.getData().size());
     }
@@ -637,7 +637,7 @@ public class TestRunnerTest {
         
         suiteRunner.runSuite();
         
-        SuiteSession suiteSession = suiteRunner.getSuite().getSuiteSession();
+        SuiteSession suiteSession = suiteRunner.getSuiteSession();
         Assert.assertNotNull(suiteSession);
         List<SampleEvent> events = (List<SampleEvent>) suiteSession.getData().get("events");
         Assert.assertNotNull(events);

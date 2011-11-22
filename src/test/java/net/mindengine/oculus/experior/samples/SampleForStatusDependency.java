@@ -41,7 +41,7 @@ public class SampleForStatusDependency {
     @SuppressWarnings("unchecked")
     @BeforeTest
     public void onTestStart(TestInformation testInformation) {
-        SuiteSession suiteSession = testInformation.getTestRunner().getSuiteRunner().getSuite().getSuiteSession();
+        SuiteSession suiteSession = testInformation.getTestRunner().getSuiteRunner().getSuiteSession();
         
         events = (List<SampleEvent>)suiteSession.getData().get("events");
         if(events==null) {
