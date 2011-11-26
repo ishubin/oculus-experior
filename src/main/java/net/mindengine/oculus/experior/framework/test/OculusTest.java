@@ -180,6 +180,7 @@ public abstract class OculusTest {
             }
             testRunBean.setProjectId(projectId);
             testRunBean.setId(daoSupport.getTestRunDAO().create(testRunBean));
+            testInformation.setTestRunId(testRunBean.getId());
 
             /*
              * Exporting test run parameters to database for this specific test

@@ -40,6 +40,7 @@ public class TestInformation {
     private TestRunner testRunner;
     private int status = STATUS_PASSED;
     private TestDefinition testDefinition;
+    private Long testRunId;
     
     /**
      * Specifies the current phase in which the test is in. Will be used for the
@@ -119,6 +120,14 @@ public class TestInformation {
 
     public TestDefinition getTestDefinition() {
         return testDefinition;
+    }
+
+    public void setTestRunId(Long testRunId) {
+        this.testRunId = testRunId;
+    }
+
+    public Long getTestRunId() {
+        return testRunId;
     }
 
 }
