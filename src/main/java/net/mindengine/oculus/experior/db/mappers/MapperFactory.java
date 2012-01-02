@@ -18,7 +18,6 @@ package net.mindengine.oculus.experior.db.mappers;
 import net.mindengine.oculus.experior.db.ProjectBean;
 import net.mindengine.oculus.experior.db.SuiteRunBean;
 import net.mindengine.oculus.experior.db.TestBean;
-import net.mindengine.oculus.experior.db.TestRunBean;
 
 import org.springframework.jdbc.core.RowMapper;
 
@@ -26,8 +25,6 @@ public class MapperFactory {
     public static RowMapper<Object> getRowMapper(Class<?> clazz) {
         if (clazz.equals(SuiteRunBean.class)) {
             return new SuiteRunMapper();
-        } else if (clazz.equals(TestRunBean.class)) {
-            return new TestRunMapper();
         } else if (clazz.equals(ProjectBean.class)) {
             return new ProjectMapper();
         } else if (clazz.equals(TestBean.class)) {
