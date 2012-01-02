@@ -371,13 +371,6 @@ public class TestRunner {
                 try {
                     eventDescriptor.getMethod().setAccessible(true);
                     
-                    //TODO Handle user-defined arguments in event methods
-                    /*
-                     * Instead of using the default arguments for events (like in BeforeTest and AfterTest)
-                     * user should be able to specify what kind of information it wants to use in a specific event by using arguments annotations
-                     */
-                    
-                    
                     if(eventDescriptor.getMethod().getParameterTypes().length==0) {
                         /*
                          * It should be possible to handle events that have no arguments.
