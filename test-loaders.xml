@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<test-loaders default="classpath">
+    <test-loader name="classpath" classpath="net.mindengine.oculus.experior.test.testloader.ClasspathTestLoader">
+    </test-loader>
+</test-loaders>

@@ -22,9 +22,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Properties;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import net.mindengine.oculus.experior.test.TestRunnerConfiguration;
 import net.mindengine.oculus.experior.test.resolvers.actions.ActionResolver;
 import net.mindengine.oculus.experior.test.resolvers.cleanup.CleanupResolver;
@@ -34,6 +31,9 @@ import net.mindengine.oculus.experior.test.resolvers.errors.ErrorResolver;
 import net.mindengine.oculus.experior.test.resolvers.parameters.ParameterResolver;
 import net.mindengine.oculus.experior.test.resolvers.rollbacks.RollbackResolver;
 import net.mindengine.oculus.experior.test.resolvers.test.TestResolver;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class ExperiorConfig {
 
@@ -66,16 +66,14 @@ public class ExperiorConfig {
     private ExperiorConfig() throws Exception {
         properties = new Properties();
         
-        
-        File file = new File(getClass()
-                .getResource("/experior.properties")
-                .getFile());
+        File file = new File("experior.properties");
 
         logger.info("Loading properties from " + file.getAbsolutePath());
         FileInputStream fis = new FileInputStream(file);
         properties.load(fis);
         fis.close();
     }
+    
 
     public String get(String name) {
         String str = properties.getProperty(name);

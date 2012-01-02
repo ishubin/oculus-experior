@@ -57,9 +57,11 @@ public class TestLauncher {
             try {
                 ExperiorConfig config = ExperiorConfig.getInstance();
                 String className = config.get(ExperiorConfig.SUITE_LISTENER);
-                Class<?> suiteListenerClass = Class.forName(className);
-                Constructor<?> constructor = suiteListenerClass.getConstructor();
-                suiteListener = (SuiteListener) constructor.newInstance();
+                if(className!=null && !className.isEmpty()) {
+                    Class<?> suiteListenerClass = Class.forName(className);
+                    Constructor<?> constructor = suiteListenerClass.getConstructor();
+                    suiteListener = (SuiteListener) constructor.newInstance();
+                }
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

@@ -370,19 +370,34 @@ public class TestRunner {
             for (EventDescriptor eventDescriptor : edc.getDescriptors().values()) {
                 try {
                     eventDescriptor.getMethod().setAccessible(true);
-                    eventDescriptor.getMethod().invoke(testInstance, args);
+                    
+                    //TODO Handle user-defined arguments in event methods
+                    /*
+                     * Instead of using the default arguments for events (like in BeforeTest and AfterTest)
+                     * user should be able to specify what kind of information it wants to use in a specific event by using arguments annotations
+                     */
+                    
+                    
+                    if(eventDescriptor.getMethod().getParameterTypes().length==0) {
+                        /*
+                         * It should be possible to handle events that have no arguments.
+                         * For instance "BeforeTest" event may be just used without its default "TestInformation" argument
+                         */
+                        eventDescriptor.getMethod().invoke(testInstance, new Object[]{});
+                    }
+                    else {
+                        eventDescriptor.getMethod().invoke(testInstance, args);
+                    }
                 } catch (IllegalArgumentException e) {
-                    throw new TestConfigurationException(e);
+                    throw new TestConfigurationException("Error invoking "+eventDescriptor.getMethod().getName(), e);
                 } catch (IllegalAccessException e) {
-                    throw new TestConfigurationException(e);
+                    throw new TestConfigurationException("Error invoking "+eventDescriptor.getMethod().getName(), e);
                 } catch (InvocationTargetException e) {
-                    throw new TestInterruptedException(e.getTargetException());
+                    throw new TestInterruptedException("Error invoking "+eventDescriptor.getMethod().getName(), e.getTargetException());
                 }
             }
         }
-    }
-
-    
+    }    
 
     /**
      * Invokes the specified action and all events related to it and then
