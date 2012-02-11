@@ -52,7 +52,7 @@ public class TestRunnerConfiguration {
     private RollbackResolver rollbackResolver;
     private ErrorResolver errorResolver;
     private TestResolver testResolver;
-    
+    private Class<?> dummyTestClass;
     
     public DataDependencyResolver getDataDependencyResolver() {
         return dataDependencyResolver;
@@ -113,6 +113,12 @@ public class TestRunnerConfiguration {
     }
     public TestResolver getTestResolver() {
         return testResolver;
+    }
+    public Class<?> getDummyTestClass() {
+        return dummyTestClass;
+    }
+    public void setDummyTestClass(Class<?> dummyTestClass) {
+        this.dummyTestClass = dummyTestClass;
     }
 
 }

@@ -193,7 +193,7 @@ public class TestRunner {
 
     protected void instantiateTest() throws TestConfigurationException {
         try {
-            Constructor<?> constructor = testDefinition.fetchTestClass().getConstructor();
+            Constructor<?> constructor = testDefinition.fetchTestClass(configuration).getConstructor();
             testInstance = constructor.newInstance();
         } catch (Exception e) {
             throw new TestConfigurationException("Couldn't instantiate test", e);

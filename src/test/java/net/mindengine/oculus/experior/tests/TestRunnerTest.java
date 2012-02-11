@@ -59,6 +59,7 @@ import net.mindengine.oculus.experior.suite.SuiteSession;
 import net.mindengine.oculus.experior.suite.XmlSuiteParser;
 import net.mindengine.oculus.experior.suite.threads.ParallelSuiteRunner;
 import net.mindengine.oculus.experior.test.TestRunner;
+import net.mindengine.oculus.experior.test.TestRunnerConfiguration;
 import net.mindengine.oculus.experior.test.descriptors.ActionInformation;
 import net.mindengine.oculus.experior.test.descriptors.TestDefinition;
 import net.mindengine.oculus.experior.test.descriptors.TestDescriptor;
@@ -478,17 +479,29 @@ public class TestRunnerTest {
     }
     
     @Test
-    public void injectedTestRunningCheck() throws TestConfigurationException, TestInterruptedException {
-        Suite suite;
-        try {
-            suite = XmlSuiteParser.parse(new File(getClass().getResource("/test-suites/injected-test-suite.xml").getFile()));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    public void suiteWithTestGroup() throws Exception {
+        Suite suite = XmlSuiteParser.parse(new File(getClass().getResource("/test-suites/suite-with-test-group.xml").getFile()));
         SuiteRunner suiteRunner = new SuiteRunner();
         suiteRunner.setTestRunnerConfiguration(ExperiorConfig.getInstance().getTestRunnerConfiguration());
         suiteRunner.setSuite(suite);
         
+        runSuiteWithtestGroup(suiteRunner);
+    }
+    
+    @Test
+    public void suiteWithCustomDummyTestGroup() throws Exception {
+        Suite suite = XmlSuiteParser.parse(new File(getClass().getResource("/test-suites/suite-with-custom-dummy-test-group.xml").getFile()));
+        SuiteRunner suiteRunner = new SuiteRunner();
+        
+        TestRunnerConfiguration config = ExperiorConfig.getInstance().getTestRunnerConfiguration();
+        config.setDummyTestClass(RootSample.class);
+        suiteRunner.setTestRunnerConfiguration(config);
+        suiteRunner.setSuite(suite);
+        
+        runSuiteWithtestGroup(suiteRunner);
+    }
+
+    private void runSuiteWithtestGroup(SuiteRunner suiteRunner) throws TestConfigurationException {
         final Map<String, Object> dataOnTestStarted = new HashMap<String, Object>();
         final Map<String, Object> dataOnTestFinished = new HashMap<String, Object>();
         final Map<String, Object> dataOnTestAction = new HashMap<String, Object>();
@@ -536,21 +549,20 @@ public class TestRunnerTest {
         SubSample1 subTest1 = (SubSample1)dataOnTestStarted.get("subTest1");
         SubSample2 subTest2 = (SubSample2)dataOnTestStarted.get("subTest2");
         
-        Assert.assertEquals("Custom test name", dataOnTestStarted.get("testName"));
-        Assert.assertEquals("Custom test name", dataOnTestFinished.get("testName"));
+        Assert.assertEquals("Custom test group", dataOnTestStarted.get("testName"));
+        Assert.assertEquals("Custom test group", dataOnTestFinished.get("testName"));
+        
+        //asserting that the parameter value form xml file is set in root test
+        Assert.assertEquals("test value from xml", rootTest.param);
         
         Assert.assertEquals("out test value from root-test", subTest1.param);
         Assert.assertEquals("output parameter from sub-test-1", subTest2.param);
     }
     
     @Test
-    public void parallelSuiteRunner() throws TestConfigurationException {
-        Suite suite;
-        try {
-            suite = XmlSuiteParser.parse(new File(getClass().getResource("/test-suites/parallel-suite.xml").getFile()));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    public void parallelSuiteRunner() throws Exception {
+        Suite suite = XmlSuiteParser.parse(new File(getClass().getResource("/test-suites/parallel-suite.xml").getFile()));
+        
         SuiteRunner suiteRunner = new ParallelSuiteRunner(6);
         suiteRunner.setTestRunnerConfiguration(ExperiorConfig.getInstance().getTestRunnerConfiguration());
         suiteRunner.setSuite(suite);

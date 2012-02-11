@@ -67,7 +67,7 @@ public class TestDescriptor implements Serializable {
         setInformationCollected(true);
         fieldContainer = collectFields(testDefinition, configuration);
         eventContainer = collectEvents(testDefinition, configuration);
-        testClass = testDefinition.fetchTestClass();
+        testClass = testDefinition.fetchTestClass(configuration);
         
         testName = configuration.getTestResolver().getTestName(this);
         projectId = configuration.getTestResolver().getProjectId(this);
@@ -82,7 +82,7 @@ public class TestDescriptor implements Serializable {
     public static Map<Class<?>, FieldDescriptorsContainer> collectFields(TestDefinition testDefinition, TestRunnerConfiguration configuration) {
         Map<Class<?>, FieldDescriptorsContainer> fieldContainers = new HashMap<Class<?>, FieldDescriptorsContainer>();
 
-        Class<?> testClass = testDefinition.fetchTestClass();
+        Class<?> testClass = testDefinition.fetchTestClass(configuration);
         for (Field field : ClassUtils.getAllFields(testClass)) {
             for (Annotation annotation : field.getAnnotations()) {
                 addFieldIfSupported(annotation, field, fieldContainers, configuration.getSupportedFieldAnnotations());
@@ -100,7 +100,7 @@ public class TestDescriptor implements Serializable {
     public static Map<Class<?>, EventDescriptorsContainer> collectEvents(TestDefinition testDefinition, TestRunnerConfiguration configuration) {
         Map<Class<?>, EventDescriptorsContainer> eventContainers = new HashMap<Class<?>, EventDescriptorsContainer>();
 
-        Class<?> testClass = testDefinition.fetchTestClass();
+        Class<?> testClass = testDefinition.fetchTestClass(configuration);
         for (Method method : ClassUtils.getAllMethods(testClass)) {
             for (Annotation annotation : method.getAnnotations()) {
                 addEventIfSupported(annotation, method, eventContainers, configuration.getSupportedEventAnnotations());

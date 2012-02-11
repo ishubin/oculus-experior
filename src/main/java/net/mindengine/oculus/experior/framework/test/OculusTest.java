@@ -56,7 +56,7 @@ import net.mindengine.oculus.experior.test.descriptors.TestInformation;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 
-public abstract class OculusTest {
+public class OculusTest {
     protected Report report;
     protected TestSession testSession;
     protected Date startTime;

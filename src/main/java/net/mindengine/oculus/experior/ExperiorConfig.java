@@ -52,8 +52,9 @@ public class ExperiorConfig {
     public static final String TESTRUNNER_RESOLVERS_ROLLBACKS = "testrunner.resolvers.rollbacks";
     public static final String TESTRUNNER_RESOLVERS_ERRORS = "testrunner.resolvers.errors";
     public static final String TESTRUNNER_RESOLVERS_TEST = "testrunner.resolvers.test";
+    public static final String TESTRUNNER_DUMMY_TEST = "testrunner.dummy.test";
     public static final String TESTRUNNER_SUPPOERTEDANNOTATIONS_FIELDS = "testrunner.supportedAnnotations.fields";
-    public static final String TESTRUNNER_SUPPOERTEDANNOTATIONS_EVENTS = "testrunner.supportedAnnotations.events";
+    public static final String TESTRUNNER_SUPPORTEDANNOTATIONS_EVENTS = "testrunner.supportedAnnotations.events";
     
     
     private static ExperiorConfig _instance = null;
@@ -107,6 +108,7 @@ public class ExperiorConfig {
                 testRunnerConfiguration.setRollbackResolver((RollbackResolver) createObject(getMandatoryField(TESTRUNNER_RESOLVERS_ROLLBACKS)));
                 testRunnerConfiguration.setErrorResolver((ErrorResolver) createObject(getMandatoryField(TESTRUNNER_RESOLVERS_ERRORS)));
                 testRunnerConfiguration.setTestResolver((TestResolver) createObject(getMandatoryField(TESTRUNNER_RESOLVERS_TEST)));
+                testRunnerConfiguration.setDummyTestClass(Class.forName(getMandatoryField(TESTRUNNER_DUMMY_TEST)));
                 
                 //Reading fields annotations
                 String[] fieldNames = getMandatoryField(TESTRUNNER_SUPPOERTEDANNOTATIONS_FIELDS).split(",");
@@ -116,7 +118,7 @@ public class ExperiorConfig {
                 }
                 testRunnerConfiguration.setSupportedFieldAnnotations(supportedFields);
                 
-                String[] eventNames = getMandatoryField(TESTRUNNER_SUPPOERTEDANNOTATIONS_EVENTS).split(",");
+                String[] eventNames = getMandatoryField(TESTRUNNER_SUPPORTEDANNOTATIONS_EVENTS).split(",");
                 Collection<Class<?>>supportedEvents = new LinkedList<Class<?>>();
                 for(String eventName : eventNames) {
                     supportedEvents.add(Class.forName(eventName.trim()));

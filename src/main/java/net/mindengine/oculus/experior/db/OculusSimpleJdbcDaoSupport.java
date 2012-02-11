@@ -44,7 +44,7 @@ public class OculusSimpleJdbcDaoSupport extends SimpleJdbcDaoSupport {
         setDataSource(dataSource);
     }
 
-    public static OculusSimpleJdbcDaoSupport getInstance() {
+    public synchronized static OculusSimpleJdbcDaoSupport getInstance() {
         if (_instance == null) {
             _instance = new OculusSimpleJdbcDaoSupport();
         }

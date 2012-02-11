@@ -40,7 +40,7 @@ import org.w3c.dom.NodeList;
 public class XmlTestParser {
     
     
-    public static TestDefinition parse(Node testNode) throws Exception {
+    public static TestDefinition parseTest(Node testNode) throws Exception {
         TestDefinition testDefinition = new TestDefinition();
         
         String strCustomId = XmlUtils.getNodeAttribute(testNode, "id");
@@ -102,7 +102,7 @@ public class XmlTestParser {
                     for(int j=0;j<injectedTestNodes.getLength();j++) {
                         Node injectedTestNode = injectedTestNodes.item(j);
                         if(injectedTestNode.getNodeType() == Node.ELEMENT_NODE && injectedTestNode.getNodeName().equals("test")) {
-                             injectedTestDefinitions.add(XmlTestParser.parse(injectedTestNode));
+                             injectedTestDefinitions.add(XmlTestParser.parseTest(injectedTestNode));
                         }
                     }
                     testDefinition.setInjectedTests(injectedTestDefinitions);
@@ -173,5 +173,4 @@ public class XmlTestParser {
         writer.write("</test>");
 
     }
-
 }

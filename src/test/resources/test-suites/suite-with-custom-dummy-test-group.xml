@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suite name="Dependency suite" runnerId="1">
 
-	<test id="1" name="Custom test name" mapping="net.mindengine.oculus.experior.samples.injected.RootSample">
-        <parameter name="param">some value</parameter>
-        
+	<test id="1" name="Custom test group">
+		<parameter name="param">test value from xml</parameter>
         <tests>
     		<test id="3" mapping="net.mindengine.oculus.experior.samples.injected.SubSample2">
     			<parameter name="param" refId="2" refName="outParam"/>

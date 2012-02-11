@@ -54,13 +54,14 @@ public class XmlSuiteParser {
                     String parameterName = XmlUtils.getNodeAttribute(node, "name");
                     String parameterValue = XmlUtils.getNodeAttribute(node, "value");
                     suite.getParameters().put(parameterName, parameterValue);
-                } else if (node.getNodeName().equals("agent")) {
+                } 
+                else if (node.getNodeName().equals("agent")) {
                     // Loading the agent
                     suite.setAgentName(XmlUtils.getNodeAttribute(node, "name"));
-                } else if (node.getNodeName().equals("uniteTests")) {
-                } else if (node.getNodeName().equals("test")) {
+                } 
+                else if (node.getNodeName().equals("test")) {
                     // Loading the test
-                    suite.addTest(XmlTestParser.parse(node));
+                    suite.addTest(XmlTestParser.parseTest(node));
                 }
             }
         }

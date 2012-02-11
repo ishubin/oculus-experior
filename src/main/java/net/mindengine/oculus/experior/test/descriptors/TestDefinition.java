@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 
 import net.mindengine.oculus.experior.exception.LoopedDependencyException;
+import net.mindengine.oculus.experior.exception.TestConfigurationException;
+import net.mindengine.oculus.experior.test.TestRunnerConfiguration;
 import net.mindengine.oculus.experior.test.testloader.TestLoaderFactory;
 
 /**
@@ -126,10 +128,17 @@ public class TestDefinition implements Serializable {
         this.parameters = parameters;
     }
 
-    public Class<?> fetchTestClass() {
+    public Class<?> fetchTestClass(TestRunnerConfiguration configuration) {
         try {
-            if (mapping == null)
-                throw new NullPointerException("The mapping for " + toString() + " is not specified");
+            if (mapping == null || mapping.isEmpty()){
+                //Looking for dummy test
+                Class<?> dummyClass = configuration.getDummyTestClass();
+                if(dummyClass==null) {
+                    throw new TestConfigurationException("Dummy test is not specified in configuration");
+                }
+                return dummyClass;
+            }
+                
 
             int pos = mapping.indexOf(":");
             String path = null;
