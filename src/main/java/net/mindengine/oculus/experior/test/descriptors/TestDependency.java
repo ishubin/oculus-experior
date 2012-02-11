@@ -30,32 +30,32 @@ public class TestDependency implements Serializable {
      * The id of the prerequisite test. (Usually it is a customId of test in
      * {@link TestDefinition} class)
      */
-    private Long prerequisiteTestId;
+    private String refTestId;
 
     /**
      * The name if the output parameter of prerequisite test
      */
-    private String prerequisiteParameterName;
+    private String refParameterName;
 
     /**
      * The name of the input parameter of the dependent test
      */
     private String dependentParameterName;
 
-    public Long getPrerequisiteTestId() {
-        return prerequisiteTestId;
+    public String getRefTestId() {
+        return refTestId;
     }
 
-    public void setPrerequisiteTestId(Long prerequisiteTestId) {
-        this.prerequisiteTestId = prerequisiteTestId;
+    public void setRefTestId(String refTestId) {
+        this.refTestId = refTestId;
     }
 
-    public String getPrerequisiteParameterName() {
-        return prerequisiteParameterName;
+    public String getRefParameterName() {
+        return refParameterName;
     }
 
-    public void setPrerequisiteParameterName(String prerequisiteParameterName) {
-        this.prerequisiteParameterName = prerequisiteParameterName;
+    public void setRefParameterName(String refParameterName) {
+        this.refParameterName = refParameterName;
     }
 
     public String getDependentParameterName() {

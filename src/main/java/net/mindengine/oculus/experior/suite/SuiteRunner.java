@@ -35,12 +35,12 @@ public class SuiteRunner {
     private TestRunListener testRunListener;
     private SuiteInterruptListener suiteInterruptListener;
     private TestRunnerConfiguration testRunnerConfiguration;
-    private Map<Long, TestRunner> testRunnersMap;
+    private Map<String, TestRunner> testRunnersMap;
     private SuiteSession suiteSession;
 
     public void runSuite() throws TestConfigurationException {
 
-        setTestRunnersMap(new HashMap<Long, TestRunner>());
+        setTestRunnersMap(new HashMap<String, TestRunner>());
         
         if(testRunnerConfiguration==null) {
             throw new IllegalArgumentException("TestRunConfiguration is not provided");
@@ -142,11 +142,11 @@ public class SuiteRunner {
         return testRunnerConfiguration;
     }
 
-    public void setTestRunnersMap(Map<Long, TestRunner> testRunnersMap) {
+    public void setTestRunnersMap(Map<String, TestRunner> testRunnersMap) {
         this.testRunnersMap = testRunnersMap;
     }
 
-    public Map<Long, TestRunner> getTestRunnersMap() {
+    public Map<String, TestRunner> getTestRunnersMap() {
         return testRunnersMap;
     }
 

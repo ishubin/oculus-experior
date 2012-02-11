@@ -41,7 +41,7 @@ public class TestDefinition implements Serializable {
      * The customId field is used only in suite when there is need to fetch test
      * dependencies
      */
-    private Long customId;
+    private String customId;
     
     private Long testId;
     /**
@@ -67,11 +67,11 @@ public class TestDefinition implements Serializable {
     private String project;
     private Map<String, TestParameter> parameters = new HashMap<String, TestParameter>();
     private Collection<TestDependency> parameterDependencies = new LinkedList<TestDependency>();
-    private Collection<Long> dependencies;
+    private Collection<String> dependencies;
 
     public boolean hasDependencies(TestDefinition testDefinition) {
         for (TestDependency dependency : getParameterDependencies()) {
-            if (dependency.getPrerequisiteTestId().equals(testDefinition.getCustomId())) {
+            if (dependency.getRefTestId().equals(testDefinition.getCustomId())) {
                 return true;
             }
         }
@@ -95,11 +95,11 @@ public class TestDefinition implements Serializable {
     }
 
 
-    public Long getCustomId() {
+    public String getCustomId() {
         return customId;
     }
 
-    public void setCustomId(Long customId) {
+    public void setCustomId(String customId) {
         this.customId = customId;
     }
 
@@ -240,11 +240,11 @@ public class TestDefinition implements Serializable {
         return parameterDependencies;
     }
 
-    public void setDependencies(Collection<Long> dependencies) {
+    public void setDependencies(Collection<String> dependencies) {
         this.dependencies = dependencies;
     }
 
-    public Collection<Long> getDependencies() {
+    public Collection<String> getDependencies() {
         return dependencies;
     }
 

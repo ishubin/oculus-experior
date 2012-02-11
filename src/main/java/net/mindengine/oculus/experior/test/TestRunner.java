@@ -136,7 +136,7 @@ public class TestRunner {
      */
     private boolean checkStatusDependency() throws TestConfigurationException {
         if(testDefinition.getDependencies()!=null) {
-            for(Long id : testDefinition.getDependencies()) {
+            for(String id : testDefinition.getDependencies()) {
                 TestRunner depTestRunner = suiteRunner.getTestRunnersMap().get(id);
                 
                 if(depTestRunner==null) {

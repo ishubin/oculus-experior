@@ -71,17 +71,17 @@ public class DefaultParameterResolver implements ParameterResolver {
                      * Fetching parameter value from prerequisite test output
                      * parameter in the same suite
                      */
-                    TestDefinition prerequisiteTestDefinition = suite.getTestsMap().get(dependency.getPrerequisiteTestId());
+                    TestDefinition prerequisiteTestDefinition = suite.getTestsMap().get(dependency.getRefTestId());
                     if (prerequisiteTestDefinition == null)
-                        throw new TestConfigurationException("The test with id = " + dependency.getPrerequisiteTestId() + " doesn't exist in suite");
+                        throw new TestConfigurationException("The test with id = " + dependency.getRefTestId() + " doesn't exist in suite");
 
                     Object dependentValue = null;
-                    if (suite.getTestsParameterValues().containsKey(dependency.getPrerequisiteTestId())) {
-                        Map<String, Object> testParameters = suite.getTestsParameterValues().get(dependency.getPrerequisiteTestId());
-                        if (testParameters.containsKey(dependency.getPrerequisiteParameterName())) {
-                            dependentValue = testParameters.get(dependency.getPrerequisiteParameterName());
+                    if (suite.getTestsParameterValues().containsKey(dependency.getRefTestId())) {
+                        Map<String, Object> testParameters = suite.getTestsParameterValues().get(dependency.getRefTestId());
+                        if (testParameters.containsKey(dependency.getRefParameterName())) {
+                            dependentValue = testParameters.get(dependency.getRefParameterName());
                         }
-                        else throw new TestConfigurationException("There is no '"+dependency.getPrerequisiteParameterName()+"' in test "+testRunner.getTestName());
+                        else throw new TestConfigurationException("There is no '"+dependency.getRefParameterName()+"' in test "+testRunner.getTestName());
                     }
                     
                     value = dependentValue;
@@ -140,7 +140,7 @@ public class DefaultParameterResolver implements ParameterResolver {
             Suite suite = suiteRunner.getSuite();
             if (suite != null) {
                 if (suite.getTestsParameterValues() == null) {
-                    suite.setTestsParameterValues(new HashMap<Long, Map<String, Object>>());
+                    suite.setTestsParameterValues(new HashMap<String, Map<String, Object>>());
                 }
 
                 // Fetching values for all test output parameters

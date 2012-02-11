@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
+import java.util.UUID;
 
 import net.mindengine.oculus.experior.db.SuiteRunBean;
 import net.mindengine.oculus.experior.db.TestRunBean;
@@ -46,7 +46,7 @@ public class Suite extends SuiteRunBean {
      * Set of tests with key = test custom id and value = test descriptor Used
      * to quickly fetch the test by its customId
      */
-    private Map<Long, TestDefinition> testsMap = new HashMap<Long, TestDefinition>();
+    private Map<String, TestDefinition> testsMap = new HashMap<String, TestDefinition>();
 
     /**
      * Used to store the order of tests
@@ -56,7 +56,7 @@ public class Suite extends SuiteRunBean {
     /**
      * Contains all parameters for all tests which were finished
      */
-    private Map<Long, Map<String, Object>> testsParameterValues = new HashMap<Long, Map<String, Object>>();
+    private Map<String, Map<String, Object>> testsParameterValues = new HashMap<String, Map<String, Object>>();
 
 
     /**
@@ -77,12 +77,7 @@ public class Suite extends SuiteRunBean {
      */
     public void addTest(TestDefinition testDefinition) throws ClassNotFoundException, SecurityException, NoSuchMethodException, TestIsNotDefinedException {
         if (testDefinition.getCustomId() == null) {
-            /**
-             * Generating custom id
-             */
-            Random rnd = new Random();
-
-            testDefinition.setCustomId(rnd.nextLong());
+            testDefinition.setCustomId(UUID.randomUUID().toString());
         }
         
         /*
@@ -103,11 +98,11 @@ public class Suite extends SuiteRunBean {
         }
     }
 
-    public Map<Long, TestDefinition> getTestsMap() {
+    public Map<String, TestDefinition> getTestsMap() {
         return testsMap;
     }
 
-    public void setTestsMap(Map<Long, TestDefinition> tests) {
+    public void setTestsMap(Map<String, TestDefinition> tests) {
         this.testsMap = tests;
     }
       
@@ -141,12 +136,12 @@ public class Suite extends SuiteRunBean {
     }
 
 
-    public void setTestsParameterValues(Map<Long, Map<String, Object>> testsParameterValues) {
+    public void setTestsParameterValues(Map<String, Map<String, Object>> testsParameterValues) {
         this.testsParameterValues = testsParameterValues;
     }
 
 
-    public Map<Long, Map<String, Object>> getTestsParameterValues() {
+    public Map<String, Map<String, Object>> getTestsParameterValues() {
         return testsParameterValues;
     }
 

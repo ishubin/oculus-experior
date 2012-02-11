@@ -43,9 +43,9 @@ public class XmlTestParser {
     public static TestDefinition parseTest(Node testNode) throws Exception {
         TestDefinition testDefinition = new TestDefinition();
         
-        String strCustomId = XmlUtils.getNodeAttribute(testNode, "id");
-        if (strCustomId != null) {
-            testDefinition.setCustomId(Long.parseLong(strCustomId));
+        String customId = XmlUtils.getNodeAttribute(testNode, "id");
+        if (customId != null) {
+            testDefinition.setCustomId(customId);
         }
         else throw new TestConfigurationException("Test doesn't have id specified");
 
@@ -73,19 +73,19 @@ public class XmlTestParser {
 
                         TestDependency dependency = new TestDependency();
                         dependency.setDependentParameterName(parameterName);
-                        dependency.setPrerequisiteParameterName(prerequisiteName);
-                        dependency.setPrerequisiteTestId(Long.parseLong(prerequisiteCustomId));
+                        dependency.setRefParameterName(prerequisiteName);
+                        dependency.setRefTestId(prerequisiteCustomId);
 
                         testDefinition.getParameterDependencies().add(dependency);
                     }
                     
                 } else if (node.getNodeName().equals("depends")) {
-                    Collection<Long> dependencies = new LinkedList<Long>();
+                    Collection<String> dependencies = new LinkedList<String>();
                         NodeList dependencyNodeList = node.getChildNodes();
                         for(int j = 0; j<dependencyNodeList.getLength(); j++) {
                             Node dependencyNode = dependencyNodeList.item(j);
                             if(dependencyNode.getNodeType() == Node.ELEMENT_NODE && dependencyNode.getNodeName().equals("test")) {
-                                Long depId = Long.parseLong(dependencyNode.getTextContent().trim());
+                                String depId = dependencyNode.getTextContent().trim();
                                 dependencies.add(depId);
                             }
                         }
@@ -150,17 +150,17 @@ public class XmlTestParser {
                 writer.write("\n<parameter name=\"");
                 writer.write(StringEscapeUtils.escapeXml(dependency.getDependentParameterName()));
                 writer.write("\" refId=\"");
-                writer.write(StringEscapeUtils.escapeXml(dependency.getPrerequisiteTestId().toString()));
+                writer.write(StringEscapeUtils.escapeXml(dependency.getRefTestId()));
                 writer.write("\" refName=\"");
-                writer.write(StringEscapeUtils.escapeXml(dependency.getPrerequisiteParameterName()));
+                writer.write(StringEscapeUtils.escapeXml(dependency.getRefParameterName()));
                 writer.write("\"/>\n");
             }
         }
         
         if(test.getDependencies()!=null) {
             writer.write("<depends>");
-            for(Long id : test.getDependencies()) {
-                writer.write("<test>"+id+"</test>");
+            for(String id : test.getDependencies()) {
+                writer.write("<test>"+StringEscapeUtils.escapeXml(id)+"</test>");
             }
             writer.write("</depends>");
         }
