@@ -116,9 +116,13 @@ public class XmlTestParser {
     public static void save(OutputStreamWriter writer, TestDefinition test) throws IOException {
         writer.write("\n<test id=\"");
         writer.write(test.getCustomId().toString());
-        writer.write("\" mapping=\"");
-        writer.write(StringEscapeUtils.escapeXml(test.getMapping()));
-        writer.write("\" ");
+        writer.write("\"");
+        
+        if(test.getMapping()!=null) {
+            writer.write("mapping=\"");
+            writer.write(StringEscapeUtils.escapeXml(test.getMapping()));
+            writer.write("\" ");
+        }
         
         if(test.getName()!=null){
             writer.write("name=\"");
