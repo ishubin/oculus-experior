@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Properties;
 
+import net.mindengine.oculus.experior.reporter.ReportConfiguration;
 import net.mindengine.oculus.experior.test.TestRunnerConfiguration;
 import net.mindengine.oculus.experior.test.resolvers.actions.ActionResolver;
 import net.mindengine.oculus.experior.test.resolvers.cleanup.CleanupResolver;
@@ -37,10 +38,10 @@ import org.apache.commons.logging.LogFactory;
 
 public class ExperiorConfig {
 
-    public static final String REPORTING_DB_URL = "reporting.db.url";
-    public static final String REPORTING_DB_DRIVERCLASSNAME = "reporting.db.driverClassName";
-    public static final String REPORTING_DB_USERNAME = "reporting.db.username";
-    public static final String REPORTING_DB_PASSWORD = "reporting.db.password";
+    public static final String REPORT_DB_URL = "report.db.url";
+    public static final String REPORT_DB_DRIVERCLASSNAME = "report.db.driverClassName";
+    public static final String REPORT_DB_USERNAME = "report.db.username";
+    public static final String REPORT_DB_PASSWORD = "report.db.password";
     public static final String SUITE_LISTENER = "suite.listener";
     public static final String OCULUS_URL = "oculus.url";
     public static final String COMPONENT_PROVIDER = "component.provider";
@@ -62,6 +63,7 @@ public class ExperiorConfig {
     private Properties properties;
 
     private TestRunnerConfiguration testRunnerConfiguration = null;
+    private ReportConfiguration reportConfiguration;
     
     private Log logger = LogFactory.getLog(getClass());
     private ExperiorConfig() throws Exception {
@@ -82,6 +84,13 @@ public class ExperiorConfig {
             return str.trim();
         }
         return null;
+    }
+    
+    public ReportConfiguration getReportConfiguration() {
+        if(reportConfiguration==null) {
+            reportConfiguration = ReportConfiguration.loadFromProperties(properties);
+        }
+        return reportConfiguration;
     }
     
     /**

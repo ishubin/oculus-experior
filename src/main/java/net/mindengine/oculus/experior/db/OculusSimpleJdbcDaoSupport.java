@@ -37,10 +37,10 @@ public class OculusSimpleJdbcDaoSupport extends SimpleJdbcDaoSupport {
         ExperiorConfig config = ExperiorConfig.getInstance();
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
 
-        dataSource.setDriverClassName(config.get(ExperiorConfig.REPORTING_DB_DRIVERCLASSNAME));
-        dataSource.setUrl(config.get(ExperiorConfig.REPORTING_DB_URL));
-        dataSource.setUsername(config.get(ExperiorConfig.REPORTING_DB_USERNAME));
-        dataSource.setPassword(config.get(ExperiorConfig.REPORTING_DB_PASSWORD));
+        dataSource.setDriverClassName(config.get(ExperiorConfig.REPORT_DB_DRIVERCLASSNAME));
+        dataSource.setUrl(config.get(ExperiorConfig.REPORT_DB_URL));
+        dataSource.setUsername(config.get(ExperiorConfig.REPORT_DB_USERNAME));
+        dataSource.setPassword(config.get(ExperiorConfig.REPORT_DB_PASSWORD));
         setDataSource(dataSource);
     }
 
