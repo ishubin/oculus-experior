@@ -1,5 +1,8 @@
 package net.mindengine.oculus.experior.reporter;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -10,27 +13,62 @@ public class ReportConfiguration {
     
     private final static String REPORT_BRANCH = "report.branch.";
     private final static String PARENTS = "parents";
+	private static final String OUTPUT_INDENTATION = "report.output.indentation";
+	private static final String MESSAGES_PATH = "report.messages.path";
 
-    private Map<String, ReportBranch> branches = new HashMap<String, ReportBranch>();
+    private Map<String, ReportBranchConfiguration> branches = new HashMap<String, ReportBranchConfiguration>();
+
+    private MessageContainer messageContainer = new MessageContainer();
+    
+    private PrintStream outputStreamOut = System.out;
+    private PrintStream outputStreamErr = System.err;
+    private Integer outputIndentation = 0;
 
     private ReportConfiguration(){
     }
     
     public static ReportConfiguration loadFromProperties(Properties properties) {
-        ReportConfiguration rc = new ReportConfiguration();
+        ReportConfiguration reportConfiguration = new ReportConfiguration();
         
-        for(String propertyName : properties.stringPropertyNames()) {
-            if(propertyName.startsWith(REPORT_BRANCH)) {
-                
-                ReportBranch branch = fetchBranchForProperty(rc, propertyName);
-                processBranchFields(branch, propertyName, properties.getProperty(propertyName));
-                rc.getBranches().put(branch.getName(), branch);
-            }
-        }
-        return rc;
+        loadBranchConfiguration(properties, reportConfiguration);
+        loadStreamConfiguration(properties, reportConfiguration);
+        loadMessageContainer(properties, reportConfiguration);
+        return reportConfiguration;
     }
 
-    private static void processBranchFields(ReportBranch branch, String propertyName, String property) {
+	private static void loadMessageContainer(Properties properties, ReportConfiguration reportConfiguration) {
+		try {
+			String messagesPropertiesPath = properties.getProperty(MESSAGES_PATH);
+			if ( messagesPropertiesPath != null ) {
+				Properties messageProperties = new Properties();
+				messageProperties.load(new FileReader(new File(messagesPropertiesPath.trim())));
+				reportConfiguration.getMessageContainer().loadMessages(messageProperties);
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private static void loadStreamConfiguration(Properties properties, ReportConfiguration reportConfiguration) {
+		String indent = properties.getProperty(OUTPUT_INDENTATION);
+		if(indent != null) {
+			reportConfiguration.setOutputIndentation(Integer.parseInt(indent.trim()));
+		}
+	}
+
+	private static void loadBranchConfiguration(Properties properties, ReportConfiguration reportConfiguration) {
+		for(String propertyName : properties.stringPropertyNames()) {
+            if(propertyName.startsWith(REPORT_BRANCH)) {
+                
+                ReportBranchConfiguration branch = fetchBranchForProperty(reportConfiguration, propertyName);
+                processBranchFields(branch, propertyName, properties.getProperty(propertyName));
+                reportConfiguration.getBranches().put(branch.getName(), branch);
+            }
+        }
+	}
+
+    private static void processBranchFields(ReportBranchConfiguration branch, String propertyName, String property) {
         int length = branch.getName().length() + REPORT_BRANCH.length()+1;
         if(propertyName.length() > length) {
             String branchField = propertyName.substring(length).trim();
@@ -49,11 +87,11 @@ public class ReportConfiguration {
         return branchParents;
     }
 
-    private static ReportBranch fetchBranchForProperty(ReportConfiguration reportConfiguration, String propertyName) {
+    private static ReportBranchConfiguration fetchBranchForProperty(ReportConfiguration reportConfiguration, String propertyName) {
         String branchName = fetchBranchNameFromPropertyName(propertyName);
-        ReportBranch branch = reportConfiguration.getBranches().get(branchName);
+        ReportBranchConfiguration branch = reportConfiguration.getBranches().get(branchName);
         if(branch == null) {
-            branch = new ReportBranch();
+            branch = new ReportBranchConfiguration();
             branch.setName(branchName);
         }
         return branch;
@@ -79,12 +117,45 @@ public class ReportConfiguration {
         return name;
     }
 
-    public Map<String, ReportBranch> getBranches() {
+    public Map<String, ReportBranchConfiguration> getBranches() {
         return branches;
     }
 
-    public void setBranches(Map<String, ReportBranch> branches) {
+    public void setBranches(Map<String, ReportBranchConfiguration> branches) {
         this.branches = branches;
     }
+
+	public Integer getOutputIndentation() {
+		return outputIndentation;
+	}
+
+	public void setOutputIndentation(Integer outputIndentation) {
+		this.outputIndentation = outputIndentation;
+	}
+
+	public PrintStream getOutputStreamErr() {
+		return outputStreamErr;
+	}
+
+	public void setOutputStreamErr(PrintStream outputStreamErr) {
+		this.outputStreamErr = outputStreamErr;
+	}
+
+	public PrintStream getOutputStreamOut() {
+		return outputStreamOut;
+	}
+
+	public void setOutputStreamOut(PrintStream outputStreamOut) {
+		this.outputStreamOut = outputStreamOut;
+	}
+
+	public MessageContainer getMessageContainer() {
+		return messageContainer;
+	}
+
+	public void setMessageContainer(MessageContainer messageContainer) {
+		this.messageContainer = messageContainer;
+	}
+
 
 }

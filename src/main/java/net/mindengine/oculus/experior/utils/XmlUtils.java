@@ -28,7 +28,17 @@ public class XmlUtils {
             if (childName.equals(nodeList.item(i).getNodeName()))
                 return nodeList.item(i).getTextContent();
         }
-        return "";
+        return null;
+    }
+    
+    public static Node getChildNode(Node root, String childName) {
+        NodeList nodeList = root.getChildNodes();
+
+        for (int i = 0; i < nodeList.getLength(); i++) {
+            if (childName.equals(nodeList.item(i).getNodeName()))
+                return nodeList.item(i);
+        }
+        return null;
     }
 
     public static String getNodeAttribute(Node node, String name) {

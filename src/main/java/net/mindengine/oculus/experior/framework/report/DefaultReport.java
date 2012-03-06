@@ -15,21 +15,21 @@
 ******************************************************************************/
 package net.mindengine.oculus.experior.framework.report;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.LinkedList;
+import java.io.PrintStream;
 
 import net.mindengine.oculus.experior.framework.test.OculusTest;
+import net.mindengine.oculus.experior.reporter.MessageBuilder;
+import net.mindengine.oculus.experior.reporter.MessageContainer;
 import net.mindengine.oculus.experior.reporter.Report;
-import net.mindengine.oculus.experior.reporter.ReportCollector;
-import net.mindengine.oculus.experior.reporter.ReportLogo;
-import net.mindengine.oculus.experior.reporter.nodes.ComponentReportNode;
-import net.mindengine.oculus.experior.reporter.nodes.DescriptionReportNode;
+import net.mindengine.oculus.experior.reporter.ReportBranchConfiguration;
+import net.mindengine.oculus.experior.reporter.ReportConfiguration;
+import net.mindengine.oculus.experior.reporter.ReportIcon;
+import net.mindengine.oculus.experior.reporter.nodes.BranchReportNode;
 import net.mindengine.oculus.experior.reporter.nodes.ExceptionReportNode;
-import net.mindengine.oculus.experior.reporter.nodes.NodeCollector;
-import net.mindengine.oculus.experior.reporter.nodes.NodeComparator;
 import net.mindengine.oculus.experior.reporter.nodes.ReportNode;
 import net.mindengine.oculus.experior.reporter.nodes.TextReportNode;
+
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * This is a simple implementation of the report. It is used in
@@ -40,162 +40,230 @@ import net.mindengine.oculus.experior.reporter.nodes.TextReportNode;
  */
 
 public class DefaultReport implements Report {
-    private ReportCollector collector;
 
-
-    public DefaultReport() {
-
-    }
-
-    public DefaultReport(ReportCollector reportCollector) {
-        this.collector = reportCollector;
-    }
-
-    public ReportCollector getCollector() {
-        return collector;
-    }
-
-    public void setReportCollector(ReportCollector collector) {
-        this.collector = collector;
-    }
-
-    public void rootBranch(String name) {
-        rootBranch(name, null, ReportLogo.ACTION);
-    }
-
-    public void rootBranch(String name, String details, ReportLogo logo) {
-        breakRootBranch();
-        ReportNode node = new ComponentReportNode();
-        node.setName(name);
-        node.setText(details);
-        node.setLogo(logo);
-        collector.addNode(node);
-        collector.gotoNode(node);
-    }
-
-    public void branch(String name) {
-        branch(name, null, ReportLogo.COMPONENT);
-    }
-
-    public void branch(String name, String description, ReportLogo logo) {
-        ReportNode node = new ComponentReportNode();
-        node.setName(name);
-        node.setLogo(logo);
-        node.setText(description);
-        collector.addNode(node);
-        collector.gotoNode(node);
-    }
-
-    public void breakBranch() {
-        collector.goUp();
-    }
-
-    public void breakRootBranch() {
-        collector.gotoRoot();
-    }
-
-    public void error(String msg) {
-        error(msg, null, null);
-    }
-
-    public void error(String msg, ReportLogo logo) {
-        collector.addNode(createTextReportNode(msg, null, logo, ReportNode.ERROR));
-    }
-
-    public void error(String msg, String details, ReportLogo logo) {
-        collector.addNode(createTextReportNode(msg, details, logo, ReportNode.ERROR));
-    }
-
-    public void error(Throwable ex) {
-        ex.printStackTrace();
-        collector.addNode(createExceptionReportNode(ex));
-    }
-
-    public void info(String msg) {
-        info(msg, null, null);
-    }
-
-    public void info(String msg, ReportLogo logo) {
-        collector.addNode(createTextReportNode(msg, null, logo, ReportNode.INFO));
-    }
-
-    public void info(String msg, String details, ReportLogo logo) {
-        collector.addNode(createTextReportNode(msg, details, logo, ReportNode.INFO));
-    }
-
-    private ReportNode createExceptionReportNode(Throwable ex) {
-        ExceptionReportNode node = new ExceptionReportNode();
-        node.setThrowable(ex);
-        node.setType(ReportNode.ERROR);
-        node.setLogo(ReportLogo.EXCEPTION);
-        node.setTime(new Date());
-        return node;
-    }
-
-    private TextReportNode createTextReportNode(String msg, String details, ReportLogo logo, String type) {
-        TextReportNode node = new TextReportNode();
-        node.setText(msg);
-        node.setType(type);
-        node.setLogo(logo);
-        node.setTime(new Date());
-
-        if (details != null) {
-            DescriptionReportNode detailsNode = new DescriptionReportNode();
-            detailsNode.setText(details);
-
-            node.getChildren().add(detailsNode);
-        }
-
-        return node;
-    }
-
-    public void warn(String msg) {
-        warn(msg, null, null);
-    }
-
-    public void warn(String msg, String details, ReportLogo logo) {
-        collector.addNode(createTextReportNode(msg, details, logo, ReportNode.WARN));
-    }
-
-    public void setBranchDescription(String text) {
-        ReportNode node = collector.getCaret();
-        node.setText(text);
-    }
-
-    public ReportNode getReportNode() {
-        collector.gotoRoot();
-        return collector.getCaret();
-    }
-
+    protected static final String ROOT = "root";
+    
     /**
-     * Returns the list of all error nodes
-     * 
-     * @return
+     * Used for generating ids for all report nodes
      */
-    public Collection<ReportNode> collectErrorNodes() {
-        collector.gotoRoot();
-        ReportNode reportNode = collector.getCaret();
-        NodeCollector nodeCollector = new NodeCollector();
-        nodeCollector.setNodeComparator(new NodeComparator() {
-
-            public boolean compare(ReportNode reportNode) {
-                if (ReportNode.ERROR.equals(reportNode.getType()))
-                    return true;
-                return false;
-            }
-        });
-        reportNode.collectNodes(nodeCollector);
-
-        return nodeCollector.getNodes();
+    private transient Long uniqueCount = 0L;
+    private BranchReportNode mainBranch;
+    private BranchReportNode caret;
+    private ReportConfiguration reportConfiguration;
+    private MessageContainer messageContainer;
+    
+    public DefaultReport (ReportConfiguration reportConfiguration) {
+        setReportConfiguration(reportConfiguration);
+        messageContainer = reportConfiguration.getMessageContainer();
+        init();
+    }
+    
+    private void init() {
+        mainBranch = new BranchReportNode(ROOT);
+        mainBranch.setReport(this);
+        caret = mainBranch;
     }
 
-    public Collection<String> collectReasons() {
-        Collection<ReportNode> errorNodes = collectErrorNodes();
-
-        Collection<String> reasons = new LinkedList<String>();
-        for (ReportNode reportNode : errorNodes) {
-            reasons.add(reportNode.getReason());
+    private synchronized String getUniqueId(){
+        uniqueCount++;
+        return uniqueCount.toString();
+    }
+    
+    @Override
+    public BranchReportNode branch(String branch) {
+        return branch(branch, null);
+    }
+    
+    @Override
+    public BranchReportNode branch(String branch, String title) {
+    	ReportBranchConfiguration reportBranchConfiguration = getReportConfiguration().getBranches().get(branch);
+        BranchReportNode suitableBranch = findSuitableBranch(reportBranchConfiguration, caret);
+        BranchReportNode newBranchNode = new BranchReportNode(branch).id(getUniqueId()).icon(ReportIcon.COMPONENT).title(title);
+        suitableBranch.addNode(newBranchNode);
+        caret = newBranchNode;
+        newBranchNode.setReport(this);
+        
+        if ( title !=null ) {
+        	outputInfo("- " + title);
         }
-        return reasons;
+        else outputInfo("- " + branch);
+        return newBranchNode;
     }
+
+    private void outputInfo(String text) {
+    	try {
+    		if ( getReportConfiguration().getOutputStreamOut() != null ) {
+    			output( getReportConfiguration().getOutputStreamOut(), text);
+    		}
+    	}
+    	catch (Exception e) {
+		}
+	}
+
+	private void outputError(String text) {
+    	try {
+    		if ( getReportConfiguration().getOutputStreamErr() != null ) {
+    			output( getReportConfiguration().getOutputStreamErr(), text);
+    		}
+    	}
+    	catch (Exception e) {
+		}
+	}
+
+	private void output(PrintStream stream, String text) {
+		printIndentation(stream);
+		stream.println(text);
+	}
+	
+    private void printIndentation(PrintStream stream) {
+		if( getReportConfiguration().getOutputIndentation() > 0) {
+			String indentationBlock = StringUtils.repeat(" ", getReportConfiguration().getOutputIndentation());
+			printIndentation(stream, indentationBlock, caret);
+		}
+	}
+
+	private void printIndentation(PrintStream stream, String indentationBlock,
+			BranchReportNode node) {
+		if( node.getParentBranch() != null ) {
+			stream.print(indentationBlock);
+			printIndentation(stream, indentationBlock, node.getParentBranch());
+		}
+	}
+
+	private void outputError(Throwable exception) {
+    	try {
+    		if ( getReportConfiguration().getOutputStreamErr() != null ) {
+    			exception.printStackTrace(getReportConfiguration().getOutputStreamErr());
+    		}
+    	}
+    	catch (Exception e) {
+		}
+    }
+    
+	private BranchReportNode findSuitableBranch(ReportBranchConfiguration reportBranchConfiguration, BranchReportNode fromBranchNode) {
+        if(reportBranchConfiguration != null) {
+            if(reportBranchConfiguration.allowsParent(fromBranchNode.getBranch())){
+                return fromBranchNode;
+            }
+            else {
+                if(fromBranchNode.getParentBranch() != null) {
+                    return findSuitableBranch(reportBranchConfiguration, fromBranchNode.getParentBranch());
+                }
+            }
+        }
+        return fromBranchNode;
+    }
+
+    
+    @Override
+    public void closeBranchById(String id) {
+        ReportNode node = findNodeById(id, caret);
+        if(node != null && node.getParentBranch() != null) {
+            caret = node.getParentBranch();
+        }
+    }
+    
+    @Override
+    public void closeBranch(BranchReportNode branch) {
+        if(branch.getParentBranch() != null) {
+            caret = branch.getParentBranch();
+        }
+        else {
+            caret = branch; 
+        }
+    }
+
+    private ReportNode findNodeById(String id, BranchReportNode startFromNode) {
+        if(StringUtils.equals(id, startFromNode.getId())) {
+            return startFromNode;
+        }
+        else {
+            if(startFromNode.getParentBranch() != null) {
+                return findNodeById(id, startFromNode.getParentBranch());
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public TextReportNode info(String title) {
+        TextReportNode textNode = new TextReportNode().title(title).level(ReportNode.INFO).icon(ReportIcon.INFO);
+        caret.addNode(textNode);
+        textNode.setReport(this);
+        
+        outputInfo(title);
+        return textNode;
+    }
+
+    @Override
+    public TextReportNode warn(String title) {
+        TextReportNode textNode = new TextReportNode().title(title).level(ReportNode.WARN).icon(ReportIcon.INFO);
+        caret.addNode(textNode);
+        textNode.setReport(this);
+        
+        outputInfo(title);
+        return textNode;
+    }
+
+    @Override
+    public TextReportNode error(String title) {
+        TextReportNode textNode = new TextReportNode().title(title).level(ReportNode.ERROR).icon(ReportIcon.INFO);
+        caret.addNode(textNode);
+        textNode.setReport(this);
+        
+        outputError(title);
+        return textNode;
+    }
+
+    @Override
+    public ExceptionReportNode error(Throwable exception) {
+        ExceptionReportNode node = new ExceptionReportNode();
+        node.exception(exception).icon(ReportIcon.EXCEPTION);
+        node.setReport(this);
+        caret.addNode(node);
+        
+        outputError(exception);
+        return node;
+    }
+    
+
+	@Override
+    public <T extends ReportNode> T addnode(T node) {
+        caret.addNode(node);
+        return node;
+    }
+
+    @Override
+    public BranchReportNode getMainBranch() {
+        return mainBranch;
+    }
+    
+    @Override
+    public MessageBuilder message(String messageName) {
+    	return message(messageName, "Uknown message '" + messageName + "'");
+    }
+    
+    @Override
+    public MessageBuilder message(String messageName, String defaultValue) {
+    	if( getMessageContainer() != null ) {
+    		return getMessageContainer().message(messageName, defaultValue);
+    	}
+    	else return new MessageBuilder(defaultValue);
+    }
+
+	public ReportConfiguration getReportConfiguration() {
+		return reportConfiguration;
+	}
+
+	public void setReportConfiguration(ReportConfiguration reportConfiguration) {
+		this.reportConfiguration = reportConfiguration;
+	}
+
+	public MessageContainer getMessageContainer() {
+		return messageContainer;
+	}
+
+	public void setMessageContainer(MessageContainer messageContainer) {
+		this.messageContainer = messageContainer;
+	}
 }

@@ -1,201 +1,98 @@
-/*******************************************************************************
-* Copyright 2012 Ivan Shubin http://mindengine.net
-* 
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*   http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-******************************************************************************/
 package net.mindengine.oculus.experior.reporter.nodes;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
-import net.mindengine.oculus.experior.reporter.ReportLogo;
+import org.apache.commons.lang3.StringUtils;
 
-/**
- * 
- * @author Ivan Shubin
- */
-public abstract class ReportNode implements Serializable {
+import net.mindengine.oculus.experior.reporter.Report;
+import net.mindengine.oculus.experior.reporter.ReportReason;
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -6033401838310444815L;
-    public final static String INFO = "info";
-    public final static String ERROR = "error";
-    public final static String WARN = "warn";
-    public final static String DEBUG = "debug";
-
-    private String name;
-    private String text;
-    private String type = INFO;
-    private ReportLogo logo;
-    private Date time = new Date();
-
-    private Long id = null;
-    private static long idCounter = 0;
-
-    private List<ReportNode> children = new ArrayList<ReportNode>();
-    private ReportNode shortDescription = null;
-
-    private transient ReportNode parent = null;
-
-    /**
-     * This meta data is used for rendering the report in html
-     */
-    private Map<String, Object> metaData = null;
-
-    public ReportNode getShortDescription() {
-        return shortDescription;
+public abstract class ReportNode {
+    
+    public static final String ERROR = "error".intern();
+    public static final String WARN = "warn".intern();
+    public static final String INFO = "info".intern();
+    
+    private transient Report report;
+    
+    private transient BranchReportNode parentBranch;
+    
+    private String title;
+    private String id;
+    private String icon;
+    private boolean debug = false;
+    private Date date = new Date();
+    private String hint;
+    private String level = INFO;
+    public Report getReport() {
+        return report;
     }
-
-    public void setShortDescription(ReportNode shortDescription) {
-        this.shortDescription = shortDescription;
+    public void setReport(Report report) {
+        this.report = report;
     }
-
-    public ReportNode() {
-        idCounter++;
-        id = new Long(idCounter);
+    public BranchReportNode getParentBranch() {
+        return parentBranch;
     }
-
-    /**
-     * Return the report node in short text format. Used in reasons collecting
-     * 
-     * @return
-     */
-    public String getReason() {
-        if (name == null)
-            return text;
-        return name + ": " + text;
+    public void setParentBranch(BranchReportNode parentBranch) {
+        this.parentBranch = parentBranch;
     }
-
-    public void collectNodes(NodeCollector nodeCollector) {
-        if (nodeCollector.getNodeComparator().compare(this)) {
-            nodeCollector.addNode(this);
-        }
-        for (ReportNode reportNode : children) {
-            reportNode.collectNodes(nodeCollector);
-        }
+    public String getTitle() {
+        return title;
     }
-
-    public String getName() {
-        return name;
+    public void setTitle(String title) {
+        this.title = title;
     }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public List<ReportNode> getChildren() {
-        return children;
-    }
-
-    public void setChildren(List<ReportNode> children) {
-        this.children = children;
-    }
-
-    public ReportLogo getLogo() {
-        return logo;
-    }
-
-    public void setLogo(ReportLogo logo) {
-        this.logo = logo;
-    }
-
-    public Long getId() {
+    public String getId() {
         return id;
     }
-
-    public boolean hasError() {
-        return hasType(ERROR);
+    public void setId(String id) {
+        this.id = id;
+    }
+    public boolean getDebug() {
+        return debug;
+    }
+    public void setDebug(boolean debug) {
+        this.debug = debug;
+    }
+    public Date getDate() {
+        return date;
+    }
+    public void setDate(Date date) {
+        this.date = date;
+    }
+    public String getHint() {
+        return hint;
+    }
+    public void setHint(String hint) {
+        this.hint = hint;
+    }
+    public String getLevel() {
+        return level;
+    }
+    public void setLevel(String level) {
+        this.level = level;
+    }
+    public String getIcon() {
+        return icon;
+    }
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 
-    public boolean hasWarn() {
-        return hasType(WARN);
+    /**
+     * Checkes whether the report is of specified level, in case of branch nodes it also checkes of it has specified level nodes in child nodes
+     * @param level
+     * @return
+     */
+    public boolean hasLevel(String level) {
+        return StringUtils.equals(this.level, level);
     }
-
-    public boolean hasType(String expType) {
-        if (expType.equals(type))
-            return true;
-
-        if (shortDescription != null) {
-            if (shortDescription.hasType(expType))
-                return true;
-        }
-
-        for (ReportNode node : children) {
-            if (node.hasType(expType))
-                return true;
-        }
-        return false;
-    }
-
-    public Date getTime() {
-        return time;
-    }
-
-    public void setTime(Date time) {
-        this.time = time;
-    }
-
-    @Override
-    public String toString() {
-        String str = "[" + this.type + "]";
-        if (text != null) {
-            str += text;
-        } else
-            str += name;
-
-        return str;
-    }
-
-    public void setParent(ReportNode parent) {
-        this.parent = parent;
-    }
-
-    public ReportNode getParent() {
-        return parent;
-    }
-
-    public boolean getHasChildren() {
-        if (children != null && children.size() > 0)
-            return true;
-        return false;
-    }
-
-    public void setMetaData(Map<String, Object> metaData) {
-        this.metaData = metaData;
-    }
-
-    public Map<String, Object> getMetaData() {
-        return metaData;
-    }
+    
+    /**
+     * Collects reasons for specified level 
+     * @param levels
+     * @return
+     */
+    public abstract List<ReportReason> collectReasons(String...levels);
 }

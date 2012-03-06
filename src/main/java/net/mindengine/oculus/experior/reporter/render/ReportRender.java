@@ -15,10 +15,22 @@
 ******************************************************************************/
 package net.mindengine.oculus.experior.reporter.render;
 
+import java.util.List;
+
+import net.mindengine.oculus.experior.reporter.ReportReason;
 import net.mindengine.oculus.experior.reporter.nodes.ReportNode;
 
 public interface ReportRender {
     public String render(ReportNode report);
 
     public ReportNode decode(String report) throws Exception;
+
+    /**
+     * Saves collected failure reasons
+     * @param reasons
+     * @return
+     */
+    public String renderReasons(List<ReportReason> reasons);
+    
+    public List<ReportReason> decodeReasons(String reasons) throws Exception;
 }

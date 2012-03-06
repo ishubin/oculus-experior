@@ -17,7 +17,7 @@ package net.mindengine.oculus.experior.framework.verification.number;
 
 import net.mindengine.oculus.experior.reporter.Report;
 import net.mindengine.oculus.experior.reporter.ReportDesign;
-import net.mindengine.oculus.experior.reporter.ReportLogo;
+import net.mindengine.oculus.experior.reporter.ReportIcon;
 
 public class DefaultNumberVerificator extends SimpleNumberVerificator{
 
@@ -55,13 +55,13 @@ public class DefaultNumberVerificator extends SimpleNumberVerificator{
     
     public void reportInfo(String message, String details) {
         if(report!=null) {
-            report.info("The value of "+fetchName() + " is "+ReportDesign.variableValue(getRealValue()) +" "+  message, details, ReportLogo.VALIDATION_PASSED);
+            report.info("The value of "+fetchName() + " is "+ReportDesign.variableValue(getRealValue()) +" "+  message).details(details).icon(ReportIcon.VALIDATION_PASSED);
         }
     }
     
     public void reportError(String message, String details) {
         if(report!=null) {
-            report.info("The value of "+fetchName() + " is "+ReportDesign.variableValue(getRealValue()) +" "+  message, details, ReportLogo.VALIDATION_FAILED);
+            report.info("The value of "+fetchName() + " is "+ReportDesign.variableValue(getRealValue()) +" "+  message).details(details).icon(ReportIcon.VALIDATION_FAILED);
         }
     }
     

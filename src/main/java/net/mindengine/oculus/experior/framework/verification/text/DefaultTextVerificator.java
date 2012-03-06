@@ -17,7 +17,7 @@ package net.mindengine.oculus.experior.framework.verification.text;
 
 import net.mindengine.oculus.experior.reporter.Report;
 import net.mindengine.oculus.experior.reporter.ReportDesign;
-import net.mindengine.oculus.experior.reporter.ReportLogo;
+import net.mindengine.oculus.experior.reporter.ReportIcon;
 
 public class DefaultTextVerificator extends SimpleTextVerificator {
 
@@ -48,7 +48,7 @@ public class DefaultTextVerificator extends SimpleTextVerificator {
     
     public void reportInfo(String message, String details) {
         if(report!=null) {
-            report.info(message, details, ReportLogo.VALIDATION_PASSED);
+            report.info(message).details(details).icon(ReportIcon.VALIDATION_PASSED);
         }
     }
     
@@ -61,7 +61,7 @@ public class DefaultTextVerificator extends SimpleTextVerificator {
 
     public void reportError(String message, String details) {
         if(report!=null) {
-            report.info(message, details, ReportLogo.VALIDATION_FAILED);
+            report.info(message).details(details).icon(ReportIcon.VALIDATION_FAILED);
         }
     }
     

@@ -15,82 +15,80 @@
 ******************************************************************************/
 package net.mindengine.oculus.experior.reporter;
 
-import java.util.Collection;
+import java.util.Map;
 
+import net.mindengine.oculus.experior.reporter.nodes.BranchReportNode;
+import net.mindengine.oculus.experior.reporter.nodes.ExceptionReportNode;
 import net.mindengine.oculus.experior.reporter.nodes.ReportNode;
+import net.mindengine.oculus.experior.reporter.nodes.TextReportNode;
+
 
 public interface Report {
 
     /**
-     * Breaks all current branches and creates a branch at a root level
-     * @param name Name of the branch
-     */
-    public void rootBranch(String name);
-
-    /**
-     * Breaks all current branches and creates a branch at a root level
-     * @param name Name of the branch
-     * @param description Short description of the branch
-     * @param logo
-     */
-    public void rootBranch(String name, String description, ReportLogo logo);
-
-    /**
-     * Creates new branch and attaches it to the current branch
-     * @param name Name of the branch
-     */
-    public void branch(String name);
-
-    /**
-     * Creates new branch and attaches it to the current branch
-     * @param name Name of the branch
-     * @param description Short description of the branch
-     * @param logo
-     */
-    public void branch(String name, String description, ReportLogo logo);
-
-    /**
-     * Breaks current branch and puts branch caret to a higher branch
-     */
-    public void breakBranch();
-
-    /**
-     * Breaks all branches and puts branch caret to a root level
-     */
-    public void breakRootBranch();
-
-    public void error(String msg);
-
-    public void error(String msg, ReportLogo logo);
-
-    public void error(String msg, String details, ReportLogo logo);
-
-    public void error(Throwable ex);
-
-    public void info(String msg);
-
-    public void info(String msg, ReportLogo logo);
-
-    public void info(String msg, String details, ReportLogo logo);
-
-    public void warn(String msg);
-
-    public void warn(String msg, String details, ReportLogo logo);
-
-    public void setBranchDescription(String text);
-
-    public ReportNode getReportNode();
-
-    /**
-     * Returns the list of all error nodes
-     * 
+     * Creates a branch in the node and attaches it to the proper branch according to report branches configuration
+     * @param branch Type of branch defined in report branch configuration
      * @return
      */
-    public Collection<ReportNode> collectErrorNodes();
+    public BranchReportNode branch(String branch);
+    
+    /**
+     * Creates a branch in the node and attaches it to the proper branch according to report branches configuration
+     * @param branch Type of branch defined in report branch configuration
+     * @param title Title of branch
+     * @return
+     */
+    public BranchReportNode branch(String branch, String title);
+    
+    /**
+     * Closes branch with specified id and moves to one level higher
+     * @param id Generated identifier of branch
+     */
+    public void closeBranchById(String id);
+    
+    /**
+     * Closes specified branch and moves to one level higher
+     * @param id Generated identifier of branch
+     */
+    public void closeBranch(BranchReportNode branch);
 
     /**
-     * Collects all reason of failures within all report branches
-     * @return List of failure reasons from all report branches
+     * Adds text report node with "info" level to the report or to the current branch
+     * @param title
+     * @return
      */
-    public Collection<String> collectReasons();
+    public TextReportNode info(String title);
+    
+    /**
+     * Adds text report node with "warn" level to the report or to the current branch
+     * @param title
+     * @return
+     */
+    public TextReportNode warn(String title);
+    
+    /**
+     * Adds text report node with "error" level to the report or to the current branch
+     * @param title
+     * @return
+     */
+    public TextReportNode error(String title);
+    
+    /**
+     * Adds exception report node with "error" level to the report or to the current branch
+     * @param exception
+     * @return
+     */
+    public ExceptionReportNode error(Throwable exception);
+    
+    /**
+     * Returns main branch which contains whole report
+     * @return
+     */
+    public BranchReportNode getMainBranch();
+    
+    public <T extends ReportNode> T addnode(T node);
+
+	public MessageBuilder message(String messageName);
+	
+	public MessageBuilder message(String messageName, String defaultValue);
 }

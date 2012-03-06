@@ -16,12 +16,13 @@
 package net.mindengine.oculus.experior.framework.test;
 
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import net.mindengine.oculus.experior.ClassUtils;
+import net.mindengine.oculus.experior.ExperiorConfig;
 import net.mindengine.oculus.experior.annotations.InputParameter;
 import net.mindengine.oculus.experior.annotations.OutputParameter;
 import net.mindengine.oculus.experior.annotations.events.AfterTest;
@@ -36,10 +37,10 @@ import net.mindengine.oculus.experior.db.TestBean;
 import net.mindengine.oculus.experior.db.TestRunBean;
 import net.mindengine.oculus.experior.exception.TestConfigurationException;
 import net.mindengine.oculus.experior.framework.report.DefaultReport;
-import net.mindengine.oculus.experior.reporter.DefaultReportCollector;
 import net.mindengine.oculus.experior.reporter.Report;
-import net.mindengine.oculus.experior.reporter.ReportDesign;
-import net.mindengine.oculus.experior.reporter.ReportLogo;
+import net.mindengine.oculus.experior.reporter.ReportIcon;
+import net.mindengine.oculus.experior.reporter.ReportReason;
+import net.mindengine.oculus.experior.reporter.nodes.BranchReportNode;
 import net.mindengine.oculus.experior.reporter.nodes.ReportNode;
 import net.mindengine.oculus.experior.reporter.render.ReportRender;
 import net.mindengine.oculus.experior.reporter.render.XmlReportRender;
@@ -53,8 +54,6 @@ import net.mindengine.oculus.experior.test.descriptors.RollbackInformation;
 import net.mindengine.oculus.experior.test.descriptors.TestDefinition;
 import net.mindengine.oculus.experior.test.descriptors.TestDescriptor;
 import net.mindengine.oculus.experior.test.descriptors.TestInformation;
-
-import org.apache.commons.lang3.StringEscapeUtils;
 
 public class OculusTest {
     protected Report report;
@@ -84,7 +83,7 @@ public class OculusTest {
             /*
              * Creating an instance of reporter
              */
-            report = new DefaultReport(new DefaultReportCollector());
+            report = new DefaultReport(ExperiorConfig.getInstance().getReportConfiguration());
             testSession.getData().put("report", report);
         } else {
             report = (Report) testSession.getData().get("report");
@@ -132,33 +131,25 @@ public class OculusTest {
             testRunBean.setStartTime(startTime);
             testRunBean.setEndTime(new Date());
 
-            ReportNode reportNode = report.getReportNode();
+            ReportNode reportNode = report.getMainBranch();
 
             ReportRender reportRender = new XmlReportRender();
             String reportData = reportRender.render(reportNode);
 
             testRunBean.setReport(reportData);
 
-            if (testInformation.getFailureCause() != null || reportNode.hasError()) {
+            if (testInformation.getFailureCause() != null || reportNode.hasLevel(ReportNode.ERROR)) {
                 testRunBean.setStatus("FAILED");
                 /*
                  * Fetching reasons and translating them to the needed format
                  */
-                Collection<String> reasonsList = report.collectReasons();
-                StringBuffer buffer = new StringBuffer();
-                boolean bSep = false;
-                for (String reason : reasonsList) {
-                    if (bSep)
-                        buffer.append("<r>");
-                    buffer.append(StringEscapeUtils.escapeXml(ReportDesign.removeDecorationTags(reason)));
-                    bSep = true;
-                }
-                testRunBean.setReasons(buffer.toString());
+                List<ReportReason> reasons = report.getMainBranch().collectReasons(ReportNode.ERROR);
+                testRunBean.setReasons(reportRender.renderReasons(reasons));
 
                 // Setting test status to testInformation so it could be fetched
                 // by test-run-manager system
                 testInformation.setStatus(TestInformation.STATUS_FAILED);
-            } else if (reportNode.hasWarn()) {
+            } else if (reportNode.hasLevel(ReportNode.WARN)) {
                 testRunBean.setStatus("WARNING");
                 
                 // Setting test status to testInformation so it could be fetched
@@ -248,17 +239,17 @@ public class OculusTest {
 
     @BeforeAction
     public void onBeforeAction(ActionInformation actionInformation) {
-        report.rootBranch(actionInformation.getActionName());
+        report.branch(BranchReportNode.ACTION).title(actionInformation.getActionName());
     }
 
     @BeforeRollback
     public void onBeforeRollback(RollbackInformation rollbackInformation) {
-        report.rootBranch(rollbackInformation.getName(), null, ReportLogo.ROLLBACK);
+        report.branch(BranchReportNode.ACTION).title(rollbackInformation.getName()).icon(ReportIcon.ROLLBACK);
     }
 
     @BeforeErrorHandler
     public void onBeforeError(ErrorInformation errorInformation) {
-        report.rootBranch(errorInformation.getName());
+        report.branch(BranchReportNode.ACTION).title(errorInformation.getName());
     }
 
     @OnTestFailure
