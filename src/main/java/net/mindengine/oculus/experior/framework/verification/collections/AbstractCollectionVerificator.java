@@ -20,6 +20,17 @@ import java.util.LinkedList;
 
 public abstract class AbstractCollectionVerificator implements CollectionVerificator, Iterable<Object>, Cloneable {
  
+	protected static final String HASEXACTLY_FAIL_DEFAULT_TEMPLATE = "The ${name} is not same as expected list";
+	protected static final String HASEXACTLY_PASS_DEFAULT_TEMPLATE = "The ${name} is same as expected list";
+	protected static final String HASALL_PASS_DEFAULT_TEMPLATE = "The ${name} contains all specified expected items";
+	protected static final String HASALL_FAIL_DEFAULT_TEMPLATE = "The ${name} doesn't contain all specified expected items";
+	protected static final String HASANY_FAIL_DEFAULT_TEMPLATE = "The ${name} contains at least on item from expected list";
+	protected static final String HASANY_PASS_DEFAULT_TEMPLATE = "The ${name} doesn't contain any item from expected list";
+	protected static final String HASNONE_PASS_DEFAULT_TEMPLATE = "The ${name} doesn't contain any unexpected item";
+	protected static final String HASNONE_FAIL_DEFAULT_TEMPLATE = "The ${name} contains unexpected items";
+	protected static final String HASONLY_PASS_DEFAULT_TEMPLATE = "The ${name} contains only items from expected list";
+	protected static final String HASONLY_FAIL_DEFAULT_TEMPLATE = "The ${name} doesn't contain only items from expected list";
+	
     /**
      * 
      * @return Amount of elements in collection which represents the real value
@@ -145,7 +156,4 @@ public abstract class AbstractCollectionVerificator implements CollectionVerific
         if(expectedList.size()==0) return true;
         return false;
     }
-    
-    
-    
 }
