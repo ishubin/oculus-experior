@@ -15,13 +15,41 @@
 ******************************************************************************/
 package net.mindengine.oculus.experior.framework.verification.text;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import net.mindengine.oculus.experior.reporter.Report;
 import net.mindengine.oculus.experior.reporter.ReportDesign;
 import net.mindengine.oculus.experior.reporter.ReportIcon;
 
 public class DefaultTextVerificator extends SimpleTextVerificator {
 
-    private Report report;
+    private static final String TEXT_VERIFICATOR_HEADER = "TextVerificator";
+	private static final String CONTAINS_PASS_DEFAULT_TEMPLATE = null;
+	private static final String CONTAINS_FAIL_DEFAULT_TEMPLATE = null;
+	private static final String DOESNT_CONTAIN_PASS_DEFAULT_TEMPLATE = null;
+	private static final String DOESNT_CONTAIN_FAIL_DEFAULT_TEMPLATE = null;
+	private static final String MATCHES_PASS_DEFAULT_TEMPLATE = null;
+	private static final String MATCHES_FAIL_DEFAULT_TEMPLATE = null;
+	private static final String DOESNOTMATCH_PASS_DEFAULT_TEMPLATE = null;
+	private static final String DOESNOTMATCH_FAIL_DEFAULT_TEMPLATE = null;
+	private static final String STARTSWITH_PASS_DEFAULT_TEMPLATE = null;
+	private static final String STARTSWITH_FAIL_DEFAULT_TEMPLATE = null;
+	private static final String DOESNOTSTARTWITH_PASS_DEFAULT_TEMPLATE = null;
+	private static final String DOESNOTSTARTWITH_FAIL_DEFAULT_TEMPLATE = null;
+	private static final String IS_PASS_DEFAULT_TEMPLATE = null;
+	private static final String IS_FAIL_DEFAULT_TEMPLATE = null;
+	private static final String ISNOT_PASS_DEFAULT_TEMPLATE = null;
+	private static final String ISNOT_FAIL_DEFAULT_TEMPLATE = null;
+	private static final String ENDSWITH_PASS_DEFAULT_TEMPLATE = null;
+	private static final String ENDSWITH_FAIL_DEFAULT_TEMPLATE = null;
+	private static final String DOESNOTENDWITH_PASS_DEFAULT_TEMPLATE = null;
+	private static final String DOESNOTENDWITH_FAIL_DEFAULT_TEMPLATE = null;
+	private static final String ISONEOF_PASS_DEFAULT_TEMPLATE = null;
+	private static final String ISONEOF_FAIL_DEFAULT_TEMPLATE = null;
+	private static final String ISNOTONEOF_PASS_DEFAULT_TEMPLATE = null;
+	private static final String ISNOTONEOF_FAIL_DEFAULT_TEMPLATE = null;
+	private Report report;
     private String name;
     
     public DefaultTextVerificator() {
@@ -38,18 +66,211 @@ public class DefaultTextVerificator extends SimpleTextVerificator {
         setReport(report);
     }
     
-    public void reportInfo(String message) {
-        reportInfo(message, null);
+    @Override
+    public boolean contains(String string) {
+    	boolean check = super.contains(string);
+    	if( report != null ){
+	    	if(check){
+	            reportInfo(report.message(TEXT_VERIFICATOR_HEADER + ".contains.pass", CONTAINS_PASS_DEFAULT_TEMPLATE).putAll(mapSimple(string)).toString(),
+	                    details("Should contain", string));
+	        }
+	        else {
+	        	reportError(report.message(TEXT_VERIFICATOR_HEADER + ".contains.fail", CONTAINS_FAIL_DEFAULT_TEMPLATE).putAll(mapSimple(string)).toString(),
+	                    details("Should contain", string));
+	        }
+    	}
+        return check;
     }
-    
-    public void reportError(String message) {
-        reportError(message, null);
-    }
-    
-    public void reportInfo(String message, String details) {
-        if(report!=null) {
-            report.info(message).details(details).icon(ReportIcon.VALIDATION_PASSED);
+
+    @Override
+    public boolean doesNotContain(String string) {
+        boolean check = super.doesNotContain(string);
+        if( report != null ){
+	        if(check){
+	            reportInfo(report.message(TEXT_VERIFICATOR_HEADER + ".doesNotContain.pass", DOESNT_CONTAIN_PASS_DEFAULT_TEMPLATE).putAll(mapSimple(string)).toString(),
+	                    details("Should not contain", string));
+	        }
+	        else {
+	        	reportError(report.message(TEXT_VERIFICATOR_HEADER + ".doesNotContain.fail", DOESNT_CONTAIN_FAIL_DEFAULT_TEMPLATE).putAll(mapSimple(string)).toString(),
+	                    details("Should not contain", string));
+	        }
         }
+        return check;
+    }
+
+	@Override
+    public boolean matches(String regEx) {
+        boolean check = super.matches(regEx);
+        if( report != null ){
+	        if(check){
+	            reportInfo(report.message(TEXT_VERIFICATOR_HEADER + ".matches.pass", MATCHES_PASS_DEFAULT_TEMPLATE).putAll(mapSimple(regEx)).toString(),
+	                    details("Pattern", regEx));
+	        }
+	        else {
+	        	reportError(report.message(TEXT_VERIFICATOR_HEADER + ".matches.fail", MATCHES_FAIL_DEFAULT_TEMPLATE).putAll(mapSimple(regEx)).toString(),
+	                    details("Pattern", regEx));
+	        }
+        }
+        return check;
+    }
+
+    
+    @Override
+    public boolean doesNotMatch(String regEx) {
+        boolean check = super.doesNotMatch(regEx);
+        if( report != null ){
+	        if(check){
+	            reportInfo(report.message(TEXT_VERIFICATOR_HEADER + ".doesNotMatch.pass", DOESNOTMATCH_PASS_DEFAULT_TEMPLATE).putAll(mapSimple(regEx)).toString(),
+	                    details("Pattern", regEx));
+	        }
+	        else {
+	        	reportError(report.message(TEXT_VERIFICATOR_HEADER + ".doesNotMatch.fail", DOESNOTMATCH_FAIL_DEFAULT_TEMPLATE).putAll(mapSimple(regEx)).toString(),
+	                    details("Pattern", regEx));
+	        }
+        }
+        return check;
+    }
+
+    @Override
+    public boolean startsWith(String string) {
+        boolean check = super.startsWith(string);
+        if( report != null ){
+	        if(check){
+	            reportInfo(report.message(TEXT_VERIFICATOR_HEADER + ".startsWith.pass", STARTSWITH_PASS_DEFAULT_TEMPLATE).putAll(mapSimple(string)).toString(),
+	                    details("Prefix", string));
+	        }
+	        else {
+	        	reportError(report.message(TEXT_VERIFICATOR_HEADER + ".startsWith.fail", STARTSWITH_FAIL_DEFAULT_TEMPLATE).putAll(mapSimple(string)).toString(),
+	                    details("Prefix", string));
+	        }
+        }
+        return check;
+    }
+    
+    @Override
+    public boolean doesNotStartWith(String string) {
+        boolean check = super.doesNotStartWith(string);
+        if( report != null ){
+	        if(check){
+	            reportInfo(report.message(TEXT_VERIFICATOR_HEADER + ".doesNotStartWith.pass", DOESNOTSTARTWITH_PASS_DEFAULT_TEMPLATE).putAll(mapSimple(string)).toString(),
+	                    details("Prefix", string));
+	        }
+	        else {
+	        	reportError(report.message(TEXT_VERIFICATOR_HEADER + ".doesNotStartWith.fail", DOESNOTSTARTWITH_FAIL_DEFAULT_TEMPLATE).putAll(mapSimple(string)).toString(),
+	                    details("Prefix", string));
+	        }
+        }
+        return check;
+    }
+
+    @Override
+    public boolean is(String string) {
+        boolean check = super.is(string);
+        if( report != null ){
+	        if(check){
+	            reportInfo(report.message(TEXT_VERIFICATOR_HEADER + ".is.pass", IS_PASS_DEFAULT_TEMPLATE).putAll(mapSimple(string)).toString(),
+	                    details("Expected", string));
+	        }
+	        else {
+	        	reportError(report.message(TEXT_VERIFICATOR_HEADER + ".is.fail", IS_FAIL_DEFAULT_TEMPLATE).putAll(mapSimple(string)).toString(),
+	                    details("Expected", string));
+	        }
+        }
+        return check;
+    }
+
+    @Override
+    public boolean isNot(String string) {
+        boolean check = super.isNot(string);
+        if( report != null ){
+	        if(check){
+	            reportInfo(report.message(TEXT_VERIFICATOR_HEADER + ".isNot.pass", ISNOT_PASS_DEFAULT_TEMPLATE).putAll(mapSimple(string)).toString(),
+	                    details("Unexpected", string));
+	        }
+	        else {
+	        	reportError(report.message(TEXT_VERIFICATOR_HEADER + ".isNot.fail", ISNOT_FAIL_DEFAULT_TEMPLATE).putAll(mapSimple(string)).toString(),
+	                    details("Unexpected", string));
+	        }
+        }
+        return check;
+    }
+
+    @Override
+    public boolean endsWith(String string) {
+        boolean check = super.endsWith(string);
+        if( report != null ){
+	        if(check){
+	            reportInfo(report.message(TEXT_VERIFICATOR_HEADER + ".endsWith.pass", ENDSWITH_PASS_DEFAULT_TEMPLATE).putAll(mapSimple(string)).toString(),
+	                    details("Suffix", string));
+	        }
+	        else {
+	        	reportError(report.message(TEXT_VERIFICATOR_HEADER + ".endsWith.fail", ENDSWITH_FAIL_DEFAULT_TEMPLATE).putAll(mapSimple(string)).toString(),
+	                    details("Suffix", string));
+	        }
+        }
+        return check;
+    }
+    
+    @Override
+    public boolean doesNotEndWith(String string) {
+        boolean check = super.doesNotEndWith(string);
+        if( report != null ){
+	        if(check){
+	            reportInfo(report.message(TEXT_VERIFICATOR_HEADER + ".doesNotEndWith.pass", DOESNOTENDWITH_PASS_DEFAULT_TEMPLATE).putAll(mapSimple(string)).toString(),
+	                    details("Prefix", string));
+	        }
+	        else {
+	        	reportError(report.message(TEXT_VERIFICATOR_HEADER + ".doesNotEndWith.fail", DOESNOTENDWITH_FAIL_DEFAULT_TEMPLATE).putAll(mapSimple(string)).toString(),
+	                    details("Prefix", string));
+	        }
+        }
+        return check;
+    }
+
+    @Override
+    public boolean isOneOf(String... strings) {
+        boolean check = super.isOneOf(strings);
+        if( report != null ){
+	        if(check){
+	            reportInfo(report.message(TEXT_VERIFICATOR_HEADER + ".isOneOf.pass", ISONEOF_PASS_DEFAULT_TEMPLATE).putAll(mapSimple()).toString(),
+	            		details("Expected text list", ReportDesign.breakline() + ReportDesign.listValues((Object[])strings)));
+	        }
+	        else {
+	        	reportError(report.message(TEXT_VERIFICATOR_HEADER + ".isOneOf.fail", ISONEOF_FAIL_DEFAULT_TEMPLATE).putAll(mapSimple()).toString(),
+	        			details("Expected text list", ReportDesign.breakline()+ReportDesign.listValues((Object[])strings)));
+	        }
+        }
+        return check;
+    }
+    
+    @Override
+    public boolean isNotOneOf(String... strings) {
+        boolean check = super.isNotOneOf(strings);
+        if( report != null ){
+	        if(check){
+	            reportInfo(report.message(TEXT_VERIFICATOR_HEADER + ".isNotOneOf.pass", ISNOTONEOF_PASS_DEFAULT_TEMPLATE).putAll(mapSimple()).toString(),
+	            		details("Unexpected text list", ReportDesign.breakline() + ReportDesign.listValues((Object[])strings)));
+	        }
+	        else {
+	        	reportError(report.message(TEXT_VERIFICATOR_HEADER + ".isNotOneOf.fail", ISNOTONEOF_FAIL_DEFAULT_TEMPLATE).putAll(mapSimple()).toString(),
+	        			details("Unexpected text list", ReportDesign.breakline()+ReportDesign.listValues((Object[])strings)));
+	        }
+        }
+        return check;
+    }
+    
+    private String shortString(String string) {
+		if( string != null) {
+			if ( string.length() > 50 ) {
+				return string.substring(0, 50) + "...";
+			}
+			else return string;
+		}
+		return "";
+	}
+    
+    private void reportInfo(String message, String details) {
+        report.info(message).details(details).icon(ReportIcon.VALIDATION_PASSED);
     }
     
     private String fetchName() {
@@ -59,160 +280,27 @@ public class DefaultTextVerificator extends SimpleTextVerificator {
         else return "Undefined";
     }
 
-    public void reportError(String message, String details) {
-        if(report!=null) {
-            report.info(message).details(details).icon(ReportIcon.VALIDATION_FAILED);
-        }
+    private void reportError(String message, String details) {
+        report.error(message).details(details).icon(ReportIcon.VALIDATION_FAILED);
     }
     
     private String details(String expectedCaption, String expectedString) {
         return ReportDesign.bold("Real text: ")+ReportDesign.string(getRealValue())+ReportDesign.breakline()+ReportDesign.bold(expectedCaption+": ")+ReportDesign.string(expectedString);
     }
     
+    private Map<String, Object> mapSimple(String expected) {
+		Map<String, Object> map = mapSimple();
+    	map.put("expected", shortString(expected));
+		return map;
+	}
 
-    @Override
-    public boolean contains(String string) {
-        boolean check = super.contains(string);
-        if(check){
-            reportInfo("The text of "+fetchName()+" contains the expected "+ReportDesign.shortString(string),
-                    details("Should contain", string));
-        }
-        else reportError("The text of "+fetchName()+" doesn't contain the expected "+ReportDesign.shortString(string),
-                details("Should contain", string));
-        return check;
-    }
+	private Map<String, Object> mapSimple() {
+		Map<String, Object> map = new HashMap<String, Object>();
+    	map.put("name", fetchName());
+    	map.put("real", getRealValue());
+		return map;
+	}
 
-    @Override
-    public boolean doesNotContain(String string) {
-        boolean check = super.doesNotContain(string);
-        if(check){
-            reportInfo("The text of "+fetchName()+" doesn't contain the "+ReportDesign.shortString(string)+" as expected",
-                    details("Should not contain", string));
-        }
-        else reportError("The text of "+fetchName()+" contains the unexpected "+ReportDesign.shortString(string),
-                details("Should not contain", string));
-        return check;
-    }
-
-    @Override
-    public boolean doesNotMatch(String regEx) {
-        boolean check = super.doesNotMatch(regEx);
-        if(check){
-            reportInfo("The text of "+fetchName()+" doesn't match pattern "+ReportDesign.shortString(regEx)+" as expected",
-                    details("Pattern", regEx));
-        }
-        else reportError("The text of "+fetchName()+" matches the unexpected pattern "+ReportDesign.shortString(regEx),
-                details("Pattern", regEx));
-        return check;
-    }
-
-    @Override
-    public boolean doesNotStartWith(String string) {
-        boolean check = super.doesNotStartWith(string);
-        if(check){
-            reportInfo("The text of "+fetchName()+" doesn't start with text "+ReportDesign.shortString(string)+" as expected",
-                    details("Prefix", string));
-        }
-        else reportError("The text of "+fetchName()+" starts with unexpected text "+ReportDesign.shortString(string),
-                details("Prefix", string));
-        return check;
-    }
-
-    @Override
-    public boolean is(String string) {
-        boolean check = super.is(string);
-        if(check){
-            reportInfo("The text of "+fetchName()+" is same as expected text "+ReportDesign.shortString(string),
-                    details("Expected text", string));
-        }
-        else reportError("The text of "+fetchName()+" not the same as expected text "+ReportDesign.shortString(string),
-                details("Expected text", string));
-        return check;
-    }
-
-    @Override
-    public boolean isNot(String string) {
-        boolean check = super.isNot(string);
-        if(check){
-            reportInfo("The text of "+fetchName()+" is not same as unexpected text "+ReportDesign.shortString(string),
-                    details("Unexpected text", string));
-        }
-        else reportError("The text of "+fetchName()+" is the same as unexpected text "+ReportDesign.shortString(string),
-                details("Unexpected text", string));
-        return check;
-    }
-
-    @Override
-    public boolean matches(String regEx) {
-        boolean check = super.matches(regEx);
-        if(check){
-            reportInfo("The text of "+fetchName()+" matches the expected pattern "+ReportDesign.shortString(regEx),
-                    details("Pattern", regEx));
-        }
-        else reportError("The text of "+fetchName()+" doesn't match the expected pattern "+ReportDesign.shortString(regEx),
-                details("Pattern", regEx));
-        return check;
-    }
-
-    @Override
-    public boolean startsWith(String string) {
-        boolean check = super.startsWith(string);
-        if(check){
-            reportInfo("The text of "+fetchName()+" starts with text "+ReportDesign.shortString(string)+" as expected",
-                    details("Prefix", string));
-        }
-        else reportError("The text of "+fetchName()+" doesn't start with expected text "+ReportDesign.shortString(string),
-                details("Prefix", string));
-        return check;
-    }
-    
-    @Override
-    public boolean endsWith(String string) {
-        boolean check = super.endsWith(string);
-        if(check){
-            reportInfo("The text of "+fetchName()+" ends with text "+ReportDesign.shortString(string)+" as expected",
-                    details("Suffix", string));
-        }
-        else reportError("The text of "+fetchName()+" doesn't end with expected text "+ReportDesign.shortString(string),
-                details("Suffix", string));
-        return check;
-    }
-    
-    @Override
-    public boolean doesNotEndWith(String string) {
-        boolean check = super.doesNotEndWith(string);
-        if(check){
-            reportInfo("The text of "+fetchName()+" doesn't end with unexpected text "+ReportDesign.shortString(string),
-                    details("Suffix", string));
-        }
-        else reportError("The text of "+fetchName()+" ends with unexpected text "+ReportDesign.shortString(string),
-                details("Suffix", string));
-        return check;
-    }
-
-    @Override
-    public boolean isOneOf(String... strings) {
-        boolean check = super.isOneOf(strings);
-        if(check){
-            reportInfo("The text of "+fetchName()+" is in specified list of expected texts",
-                    details("Expected texts", ReportDesign.breakline()+ReportDesign.listValues((Object[])strings)));
-        }
-        else reportError("The text of "+fetchName()+" is not in specified list of expected texts",
-                details("Expected texts", ReportDesign.breakline()+ReportDesign.listValues((Object[])strings)));
-        return check;
-    }
-    
-    @Override
-    public boolean isNotOneOf(String... strings) {
-        boolean check = super.isNotOneOf(strings);
-        if(check){
-            reportInfo("The text of "+fetchName()+" is ont in specified list of unexpected texts",
-                    details("Unexpected texts", ReportDesign.breakline()+ReportDesign.listValues((Object[])strings)));
-        }
-        else reportError("The text of "+fetchName()+" is in specified list of unexpected texts",
-                details("Unexpected texts", ReportDesign.breakline()+ReportDesign.listValues((Object[])strings)));
-        return check;
-    }
     
     public void setName(String name) {
         this.name = name;

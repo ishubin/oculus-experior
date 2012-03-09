@@ -15,10 +15,13 @@
 ******************************************************************************/
 package net.mindengine.oculus.experior.tests;
 
+import java.io.ByteArrayOutputStream;
 import java.util.LinkedList;
 import java.util.List;
 
 import junit.framework.Assert;
+import net.mindengine.oculus.experior.ExperiorConfig;
+import net.mindengine.oculus.experior.framework.report.DefaultReport;
 import net.mindengine.oculus.experior.framework.verification.checkpoint.Checkpoint;
 import net.mindengine.oculus.experior.framework.verification.collections.CollectionVerificator;
 import net.mindengine.oculus.experior.framework.verification.collections.DefaultNumberCollectionVerificator;
@@ -26,11 +29,12 @@ import net.mindengine.oculus.experior.framework.verification.collections.Default
 import net.mindengine.oculus.experior.framework.verification.collections.SimpleNumberCollectionVerificator;
 import net.mindengine.oculus.experior.framework.verification.collections.SimpleTextCollectionVerificator;
 import net.mindengine.oculus.experior.framework.verification.number.DefaultNumberVerificator;
-import net.mindengine.oculus.experior.framework.verification.number.SimpleNumberVerificator;
 import net.mindengine.oculus.experior.framework.verification.number.NumberVerificator;
+import net.mindengine.oculus.experior.framework.verification.number.SimpleNumberVerificator;
 import net.mindengine.oculus.experior.framework.verification.text.DefaultTextVerificator;
 import net.mindengine.oculus.experior.framework.verification.text.SimpleTextVerificator;
 import net.mindengine.oculus.experior.framework.verification.text.TextVerificator;
+import net.mindengine.oculus.experior.reporter.Report;
 
 import org.junit.Test;
 
@@ -83,8 +87,15 @@ public class VerificatorTest {
     @Test
     public void defaultNumberIntegerVerificatorCheck() {
         
-        NumberVerificator verificator = new DefaultNumberVerificator(10);
-        Assert.assertFalse(verificator.isNull());
+        DefaultNumberVerificator verificator = new DefaultNumberVerificator(10);
+        verificator.setName("test var");
+        DefaultReport report = new DefaultReport(ExperiorConfig.getInstance().getReportConfiguration());
+    	ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    	report.getReportConfiguration().setOutputStreamOut(baos);
+    	report.getReportConfiguration().setOutputStreamErr(baos);
+    	verificator.setReport(report);
+    	
+    	Assert.assertFalse(verificator.isNull());
         Assert.assertTrue(verificator.isNotNull());
         Assert.assertTrue(verificator.is(10));
         Assert.assertFalse(verificator.is(9));
@@ -122,6 +133,43 @@ public class VerificatorTest {
         
         Assert.assertTrue(verificator.mod(3).is(1));
         Assert.assertFalse(verificator.mod(2).is(1));
+        
+        String outputResult = baos.toString();
+        StringBuilder expected = new StringBuilder();
+        
+        expected.append("test var is null as expected");
+        expected.append("test var is 10 as expected (Should not be null)");
+        expected.append("test var is 10 as expected");
+		expected.append("test var is 10 as expected");
+		expected.append("test var is 10 as expected");
+		expected.append("test var is 10 as expected (It should not be 9)");
+		expected.append("test var is 10 as expected (It should not be 10)");
+		expected.append("test var is 10 and is less than 10 as expected");
+		expected.append("test var is 10 and is less than or equals 10 as expected");
+		expected.append("test var is 10 and is less than 11 as expected");
+		expected.append("test var is 10 and is greater than 11 as expected");
+		expected.append("test var is 10 and is greater than or equals 10 as expected");
+		expected.append("test var is 10 and is greater than 10 as expected");
+		expected.append("test var is 10 as expected");
+		expected.append("test var is 10 but it is not in specified list");
+		expected.append("test var is 10 but should not be in specified list");
+		expected.append("test var is 10 as expected");
+		expected.append("test var is 10 as expected (Should be in range of [4, 13])");
+		expected.append("test var is 10 but it should be in range of [11, 100])");
+        expected.append("test var is 10 but it should not be in range of [4, 13])");
+        expected.append("test var is 10 as expected (Should not be in range of [11, 13])");
+		expected.append("test var is 12 as expected");
+		expected.append("test var is 12 as expected");
+		expected.append("test var is 8 as expected");
+		expected.append("test var is 8 as expected");
+		expected.append("test var is 20 as expected");
+		expected.append("test var is 20 as expected");
+		expected.append("test var is 5 as expected");
+		expected.append("test var is 5 as expected");
+		expected.append("test var is 1 as expected");
+		expected.append("test var is 0 as expected");
+
+        Assert.assertEquals("Output of report is not as expected", expected.toString(), outputResult.replace("\n", ""));
     }
     
     @Test
@@ -241,8 +289,12 @@ public class VerificatorTest {
     
     @Test
     public void defaultTextVerificatorCheck() {
-        TextVerificator verificator = new DefaultTextVerificator("This is a test string");
-        
+    	DefaultTextVerificator verificator = new DefaultTextVerificator("This is a test string");
+        DefaultReport report = new DefaultReport(ExperiorConfig.getInstance().getReportConfiguration());
+    	ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    	report.getReportConfiguration().setOutputStreamOut(baos);
+    	report.getReportConfiguration().setOutputStreamErr(baos);
+        verificator.setReport(report);
         Assert.assertTrue(verificator.is("This is a test string"));
         Assert.assertFalse(verificator.is("This is not a test string"));
         
@@ -281,6 +333,39 @@ public class VerificatorTest {
         Assert.assertTrue(verificator.replace("is a test", "").is("This  string"));
         Assert.assertTrue(verificator.substring(1,5).is("his "));
         Assert.assertTrue(verificator.substring(15).is("string"));
+        
+        String outputResult = baos.toString();
+        StringBuilder expected = new StringBuilder();
+        
+        expected.append("Undefined is \"This is a test string\" as expected");
+        expected.append("Undefined is not \"This is not a test string\"");
+        expected.append("Undefined is not \"This is not a test string\" as expected");
+        expected.append("Undefined is \"This is a test string\" but it is not expected");
+        expected.append("Undefined contains the expected \"is a test \" text");
+        expected.append("Undefined does not contain the expected \"is an test \" text");
+        expected.append("Undefined does not contain specified text \"is an test \" as expected");   
+        expected.append("Undefined contains text \"is a test \" but it is not expected");
+        expected.append("Undefined starts with \"This is\" text as expected");
+        expected.append("Undefined does not start with \"this is\" text");
+        expected.append("Undefined does not start with \"this is\" text as expected");
+        expected.append("Undefined starts with \"This is\" text but it is not expected");
+        expected.append("Undefined ends with \"test string\" text as expected");
+        expected.append("Undefined does not start with \"test strin\" text");
+        expected.append("Undefined does not end with \"test strin\" text as expected"); 
+        expected.append("Undefined ends with \"test string\" text but it is not expected");
+        expected.append("Undefined matches the specified pattern \"This is .* string\" as expected");
+        expected.append("Undefined does not match the specified pattern \"This is .* a string\"");
+        expected.append("Undefined is one of the specified items");
+        expected.append("Undefined is not one of the specified items");
+        expected.append("Undefined is one of the specified items but it is not expected");  
+        expected.append("Undefined is not one of the specified items as expected");
+        expected.append("Undefined starts with \"this is\" text as expected");
+        expected.append("Undefined starts with \"THIS IS\" text as expected");
+        expected.append("Undefined is \"This  string\" as expected");
+        expected.append("Undefined is \"his \" as expected");
+        expected.append("Undefined is \"string\" as expected");
+        Assert.assertEquals("Output of report is not as expected", expected.toString(), outputResult.replace("\n", ""));
+        
     }
     
     @Test
@@ -383,15 +468,32 @@ public class VerificatorTest {
     }
     
     @Test
-    public void defaultTextCollectionVerificatorCheck() {
-        SimpleTextCollectionVerificator verificator= new DefaultTextCollectionVerificator("One","Two","Three","Four","Five");
+    public void defaultTextCollectionVerificatorCheckWithReport() {
+    	DefaultTextCollectionVerificator verificator= new DefaultTextCollectionVerificator("One","Two","Three","Four","Five");
+    	DefaultReport report = new DefaultReport(ExperiorConfig.getInstance().getReportConfiguration());
+    	ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    	report.getReportConfiguration().setOutputStreamOut(baos);
+    	verificator.setReport(report);
+        verificator.setName("test list");
         
         Assert.assertTrue(verificator.toLowerCase().hasExactly("one", "two", "three", "four", "five"));
-        Assert.assertTrue(verificator.toUpperCase().hasExactly("ONE", "TWO", "THREE", "FOUR", "FIVE"));
-        Assert.assertTrue(verificator.replace("Three", "oops").hasExactly("One", "Two", "oops", "Four", "Five"));
+        Assert.assertTrue(verificator.toUpperCase().hasAll("ONE", "TWO", "THREE", "FOUR", "FIVE"));
+        Assert.assertTrue(verificator.replace("Three", "oops").hasOnly("One", "Two", "oops", "Four", "Five"));
         Assert.assertTrue(verificator.substring(2).hasExactly("e", "o", "ree", "ur", "ve"));
         Assert.assertTrue(verificator.substring(0,2).hasExactly("On", "Tw", "Th", "Fo", "Fi"));
         Assert.assertTrue(verificator.replaceAll("e",".").hasExactly("On.", "Two", "Thr..", "Four", "Fiv."));
+        
+        String outputResult = baos.toString();
+        StringBuilder expected = new StringBuilder();
+        
+        expected.append("test list is exactly the same as expected list");
+        expected.append("test list contains all specified expected items");
+        expected.append("test list contains only items from expected list");
+        expected.append("test list is exactly the same as expected list");
+        expected.append("test list is exactly the same as expected list");
+        expected.append("test list is exactly the same as expected list");
+        
+        Assert.assertEquals("Output of report is not as expected", expected.toString(), outputResult.replace("\n", ""));
         
     }
     
@@ -400,11 +502,11 @@ public class VerificatorTest {
         
         final List<Boolean>results = new LinkedList<Boolean>();
         Checkpoint checkpoint = new Checkpoint() {
-            public void passed() {
+            public void whenPassed() {
                 results.add(true);
             }
             
-            public void failed() {
+            public void whenFailed() {
                 results.add(false);
             }
         };

@@ -15,10 +15,12 @@ public class ReportCollectionVerificatorHelper {
 	private List<?> realCollection;
 	
 	public boolean report(boolean checkState, String methodName, String passDefaultTemplate, String failDefaultTemplate, Object... args) {
-		if(checkState) {
-            reportInfo(msg(methodName + ".pass").put("name", getCollectionName()).toString(), args);
-        }
-        else reportError(msg(methodName + ".fail").put("name", getCollectionName()).toString(), args);
+		if(report != null) {
+			if(checkState) {
+	            reportInfo(msg(methodName + ".pass").put("name", getCollectionName()).toString(), args);
+	        }
+	        else reportError(msg(methodName + ".fail").put("name", getCollectionName()).toString(), args);
+		}
 		return checkState;
 	}
     

@@ -17,9 +17,9 @@ package net.mindengine.oculus.experior.framework.verification.checkpoint;
 
 public abstract class Checkpoint implements Cloneable{
 
-    public abstract void passed();
+    public abstract void whenPassed();
     
-    public abstract void failed();
+    public abstract void whenFailed();
 
     protected Boolean status = true;
     
@@ -37,9 +37,9 @@ public abstract class Checkpoint implements Cloneable{
     public void done() {
         if(checkStarted) {
             if(status) {
-                passed();
+                whenPassed();
             }
-            else failed();
+            else whenFailed();
         }
     }
 

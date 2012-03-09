@@ -6,14 +6,22 @@ import java.util.Map;
 public class MessageBuilder {
 
 	private String template;
-	private Map<String, String> variables = new HashMap<String, String>();
+	private Map<String, Object> variables = new HashMap<String, Object>();
 	
 	public MessageBuilder(String template) {
 		this.template = template;
 	}
 	
-	public MessageBuilder put(String name, String value) {
+	public MessageBuilder() {
+	}
+	
+	public MessageBuilder put(String name, Object value) {
 		variables.put(name, value);
+		return this;
+	}
+	
+	public MessageBuilder putAll(Map<String, Object> map) {
+		variables.putAll(map);
 		return this;
 	}
 	
@@ -24,11 +32,20 @@ public class MessageBuilder {
 			text = "";
 		}
 		
-		for(Map.Entry<String, String> var : variables.entrySet()) {
-			text = text.replace("${" + var.getKey() + "}", var.getValue());
-		}
+		text = text.trim();
 		
+		for(Map.Entry<String, Object> var : variables.entrySet()) {
+			Object varValue = var.getValue();
+			if (varValue == null) {
+				varValue = "";
+			}
+			text = text.replace("${" + var.getKey() + "}", varValue.toString());
+		}
 		return text;
 	}
-
+	
+	public MessageBuilder setTemplate(String template) {
+		this.template = template;
+		return this;
+	}
 }

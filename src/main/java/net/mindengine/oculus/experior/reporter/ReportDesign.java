@@ -185,6 +185,7 @@ public class ReportDesign {
             text = text.replace("[br]", "");
             text = text.replace("[null-value/]", "null");
             text = removeTag("string", text);
+            text = removeTag("number", text);
             text = removeTag("url", text);
             text = removeTag("xpath", text);
             text = text.replaceAll("\\[screenshot\\].*/report/screenshot(.*?)\\[/screenshot\\]", "");

@@ -2,7 +2,7 @@ package net.mindengine.oculus.experior.reporter;
 
 import java.io.File;
 import java.io.FileReader;
-import java.io.PrintStream;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -20,8 +20,8 @@ public class ReportConfiguration {
 
     private MessageContainer messageContainer = new MessageContainer();
     
-    private PrintStream outputStreamOut = System.out;
-    private PrintStream outputStreamErr = System.err;
+    private OutputStream outputStreamOut = System.out;
+    private OutputStream outputStreamErr = System.err;
     private Integer outputIndentation = 0;
 
     private ReportConfiguration(){
@@ -133,20 +133,20 @@ public class ReportConfiguration {
 		this.outputIndentation = outputIndentation;
 	}
 
-	public PrintStream getOutputStreamErr() {
-		return outputStreamErr;
-	}
-
-	public void setOutputStreamErr(PrintStream outputStreamErr) {
-		this.outputStreamErr = outputStreamErr;
-	}
-
-	public PrintStream getOutputStreamOut() {
+	public OutputStream getOutputStreamOut() {
 		return outputStreamOut;
 	}
 
-	public void setOutputStreamOut(PrintStream outputStreamOut) {
+	public void setOutputStreamOut(OutputStream outputStreamOut) {
 		this.outputStreamOut = outputStreamOut;
+	}
+
+	public OutputStream getOutputStreamErr() {
+		return outputStreamErr;
+	}
+
+	public void setOutputStreamErr(OutputStream outputStreamErr) {
+		this.outputStreamErr = outputStreamErr;
 	}
 
 	public MessageContainer getMessageContainer() {

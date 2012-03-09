@@ -15,7 +15,8 @@
 ******************************************************************************/
 package net.mindengine.oculus.experior.framework.report;
 
-import java.io.PrintStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
 import net.mindengine.oculus.experior.framework.test.OculusTest;
 import net.mindengine.oculus.experior.reporter.MessageBuilder;
@@ -23,11 +24,13 @@ import net.mindengine.oculus.experior.reporter.MessageContainer;
 import net.mindengine.oculus.experior.reporter.Report;
 import net.mindengine.oculus.experior.reporter.ReportBranchConfiguration;
 import net.mindengine.oculus.experior.reporter.ReportConfiguration;
+import net.mindengine.oculus.experior.reporter.ReportDesign;
 import net.mindengine.oculus.experior.reporter.ReportIcon;
 import net.mindengine.oculus.experior.reporter.nodes.BranchReportNode;
 import net.mindengine.oculus.experior.reporter.nodes.ExceptionReportNode;
 import net.mindengine.oculus.experior.reporter.nodes.ReportNode;
 import net.mindengine.oculus.experior.reporter.nodes.TextReportNode;
+import net.mindengine.oculus.experior.utils.ExceptionUtils;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -90,71 +93,6 @@ public class DefaultReport implements Report {
         return newBranchNode;
     }
 
-    private void outputInfo(String text) {
-    	try {
-    		if ( getReportConfiguration().getOutputStreamOut() != null ) {
-    			output( getReportConfiguration().getOutputStreamOut(), text);
-    		}
-    	}
-    	catch (Exception e) {
-		}
-	}
-
-	private void outputError(String text) {
-    	try {
-    		if ( getReportConfiguration().getOutputStreamErr() != null ) {
-    			output( getReportConfiguration().getOutputStreamErr(), text);
-    		}
-    	}
-    	catch (Exception e) {
-		}
-	}
-
-	private void output(PrintStream stream, String text) {
-		printIndentation(stream);
-		stream.println(text);
-	}
-	
-    private void printIndentation(PrintStream stream) {
-		if( getReportConfiguration().getOutputIndentation() > 0) {
-			String indentationBlock = StringUtils.repeat(" ", getReportConfiguration().getOutputIndentation());
-			printIndentation(stream, indentationBlock, caret);
-		}
-	}
-
-	private void printIndentation(PrintStream stream, String indentationBlock,
-			BranchReportNode node) {
-		if( node.getParentBranch() != null ) {
-			stream.print(indentationBlock);
-			printIndentation(stream, indentationBlock, node.getParentBranch());
-		}
-	}
-
-	private void outputError(Throwable exception) {
-    	try {
-    		if ( getReportConfiguration().getOutputStreamErr() != null ) {
-    			exception.printStackTrace(getReportConfiguration().getOutputStreamErr());
-    		}
-    	}
-    	catch (Exception e) {
-		}
-    }
-    
-	private BranchReportNode findSuitableBranch(ReportBranchConfiguration reportBranchConfiguration, BranchReportNode fromBranchNode) {
-        if(reportBranchConfiguration != null) {
-            if(reportBranchConfiguration.allowsParent(fromBranchNode.getBranch())){
-                return fromBranchNode;
-            }
-            else {
-                if(fromBranchNode.getParentBranch() != null) {
-                    return findSuitableBranch(reportBranchConfiguration, fromBranchNode.getParentBranch());
-                }
-            }
-        }
-        return fromBranchNode;
-    }
-
-    
     @Override
     public void closeBranchById(String id) {
         ReportNode node = findNodeById(id, caret);
@@ -250,6 +188,78 @@ public class DefaultReport implements Report {
     	}
     	else return new MessageBuilder(defaultValue);
     }
+    
+    private void outputInfo(String text) {
+    	try {
+    		if ( getReportConfiguration().getOutputStreamOut() != null ) {
+    			output( getReportConfiguration().getOutputStreamOut(), text);
+    		}
+    	}
+    	catch (Exception e) {
+		}
+	}
+
+	private void outputError(String text) {
+    	try {
+    		if ( getReportConfiguration().getOutputStreamErr() != null ) {
+    			output( getReportConfiguration().getOutputStreamErr(), text);
+    		}
+    	}
+    	catch (Exception e) {
+		}
+	}
+
+	private void output(OutputStream stream, String text) throws IOException {
+		printIndentation(stream);
+		if( text !=null ) {
+			stream.write((ReportDesign.removeDecorationTags(text) + "\n").getBytes());
+		}
+	}
+	
+    private void printIndentation(OutputStream stream) throws IOException {
+		if( getReportConfiguration().getOutputIndentation() > 0) {
+			String indentationBlock = StringUtils.repeat(" ", getReportConfiguration().getOutputIndentation());
+			printIndentation(stream, indentationBlock, caret);
+		}
+	}
+
+	private void printIndentation(OutputStream stream, String indentationBlock, BranchReportNode node) throws IOException {
+		if( node.getParentBranch() != null ) {
+			stream.write(indentationBlock.getBytes());
+			printIndentation(stream, indentationBlock, node.getParentBranch());
+		}
+	}
+
+	private void outputError(Throwable exception) {
+    	try {
+    		if ( getReportConfiguration().getOutputStreamErr() != null ) {
+    			printStackTraceToStream(exception, getReportConfiguration().getOutputStreamErr());
+    		}
+    	}
+    	catch (Exception e) {
+		}
+    }
+    
+	private void printStackTraceToStream(Throwable exception, OutputStream stream) throws IOException {
+		stream.write(ExceptionUtils.convertExceptionToString(exception).getBytes());
+		stream.write("\n".getBytes());
+		
+	}
+
+	private BranchReportNode findSuitableBranch(ReportBranchConfiguration reportBranchConfiguration, BranchReportNode fromBranchNode) {
+        if(reportBranchConfiguration != null) {
+            if(reportBranchConfiguration.allowsParent(fromBranchNode.getBranch())){
+                return fromBranchNode;
+            }
+            else {
+                if(fromBranchNode.getParentBranch() != null) {
+                    return findSuitableBranch(reportBranchConfiguration, fromBranchNode.getParentBranch());
+                }
+            }
+        }
+        return fromBranchNode;
+    }
+
 
 	public ReportConfiguration getReportConfiguration() {
 		return reportConfiguration;

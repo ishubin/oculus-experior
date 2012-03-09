@@ -15,13 +15,44 @@
 ******************************************************************************/
 package net.mindengine.oculus.experior.framework.verification.number;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import net.mindengine.oculus.experior.reporter.Report;
 import net.mindengine.oculus.experior.reporter.ReportDesign;
 import net.mindengine.oculus.experior.reporter.ReportIcon;
 
 public class DefaultNumberVerificator extends SimpleNumberVerificator{
 
-    private String name;
+	private static final String SHOULD_BE_IN_THE_LIST = "Should be in the list";
+	private static final String SHOULD_NOT_BE_IN_THE_LIST = "Should not be in the list";
+	private static final String NUMBER_VERIFICATOR_HEADER = "NumberVerificator";
+	private static final String IS_PASS_DEFAULT_TEMPLATE = "The value of ${name} is [number]${real}[/number] as expected";
+	private static final String IS_FAIL_DEFAULT_TEMPLATE = "The value of ${name} is [number]${real}[/number] but [number]${expected}[/number] is expected";
+	private static final String IS_GREATER_THAN_PASS_DEFAULT_TEMPLATE = "The value of ${name} is [number]${real}[/number] and is greater than [number]${expected}[/number] as expected";
+	private static final String IS_GREATER_THAN_FAIL_DEFAULT_TEMPLATE = "The value of ${name} is [number]${real}[/number] but it should be greater than [number]${expected}[/number]";
+	private static final String IS_GREATER_THAN_OR_EQUALS_PASS_DEFAULT_TEMPLATE = "The value of ${name} is [number]${real}[/number] and is greater than or equals [number]${expected}[/number] as expected";
+	private static final String IS_GREATER_THAN_OR_EQUALS_FAIL_DEFAULT_TEMPLATE = "The value of ${name} is [number]${real}[/number] but it should be greater or equal to [number]${expected}[/number]";
+	private static final String IS_LESS_THAN_PASS_DEFAULT_TEMPLATE = "The value of ${name} is [number]${real}[/number] and is less than [number]${expected}[/number] as expected";
+	private static final String IS_LESS_THAN_FAIL_DEFAULT_TEMPLATE = "The value of ${name} is [number]${real}[/number] but it should be less than [number]${expected}[/number]";
+	private static final String IS_LESS_THAN_OR_EQUALS_PASS_DEFAULT_TEMPLATE = "The value of ${name} is [number]${real}[/number] and is less than or equals [number]${expected}[/number] as expected";
+	private static final String IS_LESS_THAN_OR_EQUALS_FAIL_DEFAULT_TEMPLATE = "The value of ${name} is [number]${real}[/number] but it should be less or equal to [number]${expected}[/number]";
+	private static final String IS_NOT_PASS_DEFAULT_TEMPLATE = "The value of ${name} is [number]${real}[/number] as expected (It should not be [number]${expected}[/number])";
+	private static final String IS_NOT_FAIL_DEFAULT_TEMPLATE = "The value of ${name} is [number]${real}[/number] but it is not expected";
+	private static final String IS_NULL_PASS_DEFAULT_TEMPLATE = "The value of ${name} is [null-value/] as expected";
+	private static final String IS_NULL_FAIL_DEFAULT_TEMPLATE = "The value of ${name} is [number]${real}[/number] but [null-value/] value is expected";
+	private static final String IS_NOT_NULL_PASS_DEFAULT_TEMPLATE = "The value of ${name} is [number]${real}[/number] as expected (Should not be [null-value/])";
+	private static final String IS_NOT_NULL_FAIL_DEFAULT_TEMPLATE = "The value of ${name} is [null-value/] but it is not expected";
+	private static final String IS_IN_RANGE_PASS_DEFAULT_TEMPLATE = "The value of ${name} is [number]${real}[/number] as expected (Should be in range of [[number]${start}[/number], [number]${end}[/number]])";
+	private static final String IS_IN_RANGE_FAIL_DEFAULT_TEMPLATE = "The value of ${name} is [number]${real}[/number] but it should be in range of [[number]${start}[/number], [number]${end}[/number]])";
+	private static final String IS_NOT_IN_RANGE_PASS_DEFAULT_TEMPLATE = "The value of ${name} is [number]${real}[/number] as expected (Should not be in range of [[number]${start}[/number], [number]${end}[/number]])";
+	private static final String IS_NOT_IN_RANGE_FAIL_DEFAULT_TEMPLATE = "The value of ${name} is [number]${real}[/number] but it should not be in range of [[number]${start}[/number], [number]${end}[/number]])";
+	private static final String IS_ONE_OF_PASS_DEFAULT_TEMPLATE = "The value of ${name} is [number]${real}[/number] as expected";
+	private static final String IS_ONE_OF_FAIL_DEFAULT_TEMPLATE = "The value of ${name} is [number]${real}[/number] but it is not in specified list";
+	private static final String IS_NOT_ONE_OF_PASS_DEFAULT_TEMPLATE = "The value of ${name} is [number]${real}[/number] as expected";
+	private static final String IS_NOT_ONE_OF_FAIL_DEFAULT_TEMPLATE = "The value of ${name} is [number]${real}[/number] but should not be in specified list";
+	
+	private String name;
     private Report report;
     
     public DefaultNumberVerificator() {
@@ -42,147 +73,162 @@ public class DefaultNumberVerificator extends SimpleNumberVerificator{
         if(name!=null) {
             return name;
         }
-        else return ReportDesign.bold("Unknown");
-    }
-    
-    public void reportInfo(String message) {
-        reportInfo(message, null);
-    }
-    
-    public void reportError(String message) {
-        reportError(message, null);
-    }
-    
-    public void reportInfo(String message, String details) {
-        if(report!=null) {
-            report.info("The value of "+fetchName() + " is "+ReportDesign.variableValue(getRealValue()) +" "+  message).details(details).icon(ReportIcon.VALIDATION_PASSED);
-        }
-    }
-    
-    public void reportError(String message, String details) {
-        if(report!=null) {
-            report.info("The value of "+fetchName() + " is "+ReportDesign.variableValue(getRealValue()) +" "+  message).details(details).icon(ReportIcon.VALIDATION_FAILED);
-        }
+        else return "Unknown";
     }
     
     @Override
     public boolean is(Number expected) {
-        boolean check = super.is(expected);
-        if(check) {
-            reportInfo("as expected");
-        }
-        else reportError("but it is not as expected "+ReportDesign.variableValue(expected));
-        return check;
+    	return reportSimple(super.is(expected), 
+    			expected, 
+    			"is",  
+    			IS_PASS_DEFAULT_TEMPLATE, IS_FAIL_DEFAULT_TEMPLATE);
     }
 
-    @Override
+
+	@Override
     public boolean isGreaterThan(Number expected) {
-        boolean check = super.isGreaterThan(expected);
-        if(check) {
-            reportInfo("and it is greater than expected "+ReportDesign.variableValue(expected));
-        }
-        else reportError("but it is not greater than expected "+ReportDesign.variableValue(expected));
-        return check;
+		return reportSimple(super.isGreaterThan(expected), 
+				expected,
+				"isGreaterThan", 
+    			IS_GREATER_THAN_PASS_DEFAULT_TEMPLATE, IS_GREATER_THAN_FAIL_DEFAULT_TEMPLATE);
     }
 
     @Override
     public boolean isGreaterThanOrEquals(Number expected) {
-        boolean check = super.isGreaterThanOrEquals(expected);
-        if(check) {
-            reportInfo("and it is greater than expected or equals "+ReportDesign.variableValue(expected));
-        }
-        else reportError("but it is less than expected "+ReportDesign.variableValue(expected));
-        return check;
-    }
-
-    @Override
-    public boolean isInRange(Number start, Number end) {
-        boolean check = super.isInRange(start, end);
-        if(check) {
-            reportInfo("and it is in expected range ["+ReportDesign.variableValue(start)+", "+ReportDesign.variableValue(end)+"]");
-        }
-        else reportError("but it is not in expected range ["+ReportDesign.variableValue(start)+", "+ReportDesign.variableValue(end)+"]");
-        return check;
+    	return reportSimple(super.isGreaterThanOrEquals(expected), 
+    			expected,
+    			"isGreaterThanOrEquals", 
+    			IS_GREATER_THAN_OR_EQUALS_PASS_DEFAULT_TEMPLATE, IS_GREATER_THAN_OR_EQUALS_FAIL_DEFAULT_TEMPLATE);
     }
 
     @Override
     public boolean isLessThan(Number expected) {
-        boolean check = super.isLessThan(expected);
-        if(check) {
-            reportInfo("and it is less than expected "+ReportDesign.variableValue(expected));
-        }
-        else reportError("but it is not less than expected "+ReportDesign.variableValue(expected));
-        return check;
+    	return reportSimple(super.isLessThan(expected), 
+				expected,
+				"isLessThan", 
+    			IS_LESS_THAN_PASS_DEFAULT_TEMPLATE, IS_LESS_THAN_FAIL_DEFAULT_TEMPLATE);
     }
 
     @Override
     public boolean isLessThanOrEquals(Number expected) {
-        boolean check = super.isLessThanOrEquals(expected);
-        if(check) {
-            reportInfo("and it is less than expected or equals "+ReportDesign.variableValue(expected));
-        }
-        else reportError("but it is greater than expected "+ReportDesign.variableValue(expected));
-        return check;
+    	return reportSimple(super.isLessThanOrEquals(expected), 
+    			expected,
+    			"isLessThanOrEquals", 
+    			IS_LESS_THAN_OR_EQUALS_PASS_DEFAULT_TEMPLATE, IS_LESS_THAN_OR_EQUALS_FAIL_DEFAULT_TEMPLATE);
     }
 
     @Override
     public boolean isNot(Number expected) {
-        boolean check = super.isNot(expected);
+    	return reportSimple(super.isNot(expected), 
+    			expected,
+    			"isNot", 
+    			IS_NOT_PASS_DEFAULT_TEMPLATE, IS_NOT_FAIL_DEFAULT_TEMPLATE);
+    }
+    
+    @Override
+    public boolean isNull() {
+    	return reportSimple(super.isNull(), 
+    			null,
+    			"isNull", 
+    			IS_NULL_PASS_DEFAULT_TEMPLATE, IS_NULL_FAIL_DEFAULT_TEMPLATE);
+    }
+
+    @Override
+    public boolean isNotNull() {
+    	return reportSimple(super.isNotNull(), 
+    			null,
+    			"isNotNull", 
+    			IS_NOT_NULL_PASS_DEFAULT_TEMPLATE, IS_NOT_NULL_FAIL_DEFAULT_TEMPLATE);
+    }
+
+    @Override
+    public boolean isInRange(Number start, Number end) {
+    	Map<String, Object > map = new HashMap<String, Object>();
+    	map.put("name", fetchName());
+    	map.put("real", getRealValue());
+    	map.put("start", start);
+    	map.put("end",end);
+        boolean check = super.isInRange(start, end);
         if(check) {
-            reportInfo("as expected");
+            report.info(report.message(NUMBER_VERIFICATOR_HEADER + ".isInRange.pass", IS_IN_RANGE_PASS_DEFAULT_TEMPLATE).putAll(map).toString()).icon(ReportIcon.VALIDATION_PASSED);
         }
-        else reportError("but it is not as expected");
+        else {
+        	report.error(report.message(NUMBER_VERIFICATOR_HEADER + ".isInRange.fail", IS_IN_RANGE_FAIL_DEFAULT_TEMPLATE).putAll(map).toString()).icon(ReportIcon.VALIDATION_FAILED);
+        }
         return check;
     }
 
     @Override
     public boolean isNotInRange(Number start, Number end) {
+    	Map<String, Object > map = new HashMap<String, Object>();
+    	map.put("name", fetchName());
+    	map.put("real", getRealValue());
+    	map.put("start", start);
+    	map.put("end",end);
         boolean check = super.isNotInRange(start, end);
         if(check) {
-            reportInfo("and it is not inrange ["+ReportDesign.variableValue(start)+", "+ReportDesign.variableValue(end)+"] as expected");
+            report.info(report.message(NUMBER_VERIFICATOR_HEADER + ".isNotInRange.pass", IS_NOT_IN_RANGE_PASS_DEFAULT_TEMPLATE).putAll(map).toString()).icon(ReportIcon.VALIDATION_PASSED);
         }
-        else reportError("but it is in range ["+ReportDesign.variableValue(start)+", "+ReportDesign.variableValue(end)+"] which is not as expected");
+        else {
+        	report.error(report.message(NUMBER_VERIFICATOR_HEADER + ".isNotInRange.fail", IS_NOT_IN_RANGE_FAIL_DEFAULT_TEMPLATE).putAll(map).toString()).icon(ReportIcon.VALIDATION_FAILED);
+        }
         return check;
     }
-
-    @Override
-    public boolean isNotNull() {
-        boolean check = super.isNotNull();
-        if(check) {
-            reportInfo("and it is not "+ReportDesign.nullValue()+" as expected");
-        }
-        else reportError("but it is not as expected");
-        return check;
-    }
-
+    
     @Override
     public boolean isNotOneOf(Number... args) {
-        boolean check = super.isNotOneOf(args);
+    	Map<String, Object > map = new HashMap<String, Object>();
+    	map.put("name", fetchName());
+    	map.put("real", getRealValue());
+    	boolean check = super.isNotOneOf(args);
         if(check) {
-            reportInfo("and it is not in specified list as expected", ReportDesign.listValues((Object[])args));
+            report.info(report.message(NUMBER_VERIFICATOR_HEADER + ".isNotOneOf.pass", IS_NOT_ONE_OF_PASS_DEFAULT_TEMPLATE).putAll(map).toString()).details(expectedList(SHOULD_NOT_BE_IN_THE_LIST, args)).icon(ReportIcon.VALIDATION_PASSED);
         }
-        else reportError("and it is in specified list which is not expected", ReportDesign.listValues((Object[])args));
-        return check;
-    }
-
-    @Override
-    public boolean isNull() {
-        boolean check = super.isNull();
-        if(check) {
-            reportInfo("as expected");
+        else {
+        	report.error(report.message(NUMBER_VERIFICATOR_HEADER + ".isNotOneOf.fail", IS_NOT_ONE_OF_FAIL_DEFAULT_TEMPLATE).putAll(map).toString()).details(expectedList(SHOULD_NOT_BE_IN_THE_LIST, args)).icon(ReportIcon.VALIDATION_FAILED);
         }
-        else reportError("but "+ReportDesign.nullValue()+" is expected");
         return check;
     }
 
     @Override
     public boolean isOneOf(Number... args) {
-        boolean check = super.isOneOf(args);
+    	Map<String, Object > map = new HashMap<String, Object>();
+    	map.put("name", fetchName());
+    	map.put("real", getRealValue());
+    	boolean check = super.isOneOf(args);
         if(check) {
-            reportInfo("and it is in expected list", ReportDesign.listValues((Object[])args));
+            report.info(report.message(NUMBER_VERIFICATOR_HEADER + ".isOneOf.pass", IS_ONE_OF_PASS_DEFAULT_TEMPLATE).putAll(map).toString()).details(expectedList(SHOULD_BE_IN_THE_LIST, args)).icon(ReportIcon.VALIDATION_PASSED);
         }
-        else reportError("and it is not in expected list", ReportDesign.listValues((Object[])args));
+        else {
+        	report.error(report.message(NUMBER_VERIFICATOR_HEADER + ".isOneOf.fail", IS_ONE_OF_FAIL_DEFAULT_TEMPLATE).putAll(map).toString()).details(expectedList(SHOULD_BE_IN_THE_LIST, args)).icon(ReportIcon.VALIDATION_FAILED);
+        }
         return check;
+    }
+
+    private String expectedList(String caption, Number[] args) {
+		StringBuffer text = new StringBuffer();
+		text.append(ReportDesign.bold(caption)).append(ReportDesign.breakline()).append(ReportDesign.listValues((Object[])args));
+		return text.toString();
+	}
+
+	private boolean reportSimple(boolean state, Number expected, String methodName, String isPassDefaultTemplate, String isFailDefaultTemplate) {
+    	if( state ) {
+    		String title = report.message(NUMBER_VERIFICATOR_HEADER + "." + methodName + ".pass", isPassDefaultTemplate)
+    				.put("name", fetchName())
+    				.put("real", getRealValue())
+    				.put("expected", expected)
+    				.toString();
+    		report.info(title).icon(ReportIcon.VALIDATION_PASSED);
+    	}
+    	else {
+    		String title = report.message(NUMBER_VERIFICATOR_HEADER + "." + methodName + ".pass", isFailDefaultTemplate)
+    				.put("name", fetchName())
+    				.put("real", getRealValue())
+    				.put("expected", expected)
+    				.toString();
+    		report.error(title).icon(ReportIcon.VALIDATION_FAILED);
+    	}
+    	return state;
     }
 
     public void setReport(Report report) {

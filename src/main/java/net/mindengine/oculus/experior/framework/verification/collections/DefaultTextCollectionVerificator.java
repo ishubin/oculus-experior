@@ -59,7 +59,7 @@ public class DefaultTextCollectionVerificator extends SimpleTextCollectionVerifi
     
     @Override
     public boolean hasAll(Object... args) {
-        return getReportHelper().report(super.hasAll(args), "hasAll", HASALL_PASS_DEFAULT_TEMPLATE, HASALL_FAIL_DEFAULT_TEMPLATE, args);
+    	return getReportHelper().report(super.hasAll(args), "hasAll", HASALL_PASS_DEFAULT_TEMPLATE, HASALL_FAIL_DEFAULT_TEMPLATE, args);
     }
 	
     @Override

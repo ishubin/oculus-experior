@@ -15,8 +15,6 @@
 ******************************************************************************/
 package net.mindengine.oculus.experior.reporter;
 
-import java.util.Map;
-
 import net.mindengine.oculus.experior.reporter.nodes.BranchReportNode;
 import net.mindengine.oculus.experior.reporter.nodes.ExceptionReportNode;
 import net.mindengine.oculus.experior.reporter.nodes.ReportNode;
