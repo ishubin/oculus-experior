@@ -21,10 +21,6 @@ import java.util.List;
 import java.util.Map;
 
 import junit.framework.Assert;
-
-import org.apache.commons.lang3.ClassUtils;
-import org.junit.Test;
-
 import net.mindengine.oculus.experior.ExperiorConfig;
 import net.mindengine.oculus.experior.framework.report.DefaultReport;
 import net.mindengine.oculus.experior.reporter.Report;
@@ -37,6 +33,8 @@ import net.mindengine.oculus.experior.reporter.nodes.ExceptionReportNode;
 import net.mindengine.oculus.experior.reporter.nodes.ReportNode;
 import net.mindengine.oculus.experior.reporter.nodes.TextReportNode;
 import net.mindengine.oculus.experior.reporter.render.XmlReportRender;
+
+import org.junit.Test;
 
 public class ReporterTest {
 
