@@ -17,6 +17,7 @@ package net.mindengine.oculus.experior.reporter.nodes;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -40,6 +41,9 @@ public abstract class ReportNode {
     private Date date = new Date();
     private String hint;
     private String level = INFO;
+    private Map<String, Object> metaData;
+    
+    
     public Report getReport() {
         return report;
     }
@@ -110,4 +114,10 @@ public abstract class ReportNode {
      * @return
      */
     public abstract List<ReportReason> collectReasons(String...levels);
+	public Map<String, Object> getMetaData() {
+		return metaData;
+	}
+	public void setMetaData(Map<String, Object> metaData) {
+		this.metaData = metaData;
+	}
 }

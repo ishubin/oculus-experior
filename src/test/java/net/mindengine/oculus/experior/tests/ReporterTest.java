@@ -26,6 +26,7 @@ import net.mindengine.oculus.experior.framework.report.DefaultReport;
 import net.mindengine.oculus.experior.reporter.Report;
 import net.mindengine.oculus.experior.reporter.ReportBranchConfiguration;
 import net.mindengine.oculus.experior.reporter.ReportConfiguration;
+import net.mindengine.oculus.experior.reporter.ReportIcon;
 import net.mindengine.oculus.experior.reporter.ReportReason;
 import net.mindengine.oculus.experior.reporter.nodes.BranchReportNode;
 import net.mindengine.oculus.experior.reporter.nodes.ExceptionInfo;
@@ -70,13 +71,13 @@ public class ReporterTest {
     public void writesRendersAndDecodesReportXml() throws Exception {
         Report report = new DefaultReport(ExperiorConfig.getInstance().getReportConfiguration());
         report.info("test info").details("test details").hint("test hint");
-        report.error(new NullPointerException("Some test exception")).icon("exception");
+        report.error(new NullPointerException("Some test exception")).icon(ReportIcon.EXCEPTION);
         report.warn("test warn");
         report.branch("action", "component branch");
         BranchReportNode branch = report.branch("component").title("component branch");
-        report.error("test error in component branch");
+        report.error("test error in component branch").icon(ReportIcon.VALIDATION_FAILED);
         branch.close();
-        report.info("test info in upper component branch");
+        report.info("test info in upper component branch").icon(ReportIcon.VALIDATION_PASSED);
         
         report.branch("action").hint("hint in branch").title("action branch").debug(true);
         String branchId = report.branch("page").title("page branch").getId();

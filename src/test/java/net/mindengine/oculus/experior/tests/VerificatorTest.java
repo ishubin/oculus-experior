@@ -34,7 +34,6 @@ import net.mindengine.oculus.experior.framework.verification.number.SimpleNumber
 import net.mindengine.oculus.experior.framework.verification.text.DefaultTextVerificator;
 import net.mindengine.oculus.experior.framework.verification.text.SimpleTextVerificator;
 import net.mindengine.oculus.experior.framework.verification.text.TextVerificator;
-import net.mindengine.oculus.experior.reporter.Report;
 
 import org.junit.Test;
 
