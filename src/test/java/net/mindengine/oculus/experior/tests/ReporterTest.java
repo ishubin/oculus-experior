@@ -98,8 +98,8 @@ public class ReporterTest {
     @Test
     public void messagesAreLoadedAndProcessed() throws Exception {
     	Report report = new DefaultReport(ExperiorConfig.getInstance().getReportConfiguration());
-    	String message = report.message("NumberCollectionVerificator.hasAny.pass").put("name","some test name").toString();
-    	Assert.assertEquals("The some test name contains at least on item from expected list", message);
+    	String message = report.message("CollectionVerificator.hasAny.pass").put("name","some test name").toString();
+    	Assert.assertEquals("some test name contains at least on item from expected list", message);
     }
 
     private void assertReasonIsSame(ReportReason reason, ReportReason reason2) {
