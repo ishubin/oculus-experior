@@ -77,16 +77,22 @@ public class ReporterTest {
         BranchReportNode branch = report.branch("component").title("component branch");
         report.error("test error in component branch").icon(ReportIcon.VALIDATION_FAILED);
         branch.close();
+        
         report.info("test info in upper component branch").icon(ReportIcon.VALIDATION_PASSED);
         
         report.branch("action").hint("hint in branch").title("action branch").debug(true);
         String branchId = report.branch("page").title("page branch").getId();
         report.closeBranchById(branchId);
         report.info("info in main branch");
+        report.branch("action", "component branch");
+        report.branch("component").title("component branch");
+        report.warn("test error in component branch").icon(ReportIcon.VALIDATION_FAILED);
+        
+        
         
         XmlReportRender render = new XmlReportRender();
         String xmlString = render.render(report.getMainBranch());
-        
+        System.out.println(xmlString);
         ReportNode node = render.decode(xmlString);
         validateDecodedReport(node, report.getMainBranch());
     }

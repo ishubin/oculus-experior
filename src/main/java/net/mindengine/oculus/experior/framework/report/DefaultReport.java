@@ -155,8 +155,7 @@ public class DefaultReport implements Report {
 
     @Override
     public ExceptionReportNode error(Throwable exception) {
-        ExceptionReportNode node = new ExceptionReportNode();
-        node.exception(exception).icon(ReportIcon.EXCEPTION);
+        ExceptionReportNode node = new ExceptionReportNode().level(ReportNode.ERROR).exception(exception).icon(ReportIcon.EXCEPTION);
         node.setReport(this);
         caret.addNode(node);
         
