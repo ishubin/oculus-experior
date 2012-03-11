@@ -485,7 +485,7 @@ public class TestRunnerTest {
         suiteRunner.setTestRunnerConfiguration(ExperiorConfig.getInstance().getTestRunnerConfiguration());
         suiteRunner.setSuite(suite);
         
-        runSuiteWithtestGroup(suiteRunner);
+        runSuiteWithTestGroup(suiteRunner);
     }
     
     @Test
@@ -498,15 +498,14 @@ public class TestRunnerTest {
         suiteRunner.setTestRunnerConfiguration(config);
         suiteRunner.setSuite(suite);
         
-        runSuiteWithtestGroup(suiteRunner);
+        runSuiteWithTestGroup(suiteRunner);
     }
 
-    private void runSuiteWithtestGroup(SuiteRunner suiteRunner) throws TestConfigurationException {
+    private void runSuiteWithTestGroup(SuiteRunner suiteRunner) throws TestConfigurationException {
         final Map<String, Object> dataOnTestStarted = new HashMap<String, Object>();
         final Map<String, Object> dataOnTestFinished = new HashMap<String, Object>();
         final Map<String, Object> dataOnTestAction = new HashMap<String, Object>();
         
-
         suiteRunner.setTestRunListener(new TestRunListener() {
             @Override
             public void onTestStarted(TestInformation testInformation) {
@@ -537,12 +536,16 @@ public class TestRunnerTest {
         verifySequence(rootTest.events, SampleEvent.collection(
                 SampleEvent.event("RootTest.beforeTest"),
                 SampleEvent.event("RootTest.action"),
+                SampleEvent.event("RootTest.beforeChildTest"),
                 SampleEvent.event("SubTest1.beforeTest"),
                 SampleEvent.event("SubTest1.action"),
                 SampleEvent.event("SubTest1.afterTest"),
+                SampleEvent.event("RootTest.afterChildTest"),
+                SampleEvent.event("RootTest.beforeChildTest"),
                 SampleEvent.event("SubTest2.beforeTest"),
                 SampleEvent.event("SubTest2.action"),
                 SampleEvent.event("SubTest2.afterTest"),
+                SampleEvent.event("RootTest.afterChildTest"),
                 SampleEvent.event("RootTest.afterTest")
                 ));
         

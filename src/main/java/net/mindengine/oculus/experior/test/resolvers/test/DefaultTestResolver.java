@@ -18,7 +18,9 @@ package net.mindengine.oculus.experior.test.resolvers.test;
 import java.lang.reflect.Method;
 
 import net.mindengine.oculus.experior.annotations.Test;
+import net.mindengine.oculus.experior.annotations.events.AfterChildTest;
 import net.mindengine.oculus.experior.annotations.events.AfterTest;
+import net.mindengine.oculus.experior.annotations.events.BeforeChildTest;
 import net.mindengine.oculus.experior.annotations.events.BeforeTest;
 import net.mindengine.oculus.experior.annotations.events.OnException;
 import net.mindengine.oculus.experior.annotations.events.OnTestFailure;
@@ -41,6 +43,17 @@ public class DefaultTestResolver implements TestResolver {
     @Override
     public void beforeTest(TestRunner testRunner, TestInformation testInformation) throws TestConfigurationException, TestInterruptedException {
         testRunner.invokeEvents(BeforeTest.class, testInformation);
+    }
+    
+    
+    @Override
+    public void afterChildTest(TestRunner testRunner, TestInformation testInformation) throws TestConfigurationException, TestInterruptedException { 
+        testRunner.invokeEvents(AfterChildTest.class, testInformation);
+    }
+
+    @Override
+    public void beforeChildTest(TestRunner testRunner, TestInformation testInformation) throws TestConfigurationException, TestInterruptedException {
+        testRunner.invokeEvents(BeforeChildTest.class, testInformation);
     }
 
     @Override

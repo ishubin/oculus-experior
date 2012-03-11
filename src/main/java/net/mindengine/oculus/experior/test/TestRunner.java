@@ -232,6 +232,9 @@ public class TestRunner {
             throw new TestConfigurationException("TestResolver is not specified");
         }
         
+        if ( this.parent != null) {
+        	configuration.getTestResolver().beforeChildTest(this.parent, testInformation);
+        }
         configuration.getTestResolver().beforeTest(this, testInformation);
         if (testRunListener != null) {
             try {
@@ -324,6 +327,11 @@ public class TestRunner {
             testInformation.setStatus(TestInformation.STATUS_FAILED);
         }
         configuration.getTestResolver().afterTest(this, testInformation);
+        
+        if ( this.parent != null) {
+        	configuration.getTestResolver().afterChildTest(this.parent, testInformation);
+        }
+        
         testInformation.setPhase(TestInformation.PHASE_DONE);
         if (testRunListener != null) {
             try {

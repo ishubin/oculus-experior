@@ -26,6 +26,8 @@ import org.apache.commons.lang3.StringUtils;
 public class BranchReportNode extends ReportNode {
  
     public static final String ACTION = "action";
+    public static final String TEST = "test";
+    public static final String COMPONENT = "component";
 	private List<ReportNode> childNodes = new LinkedList<ReportNode>();
     private String branch;
     

@@ -31,6 +31,10 @@ public interface TestResolver {
     
     public void afterTest(TestRunner testRunner, TestInformation testInformation) throws TestConfigurationException, TestInterruptedException;
     
+    public void beforeChildTest(TestRunner testRunner, TestInformation testInformation) throws TestConfigurationException, TestInterruptedException;
+    
+    public void afterChildTest(TestRunner testRunner, TestInformation testInformation) throws TestConfigurationException, TestInterruptedException;
+    
     public void handleException(TestRunner testRunner, TestInformation testInformation, Throwable error) throws TestConfigurationException, TestInterruptedException;
     
     public void onTestFailure(TestRunner testRunner, TestInformation testInformation) throws TestConfigurationException, TestInterruptedException;

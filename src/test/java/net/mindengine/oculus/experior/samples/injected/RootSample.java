@@ -21,7 +21,9 @@ import java.util.List;
 import net.mindengine.oculus.experior.annotations.Action;
 import net.mindengine.oculus.experior.annotations.InputParameter;
 import net.mindengine.oculus.experior.annotations.OutputParameter;
+import net.mindengine.oculus.experior.annotations.events.AfterChildTest;
 import net.mindengine.oculus.experior.annotations.events.AfterTest;
+import net.mindengine.oculus.experior.annotations.events.BeforeChildTest;
 import net.mindengine.oculus.experior.annotations.events.BeforeTest;
 import net.mindengine.oculus.experior.samples.SampleEvent;
 import net.mindengine.oculus.experior.test.descriptors.TestInformation;
@@ -48,9 +50,19 @@ public class RootSample {
         events.add(SampleEvent.event("RootTest.beforeTest"));
     }
     
+    @BeforeChildTest
+    public void onChildTestStart(TestInformation testInformation) {
+        events.add(SampleEvent.event("RootTest.beforeChildTest"));
+    }
+    
     @AfterTest
     public void onTestFinished(TestInformation testInformation) {
         events.add(SampleEvent.event("RootTest.afterTest"));
+    }
+    
+    @AfterChildTest
+    public void onChildTestFinished(TestInformation testInformation) {
+        events.add(SampleEvent.event("RootTest.afterChildTest"));
     }
 
 }
