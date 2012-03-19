@@ -23,8 +23,7 @@ public class TestDAO extends SimpleDAO {
     }
 
     public TestBean getTestByNameProject(String testName, String projectPath) throws Exception {
-        List<?> list = daoSupport.query("select tests.* from tests " + "left join projects on tests.project_id = projects.id " + "where tests.name = :name and projects.path = :projectPath",
-                TestBean.class, "name", testName, "projectPath", projectPath);
+        List<?> list = daoSupport.query("select tests.* from tests left join projects on tests.project_id = projects.id where tests.name = :name and projects.path = :projectPath", TestBean.class, "name", testName, "projectPath", projectPath);
         if (list.size() > 0) {
             return (TestBean) list.get(0);
         }

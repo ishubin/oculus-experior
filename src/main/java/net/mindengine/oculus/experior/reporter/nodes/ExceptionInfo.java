@@ -15,6 +15,9 @@
 ******************************************************************************/
 package net.mindengine.oculus.experior.reporter.nodes;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * This class is used for serializing exceptions in report
  * @author ishubin
@@ -22,7 +25,7 @@ package net.mindengine.oculus.experior.reporter.nodes;
  */
 public class ExceptionInfo {
 
-    private static final int INFINITE_LOOP_MAX_CYCLES = 5000;
+    private static final int INFINITE_LOOP_MAX_CYCLES = 50;
     private String className;
     private String messageName;
     private StackTraceElement[] stackTrace;
@@ -52,18 +55,28 @@ public class ExceptionInfo {
         this.cause = cause;
     }
     
-    
-    public static ExceptionInfo convert(Throwable exception, int level) {
-        if(level > INFINITE_LOOP_MAX_CYCLES) {
-            throw new IllegalArgumentException("Infinite loop in exception cause");
-        }
+    /**
+     * 
+     * @param exception
+     * @param level
+     * @param convertedExceptions Stores all exceptions that have been converted. This is needed in order to avoid infinite loop
+     * @return
+     */
+    private static ExceptionInfo convert(Throwable exception, int level, List<Throwable> convertedExceptions) {
         ExceptionInfo info = new ExceptionInfo();
         info.setClassName(exception.getClass().getName());
         info.setMessageName(exception.getMessage());
         info.setStackTrace(exception.getStackTrace());
         
-        if (exception.getCause() != null) {
-           info.setCause(convert(exception, level + 1)); 
+        convertedExceptions.add(exception);
+        
+        if(level < INFINITE_LOOP_MAX_CYCLES) {
+	        if (exception.getCause() != null && exception.getCause() != exception) {
+	        	//Avoiding infinite loop
+	        	if (!convertedExceptions.contains(exception.getCause())) {
+	        		info.setCause(convert(exception.getCause(), level + 1, convertedExceptions));
+	        	}
+	        }
         }
         return info;
     }
@@ -72,6 +85,6 @@ public class ExceptionInfo {
         if (exception == null) {
             throw new NullPointerException("Can't convert exception as it is null");
         }
-        return convert(exception, 0);
+        return convert(exception, 0, new ArrayList<Throwable>());
     }
 }

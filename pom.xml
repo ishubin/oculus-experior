@@ -23,6 +23,12 @@
             <artifactId>spring-jdbc</artifactId>
             <version>3.0.6.RELEASE</version>
         </dependency>
+        <dependency>
+	        <groupId>mysql</groupId>
+	        <artifactId>mysql-connector-java</artifactId>
+	        <version>5.0.7</version>
+	        <scope>test</scope>
+	    </dependency>
     </dependencies>
 
     <build>

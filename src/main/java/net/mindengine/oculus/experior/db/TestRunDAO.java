@@ -42,6 +42,11 @@ public class TestRunDAO extends SimpleDAO {
         if (testRunBean.getName() == null) {
             testRunBean.setName("");
         }
+        
+        if( testRunBean.getSuiteRunId() == null ) {
+        	testRunBean.setSuiteRunId(0L);
+        }
+        
         ps.setLong(1, testRunBean.getSuiteRunId());
         ps.setLong(2, testRunBean.getTestId());
         ps.setTimestamp(3, new Timestamp(testRunBean.getStartTime().getTime()));

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suite name="Oculus sample suite" runnerId="1">
+
+	<test id="sample1" mapping="net.mindengine.oculus.experior.samples.OculusSample">
+    </test>
+</suite>

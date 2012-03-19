@@ -37,10 +37,6 @@ public class ClassUtils {
         return clazz.getMethod(getterName);
     }
 
-    public Method getMethod(Class<?> clazz, String name, Class<?>[] args) {
-        return null;
-    }
-
     /**
      * Returns the instance of a parameter with a value converted from String
      * 
