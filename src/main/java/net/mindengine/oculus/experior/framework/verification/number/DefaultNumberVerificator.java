@@ -18,6 +18,7 @@ package net.mindengine.oculus.experior.framework.verification.number;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.mindengine.oculus.experior.framework.verification.Provider;
 import net.mindengine.oculus.experior.reporter.Report;
 import net.mindengine.oculus.experior.reporter.ReportDesign;
 import net.mindengine.oculus.experior.reporter.ReportIcon;
@@ -59,12 +60,12 @@ public class DefaultNumberVerificator extends SimpleNumberVerificator{
         super();
     }
 
-    public DefaultNumberVerificator(Number realValue) {
-        super(realValue);
+    public DefaultNumberVerificator(Provider<Number> realValueProvider) {
+        super(realValueProvider);
     }
     
-    public DefaultNumberVerificator(Number realValue, String name, Report report) {
-        super(realValue);
+    public DefaultNumberVerificator(Provider<Number> realValueProvider, String name, Report report) {
+        super(realValueProvider);
         setName(name);
         setReport(report);
     }
@@ -145,7 +146,7 @@ public class DefaultNumberVerificator extends SimpleNumberVerificator{
     public boolean isInRange(Number start, Number end) {
     	Map<String, Object > map = new HashMap<String, Object>();
     	map.put("name", fetchName());
-    	map.put("real", getRealValue());
+    	map.put("real", findRealValue());
     	map.put("start", start);
     	map.put("end",end);
         boolean check = super.isInRange(start, end);
@@ -162,7 +163,7 @@ public class DefaultNumberVerificator extends SimpleNumberVerificator{
     public boolean isNotInRange(Number start, Number end) {
     	Map<String, Object > map = new HashMap<String, Object>();
     	map.put("name", fetchName());
-    	map.put("real", getRealValue());
+    	map.put("real", findRealValue());
     	map.put("start", start);
     	map.put("end",end);
         boolean check = super.isNotInRange(start, end);
@@ -179,7 +180,7 @@ public class DefaultNumberVerificator extends SimpleNumberVerificator{
     public boolean isNotOneOf(Number... args) {
     	Map<String, Object > map = new HashMap<String, Object>();
     	map.put("name", fetchName());
-    	map.put("real", getRealValue());
+    	map.put("real", findRealValue());
     	boolean check = super.isNotOneOf(args);
         if(check) {
             report.info(report.message(NUMBER_VERIFICATOR_HEADER + ".isNotOneOf.pass", IS_NOT_ONE_OF_PASS_DEFAULT_TEMPLATE).putAll(map).toString()).details(expectedList(SHOULD_NOT_BE_IN_THE_LIST, args)).icon(ReportIcon.VALIDATION_PASSED);
@@ -194,7 +195,7 @@ public class DefaultNumberVerificator extends SimpleNumberVerificator{
     public boolean isOneOf(Number... args) {
     	Map<String, Object > map = new HashMap<String, Object>();
     	map.put("name", fetchName());
-    	map.put("real", getRealValue());
+    	map.put("real", findRealValue());
     	boolean check = super.isOneOf(args);
         if(check) {
             report.info(report.message(NUMBER_VERIFICATOR_HEADER + ".isOneOf.pass", IS_ONE_OF_PASS_DEFAULT_TEMPLATE).putAll(map).toString()).details(expectedList(SHOULD_BE_IN_THE_LIST, args)).icon(ReportIcon.VALIDATION_PASSED);
@@ -215,7 +216,7 @@ public class DefaultNumberVerificator extends SimpleNumberVerificator{
     	if( state ) {
     		String title = report.message(NUMBER_VERIFICATOR_HEADER + "." + methodName + ".pass", isPassDefaultTemplate)
     				.put("name", fetchName())
-    				.put("real", getRealValue())
+    				.put("real", findRealValue())
     				.put("expected", expected)
     				.toString();
     		report.info(title).icon(ReportIcon.VALIDATION_PASSED);
@@ -223,7 +224,7 @@ public class DefaultNumberVerificator extends SimpleNumberVerificator{
     	else {
     		String title = report.message(NUMBER_VERIFICATOR_HEADER + "." + methodName + ".pass", isFailDefaultTemplate)
     				.put("name", fetchName())
-    				.put("real", getRealValue())
+    				.put("real", findRealValue())
     				.put("expected", expected)
     				.toString();
     		report.error(title).icon(ReportIcon.VALIDATION_FAILED);

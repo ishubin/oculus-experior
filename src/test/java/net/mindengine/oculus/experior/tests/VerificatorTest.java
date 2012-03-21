@@ -43,7 +43,12 @@ public class VerificatorTest {
     @Test
     public void numberIntegerVerificatorCheck() {
         
-        NumberVerificator verificator = new SimpleNumberVerificator(10);
+        NumberVerificator verificator = new SimpleNumberVerificator(new Provider<Number>() {
+			@Override
+			public Number provide() {
+				return 10;
+			}
+		});
         Assert.assertFalse(verificator.isNull());
         Assert.assertTrue(verificator.isNotNull());
         Assert.assertTrue(verificator.is(10));
@@ -87,7 +92,13 @@ public class VerificatorTest {
     @Test
     public void defaultNumberIntegerVerificatorCheck() {
         
-        DefaultNumberVerificator verificator = new DefaultNumberVerificator(10);
+        DefaultNumberVerificator verificator = new DefaultNumberVerificator(new Provider<Number>() {
+
+			@Override
+			public Number provide() {
+				return 10;
+			}
+		});
         verificator.setName("test var");
         DefaultReport report = new DefaultReport(ExperiorConfig.getInstance().getReportConfiguration());
     	ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -175,7 +186,13 @@ public class VerificatorTest {
     @Test
     public void numberLongWithCombinationsVerificatorCheck() {
         
-        NumberVerificator verificator = new SimpleNumberVerificator(10L);
+        NumberVerificator verificator = new SimpleNumberVerificator(new Provider<Number>() {
+
+			@Override
+			public Number provide() {
+				return 10L;
+			}
+		});
         Assert.assertFalse(verificator.isNull());
         Assert.assertTrue(verificator.isNotNull());
         Assert.assertTrue(verificator.is(10L));
@@ -215,7 +232,13 @@ public class VerificatorTest {
     @Test
     public void numberDoubleVerificatorCheck() {
         
-        NumberVerificator verificator = new SimpleNumberVerificator(10.5);
+        NumberVerificator verificator = new SimpleNumberVerificator(new Provider<Number>() {
+
+			@Override
+			public Number provide() {
+				return 10.5;
+			}
+		});
         Assert.assertFalse(verificator.isNull());
         Assert.assertTrue(verificator.isNotNull());
         Assert.assertTrue(verificator.is(10.5));
