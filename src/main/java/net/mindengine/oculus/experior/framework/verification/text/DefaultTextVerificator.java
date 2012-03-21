@@ -18,6 +18,7 @@ package net.mindengine.oculus.experior.framework.verification.text;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.mindengine.oculus.experior.framework.verification.Provider;
 import net.mindengine.oculus.experior.reporter.Report;
 import net.mindengine.oculus.experior.reporter.ReportDesign;
 import net.mindengine.oculus.experior.reporter.ReportIcon;
@@ -25,30 +26,30 @@ import net.mindengine.oculus.experior.reporter.ReportIcon;
 public class DefaultTextVerificator extends SimpleTextVerificator {
 
     private static final String TEXT_VERIFICATOR_HEADER = "TextVerificator";
-	private static final String CONTAINS_PASS_DEFAULT_TEMPLATE = null;
-	private static final String CONTAINS_FAIL_DEFAULT_TEMPLATE = null;
-	private static final String DOESNT_CONTAIN_PASS_DEFAULT_TEMPLATE = null;
-	private static final String DOESNT_CONTAIN_FAIL_DEFAULT_TEMPLATE = null;
-	private static final String MATCHES_PASS_DEFAULT_TEMPLATE = null;
-	private static final String MATCHES_FAIL_DEFAULT_TEMPLATE = null;
-	private static final String DOESNOTMATCH_PASS_DEFAULT_TEMPLATE = null;
-	private static final String DOESNOTMATCH_FAIL_DEFAULT_TEMPLATE = null;
-	private static final String STARTSWITH_PASS_DEFAULT_TEMPLATE = null;
-	private static final String STARTSWITH_FAIL_DEFAULT_TEMPLATE = null;
-	private static final String DOESNOTSTARTWITH_PASS_DEFAULT_TEMPLATE = null;
-	private static final String DOESNOTSTARTWITH_FAIL_DEFAULT_TEMPLATE = null;
-	private static final String IS_PASS_DEFAULT_TEMPLATE = null;
-	private static final String IS_FAIL_DEFAULT_TEMPLATE = null;
-	private static final String ISNOT_PASS_DEFAULT_TEMPLATE = null;
-	private static final String ISNOT_FAIL_DEFAULT_TEMPLATE = null;
-	private static final String ENDSWITH_PASS_DEFAULT_TEMPLATE = null;
-	private static final String ENDSWITH_FAIL_DEFAULT_TEMPLATE = null;
-	private static final String DOESNOTENDWITH_PASS_DEFAULT_TEMPLATE = null;
-	private static final String DOESNOTENDWITH_FAIL_DEFAULT_TEMPLATE = null;
-	private static final String ISONEOF_PASS_DEFAULT_TEMPLATE = null;
-	private static final String ISONEOF_FAIL_DEFAULT_TEMPLATE = null;
-	private static final String ISNOTONEOF_PASS_DEFAULT_TEMPLATE = null;
-	private static final String ISNOTONEOF_FAIL_DEFAULT_TEMPLATE = null;
+	private static final String CONTAINS_PASS_DEFAULT_TEMPLATE = "${name} contains the expected \"[string]${expected}[/string]\" text";
+	private static final String CONTAINS_FAIL_DEFAULT_TEMPLATE = "${name} does not contain the expected \"[string]${expected}[/string]\" text";
+	private static final String DOESNT_CONTAIN_PASS_DEFAULT_TEMPLATE = "${name} does not contain specified text \"[string]${expected}[/string]\" as expected";
+	private static final String DOESNT_CONTAIN_FAIL_DEFAULT_TEMPLATE = "${name} contains text \"[string]${expected}[/string]\" but it is not expected";
+	private static final String MATCHES_PASS_DEFAULT_TEMPLATE = "${name} matches the specified pattern \"[string]${expected}[/string]\" as expected";
+	private static final String MATCHES_FAIL_DEFAULT_TEMPLATE = "${name} does not match the specified pattern \"[string]${expected}[/string]\"";
+	private static final String DOESNOTMATCH_PASS_DEFAULT_TEMPLATE = "${name} does not match the specified pattern \"[string]${expected}[/string]\" as expected";
+	private static final String DOESNOTMATCH_FAIL_DEFAULT_TEMPLATE = "${name} matches pattern \"[string]${expected}[/string]\" but it is not expected";
+	private static final String STARTSWITH_PASS_DEFAULT_TEMPLATE = "${name} starts with \"[string]${expected}[/string]\" text as expected";
+	private static final String STARTSWITH_FAIL_DEFAULT_TEMPLATE = "${name} does not start with \"[string]${expected}[/string]\" text";
+	private static final String DOESNOTSTARTWITH_PASS_DEFAULT_TEMPLATE = "${name} does not start with \"[string]${expected}[/string]\" text as expected";
+	private static final String DOESNOTSTARTWITH_FAIL_DEFAULT_TEMPLATE = "${name} starts with \"[string]${expected}[/string]\" text but it is not expected";
+	private static final String IS_PASS_DEFAULT_TEMPLATE = "${name} is \"[string]${expected}[/string]\" as expected";
+	private static final String IS_FAIL_DEFAULT_TEMPLATE = "${name} is not \"[string]${expected}[/string]\"";
+	private static final String ISNOT_PASS_DEFAULT_TEMPLATE = "${name} is not \"[string]${expected}[/string]\" as expected";
+	private static final String ISNOT_FAIL_DEFAULT_TEMPLATE = "${name} is \"[string]${expected}[/string]\" but it is not expected";
+	private static final String ENDSWITH_PASS_DEFAULT_TEMPLATE = "${name} ends with \"[string]${expected}[/string]\" text as expected";
+	private static final String ENDSWITH_FAIL_DEFAULT_TEMPLATE = "${name} does not end with \"[string]${expected}[/string]\" text";
+	private static final String DOESNOTENDWITH_PASS_DEFAULT_TEMPLATE = "${name} does not end with \"[string]${expected}[/string]\" text as expected";
+	private static final String DOESNOTENDWITH_FAIL_DEFAULT_TEMPLATE = "${name} ends with \"[string]${expected}[/string]\" text but it is not expected";
+	private static final String ISONEOF_PASS_DEFAULT_TEMPLATE = "${name} is one of the specified items";
+	private static final String ISONEOF_FAIL_DEFAULT_TEMPLATE = "${name} is not one of the specified items";
+	private static final String ISNOTONEOF_PASS_DEFAULT_TEMPLATE = "${name} is not one of the specified items as expected";
+	private static final String ISNOTONEOF_FAIL_DEFAULT_TEMPLATE = "${name} is one of the specified items but it is not expected";
 	private Report report;
     private String name;
     
@@ -56,12 +57,12 @@ public class DefaultTextVerificator extends SimpleTextVerificator {
         super();
     }
 
-    public DefaultTextVerificator(String string) {
-        super(string);
+    public DefaultTextVerificator(Provider<String> realValueProvider) {
+        super(realValueProvider);
     }
     
-    public DefaultTextVerificator(String string, String name, Report report) {
-        super(string);
+    public DefaultTextVerificator(Provider<String> realValueProvider, String name, Report report) {
+        super(realValueProvider);
         setName(name);
         setReport(report);
     }
@@ -285,7 +286,7 @@ public class DefaultTextVerificator extends SimpleTextVerificator {
     }
     
     private String details(String expectedCaption, String expectedString) {
-        return ReportDesign.bold("Real text: ")+ReportDesign.string(getRealValue())+ReportDesign.breakline()+ReportDesign.bold(expectedCaption+": ")+ReportDesign.string(expectedString);
+        return ReportDesign.bold("Real text: ") + ReportDesign.string(findRealValue()) + ReportDesign.breakline()+ReportDesign.bold(expectedCaption+": ")+ReportDesign.string(expectedString);
     }
     
     private Map<String, Object> mapSimple(String expected) {
@@ -297,7 +298,7 @@ public class DefaultTextVerificator extends SimpleTextVerificator {
 	private Map<String, Object> mapSimple() {
 		Map<String, Object> map = new HashMap<String, Object>();
     	map.put("name", fetchName());
-    	map.put("real", getRealValue());
+    	map.put("real", findRealValue());
 		return map;
 	}
 

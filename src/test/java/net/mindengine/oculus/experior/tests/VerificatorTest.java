@@ -22,6 +22,7 @@ import java.util.List;
 import junit.framework.Assert;
 import net.mindengine.oculus.experior.ExperiorConfig;
 import net.mindengine.oculus.experior.framework.report.DefaultReport;
+import net.mindengine.oculus.experior.framework.verification.Provider;
 import net.mindengine.oculus.experior.framework.verification.checkpoint.Checkpoint;
 import net.mindengine.oculus.experior.framework.verification.collections.CollectionVerificator;
 import net.mindengine.oculus.experior.framework.verification.collections.DefaultNumberCollectionVerificator;
@@ -244,7 +245,12 @@ public class VerificatorTest {
     
     @Test
     public void textVerificatorCheck() {
-        TextVerificator verificator = new SimpleTextVerificator("This is a test string");
+        TextVerificator verificator = new SimpleTextVerificator(new Provider<String>() {
+			@Override
+			public String provide() {
+				return "This is a test string";
+			}
+		});
         
         Assert.assertTrue(verificator.is("This is a test string"));
         Assert.assertFalse(verificator.is("This is not a test string"));
@@ -288,7 +294,12 @@ public class VerificatorTest {
     
     @Test
     public void defaultTextVerificatorCheck() {
-    	DefaultTextVerificator verificator = new DefaultTextVerificator("This is a test string");
+    	DefaultTextVerificator verificator = new DefaultTextVerificator(new Provider<String>() {
+			@Override
+			public String provide() {
+				return "This is a test string";
+			}
+		});
         DefaultReport report = new DefaultReport(ExperiorConfig.getInstance().getReportConfiguration());
     	ByteArrayOutputStream baos = new ByteArrayOutputStream();
     	report.getReportConfiguration().setOutputStreamOut(baos);

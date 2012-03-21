@@ -43,7 +43,7 @@ import org.xml.sax.SAXException;
 
 public class XmlReportRender implements ReportRender {
     private static final String NODE_CLASS_PATH = getNodeClassPath();
-
+    private int maxStackTraceLength = 40;
     
     @Override
     public String renderReasons(List<ReportReason> reasons) {
@@ -219,6 +219,10 @@ public class XmlReportRender implements ReportRender {
         info.setMessageName(XmlUtils.getChildNodeText(xmlNode, "m"));
         Node stackTraceNode = XmlUtils.getChildNode(xmlNode, "s");
         if ( stackTraceNode != null) {
+        	String stackMore = XmlUtils.getNodeAttribute(stackTraceNode, "more");
+        	if ( stackMore != null ) {
+        		info.setMoreStackTraceElements(Integer.parseInt(stackMore));
+        	}
             info.setStackTrace(parseStackTrace(stackTraceNode));
         }
         
@@ -273,7 +277,7 @@ public class XmlReportRender implements ReportRender {
         }
         text.append("<m>").append(StringEscapeUtils.escapeXml(message)).append("</m>");
         
-        text.append("<s>").append(serializeStackTrace(exception.getStackTrace())).append("</s>");
+        text.append(serializeStackTrace(exception));
         
         if ( exception.getCause() != null ) {
             text.append("<c>").append(serializeExceptionInfo(exception.getCause())).append("</c>");
@@ -282,18 +286,28 @@ public class XmlReportRender implements ReportRender {
         return text.toString();
     }
 
-    private String serializeStackTrace(StackTraceElement[] stackTrace) {
+    private String serializeStackTrace(ExceptionInfo exception) {
         StringBuffer text = new StringBuffer();
+        
+        if ( exception.getStackTrace() != null && exception.getStackTrace().length > getMaxStackTraceLength()) {
+        	text.append("<s more=\"").append(exception.getStackTrace().length - getMaxStackTraceLength()).append("\">");
+        }
+        else {
+        	text.append("<s>");
+        }
+        StackTraceElement[] stackTrace = exception.getStackTrace();
         if (stackTrace != null) {
-            for(StackTraceElement element : stackTrace) {
+        	
+        	for ( int i=0; i<stackTrace.length && i< getMaxStackTraceLength(); i++ ) {
                 text.append("<e ");
-                text.append("c=\"").append(StringEscapeUtils.escapeXml(element.getClassName())).append("\" ");
-                text.append("m=\"").append(StringEscapeUtils.escapeXml(element.getMethodName())).append("\" ");
-                text.append("f=\"").append(StringEscapeUtils.escapeXml(element.getFileName())).append("\" ");
-                text.append("l=\"").append(element.getLineNumber()).append("\" ");
+                text.append("c=\"").append(StringEscapeUtils.escapeXml(stackTrace[i].getClassName())).append("\" ");
+                text.append("m=\"").append(StringEscapeUtils.escapeXml(stackTrace[i].getMethodName())).append("\" ");
+                text.append("f=\"").append(StringEscapeUtils.escapeXml(stackTrace[i].getFileName())).append("\" ");
+                text.append("l=\"").append(stackTrace[i].getLineNumber()).append("\" ");
                 text.append("/>");
             }
         }
+        text.append("</s>");
         return text.toString();
     }
     
@@ -302,4 +316,12 @@ public class XmlReportRender implements ReportRender {
         String simpleName = ReportNode.class.getSimpleName();
         return name.substring(0, name.length() - simpleName.length());
     }
+
+	public int getMaxStackTraceLength() {
+		return maxStackTraceLength;
+	}
+
+	public void setMaxStackTraceLength(int maxStackTraceLength) {
+		this.maxStackTraceLength = maxStackTraceLength;
+	}
 }

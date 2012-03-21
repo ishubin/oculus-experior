@@ -29,6 +29,7 @@ public class ExceptionInfo {
     private String className;
     private String messageName;
     private StackTraceElement[] stackTrace;
+    private int moreStackTraceElements = 0;
     private ExceptionInfo cause;
     public String getClassName() {
         return className;
@@ -45,8 +46,8 @@ public class ExceptionInfo {
     public StackTraceElement[] getStackTrace() {
         return stackTrace;
     }
-    public void setStackTrace(StackTraceElement[] stackTrace) {
-        this.stackTrace = stackTrace;
+    public synchronized void setStackTrace(StackTraceElement[] stackTrace) {
+    	this.stackTrace = stackTrace;
     }
     public ExceptionInfo getCause() {
         return cause;
@@ -87,4 +88,11 @@ public class ExceptionInfo {
         }
         return convert(exception, 0, new ArrayList<Throwable>());
     }
+    
+	public int getMoreStackTraceElements() {
+		return moreStackTraceElements;
+	}
+	public void setMoreStackTraceElements(int moreStackTraceElements) {
+		this.moreStackTraceElements = moreStackTraceElements;
+	}
 }

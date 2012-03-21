@@ -18,28 +18,46 @@ package net.mindengine.oculus.experior.framework.verification.text;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.mindengine.oculus.experior.framework.verification.Provider;
+
 public class SimpleTextVerificator implements TextVerificator, Cloneable {
 
-    private String realValue;
+	private String _realValue;
+	private Provider<String> realValueProvider;
 
     public SimpleTextVerificator() {
 
     }
 
-    public SimpleTextVerificator(String string) {
-        setRealValue(string);
+    public SimpleTextVerificator(Provider<String> realValueProvider) {
+    	this.setRealValueProvider(realValueProvider);
     }
 
     @Override
     public boolean contains(String string) {
+    	String realValue = findRealValue();
         if (realValue == null || string == null)
             return false;
 
         return realValue.contains(string);
     }
 
-    @Override
+    protected String findRealValue() {
+    	if ( _realValue != null ) {
+    		return _realValue; 
+    	}
+    	else if ( realValueProvider != null) {
+    		_realValue = realValueProvider.provide();
+    		return _realValue;
+		}
+		else {
+			throw new IllegalArgumentException("Real-value porivder is not specified");
+		}
+	}
+
+	@Override
     public boolean doesNotContain(String string) {
+		String realValue = findRealValue();
         if (realValue == null || string == null)
             return false;
 
@@ -48,6 +66,7 @@ public class SimpleTextVerificator implements TextVerificator, Cloneable {
 
     @Override
     public boolean doesNotStartWith(String string) {
+    	String realValue = findRealValue();
         if (realValue == null || string == null)
             return false;
 
@@ -56,6 +75,7 @@ public class SimpleTextVerificator implements TextVerificator, Cloneable {
 
     @Override
     public boolean is(String string) {
+    	String realValue = findRealValue();
         if (realValue == null || string == null)
             return false;
 
@@ -64,6 +84,7 @@ public class SimpleTextVerificator implements TextVerificator, Cloneable {
 
     @Override
     public boolean isNot(String string) {
+    	String realValue = findRealValue();
         if (realValue == null || string == null)
             return false;
 
@@ -72,6 +93,7 @@ public class SimpleTextVerificator implements TextVerificator, Cloneable {
 
     @Override
     public boolean matches(String regEx) {
+    	String realValue = findRealValue();
         if (realValue == null || regEx == null)
             return false;
 
@@ -82,6 +104,7 @@ public class SimpleTextVerificator implements TextVerificator, Cloneable {
     
     @Override
     public boolean doesNotMatch(String regEx) {
+    	String realValue = findRealValue();
         if (realValue == null || regEx == null)
             return false;
 
@@ -92,6 +115,7 @@ public class SimpleTextVerificator implements TextVerificator, Cloneable {
 
     @Override
     public boolean isOneOf(String... strings) {
+    	String realValue = findRealValue();
         if(strings!=null && strings.length >0){
             for(String string : strings) {
                 if(realValue!=null) {
@@ -109,6 +133,7 @@ public class SimpleTextVerificator implements TextVerificator, Cloneable {
 
     @Override
     public boolean isNotOneOf(String... strings) {
+    	String realValue = findRealValue();
         if(strings!=null && strings.length >0){
             for(String string : strings) {
                 if(realValue!=null) {
@@ -125,6 +150,7 @@ public class SimpleTextVerificator implements TextVerificator, Cloneable {
     
     @Override
     public boolean doesNotEndWith(String string) {
+    	String realValue = findRealValue();
         if (realValue == null || string == null)
             return false;
 
@@ -133,16 +159,18 @@ public class SimpleTextVerificator implements TextVerificator, Cloneable {
     
     @Override
     public boolean endsWith(String string) {
+    	String realValue = findRealValue();
         if (realValue == null || string == null)
             return false;
 
         return realValue.endsWith(string);
     }
     
-    private SimpleTextVerificator copy(){
+    private SimpleTextVerificator copy(String realValue){
         SimpleTextVerificator copy;
         try {
             copy = (SimpleTextVerificator) this.clone();
+            copy._realValue = realValue;
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException(e);
         }
@@ -151,82 +179,78 @@ public class SimpleTextVerificator implements TextVerificator, Cloneable {
     
     @Override
     public TextVerificator replace(String target, String replacement) {
+    	String realValue = findRealValue();
         if(realValue==null){
             throw new IllegalArgumentException("Cannot change null value");
         }
         
-        SimpleTextVerificator copy = copy();
-        copy.setRealValue(realValue.replace(target, replacement));
-        return copy;
+        return copy(realValue.replace(target, replacement));
     }
     
     @Override
     public TextVerificator replaceAll(String target, String replacement) {
+    	String realValue = findRealValue();
         if(realValue==null){
             throw new IllegalArgumentException("Cannot change null value");
         }
         
-        SimpleTextVerificator copy = copy();
-        copy.setRealValue(realValue.replaceAll(target, replacement));
-        return copy;
+        return copy(realValue.replaceAll(target, replacement));
     }
 
     @Override
     public boolean startsWith(String string) {
+    	String realValue = findRealValue();
         if(realValue==null || string == null) return false;
         return realValue.startsWith(string);
     }
 
     @Override
     public TextVerificator substring(int id1, int id2) {
+    	String realValue = findRealValue();
         if(realValue==null){
             throw new IllegalArgumentException("Cannot change null value");
         }
         
-        SimpleTextVerificator copy = copy();
-        copy.setRealValue(realValue.substring(id1, id2));
-        return copy;
+        return copy(realValue.substring(id1, id2));
     }
     
     @Override
     public TextVerificator substring(int id) {
+    	String realValue = findRealValue();
         if(realValue==null){
             throw new IllegalArgumentException("Cannot change null value");
         }
         
-        SimpleTextVerificator copy = copy();
-        copy.setRealValue(realValue.substring(id));
-        return copy;
+        return copy(realValue.substring(id));
     }
 
     @Override
     public TextVerificator toLowerCase() {
+    	String realValue = findRealValue();
         if(realValue==null){
             throw new IllegalArgumentException("Cannot change null value");
         }
         
-        SimpleTextVerificator copy = copy();
-        copy.setRealValue(realValue.toLowerCase());
-        return copy;
+        return copy(realValue.toLowerCase());
     }
 
     @Override
     public TextVerificator toUpperCase() {
+    	String realValue = findRealValue();
         if(realValue==null){
             throw new IllegalArgumentException("Cannot change null value");
         }
         
-        SimpleTextVerificator copy = copy();
-        copy.setRealValue(realValue.toUpperCase());
-        return copy;
+        return copy(realValue.toUpperCase());
     }
 
-    public void setRealValue(String realValue) {
-        this.realValue = realValue;
-    }
+    
+	public Provider<String> getRealValueProvider() {
+		return realValueProvider;
+	}
 
-    public String getRealValue() {
-        return realValue;
-    }
+	public void setRealValueProvider(Provider<String> realValueProvider) {
+		this.realValueProvider = realValueProvider;
+	}
 
 }
