@@ -42,9 +42,9 @@ public class VerificatorTest {
     @Test
     public void numberIntegerVerificatorCheck() {
         
-        NumberVerificator verificator = new SimpleNumberVerificator(new Provider<Number>() {
+        NumberVerificator<Integer> verificator = new SimpleNumberVerificator<Integer>(new Provider<Integer>() {
 			@Override
-			public Number provide() {
+			public Integer provide() {
 				return 10;
 			}
 		});
@@ -91,10 +91,10 @@ public class VerificatorTest {
     @Test
     public void defaultNumberIntegerVerificatorCheck() {
         
-        DefaultNumberVerificator verificator = new DefaultNumberVerificator(new Provider<Number>() {
+        DefaultNumberVerificator<Integer> verificator = new DefaultNumberVerificator<Integer>(new Provider<Integer>() {
 
 			@Override
-			public Number provide() {
+			public Integer provide() {
 				return 10;
 			}
 		});
@@ -185,10 +185,10 @@ public class VerificatorTest {
     @Test
     public void numberLongWithCombinationsVerificatorCheck() {
         
-        NumberVerificator verificator = new SimpleNumberVerificator(new Provider<Number>() {
+        NumberVerificator<Long> verificator = new SimpleNumberVerificator<Long>(new Provider<Long>() {
 
 			@Override
-			public Number provide() {
+			public Long provide() {
 				return 10L;
 			}
 		});
@@ -198,12 +198,12 @@ public class VerificatorTest {
         Assert.assertFalse(verificator.is(9L));
         Assert.assertFalse(verificator.isNot(10L));
         Assert.assertTrue(verificator.isNot(9L));
-        Assert.assertFalse(verificator.isLessThan(10));
-        Assert.assertTrue(verificator.isLessThanOrEquals(10.0));
-        Assert.assertTrue(verificator.isLessThan(11));
-        Assert.assertFalse(verificator.isGreaterThan(11));
-        Assert.assertTrue(verificator.isGreaterThanOrEquals(10));
-        Assert.assertFalse(verificator.isGreaterThan(10));
+        Assert.assertFalse(verificator.isLessThan(10L));
+        Assert.assertTrue(verificator.isLessThanOrEquals(10L));
+        Assert.assertTrue(verificator.isLessThan(11L));
+        Assert.assertFalse(verificator.isGreaterThan(11L));
+        Assert.assertTrue(verificator.isGreaterThanOrEquals(10L));
+        Assert.assertFalse(verificator.isGreaterThan(10L));
         Assert.assertTrue(verificator.isOneOf(1L,2L,10L,9L));
         Assert.assertFalse(verificator.isOneOf(4L,5L,2L));
         Assert.assertTrue(verificator.isNotOneOf(4L,5L,9L));
@@ -231,10 +231,10 @@ public class VerificatorTest {
     @Test
     public void numberDoubleVerificatorCheck() {
         
-        NumberVerificator verificator = new SimpleNumberVerificator(new Provider<Number>() {
+        NumberVerificator<Double> verificator = new SimpleNumberVerificator<Double>(new Provider<Double>() {
 
 			@Override
-			public Number provide() {
+			public Double provide() {
 				return 10.5;
 			}
 		});
@@ -243,26 +243,26 @@ public class VerificatorTest {
         Assert.assertTrue(verificator.is(10.5));
         Assert.assertFalse(verificator.is(10.45));
         Assert.assertFalse(verificator.isNot(10.5));
-        Assert.assertTrue(verificator.isNot(9L));
-        Assert.assertFalse(verificator.isLessThan(10));
+        Assert.assertTrue(verificator.isNot(9.0));
+        Assert.assertFalse(verificator.isLessThan(10.0));
         Assert.assertTrue(verificator.isLessThanOrEquals(10.5));
-        Assert.assertTrue(verificator.isLessThan(11));
+        Assert.assertTrue(verificator.isLessThan(11.0));
         Assert.assertFalse(verificator.isGreaterThan(10.6));
         Assert.assertTrue(verificator.isGreaterThanOrEquals(10.5));
         Assert.assertFalse(verificator.isGreaterThan(10.5));
-        Assert.assertTrue(verificator.isOneOf(1L,2L,10.5,9));
-        Assert.assertFalse(verificator.isOneOf(4L,5L,2L));
-        Assert.assertTrue(verificator.isNotOneOf(4L,5L,9L));
+        Assert.assertTrue(verificator.isOneOf(1.0,2.0,10.5,9.0));
+        Assert.assertFalse(verificator.isOneOf(4.0,5.0,2.0));
+        Assert.assertTrue(verificator.isNotOneOf(4.0,5.0,9.0));
         
-        Assert.assertTrue(verificator.isInRange(4L,13L));
-        Assert.assertFalse(verificator.isInRange(11L,100L));
-        Assert.assertTrue(verificator.isNotInRange(11L,13L));
+        Assert.assertTrue(verificator.isInRange(4.0,13.0));
+        Assert.assertFalse(verificator.isInRange(11.0,100.0));
+        Assert.assertTrue(verificator.isNotInRange(11.0,13.0));
         
-        Assert.assertTrue(verificator.plus(2.5).is(13));
-        Assert.assertFalse(verificator.plus(2.5).is(12));
+        Assert.assertTrue(verificator.plus(2.5).is(13.0));
+        Assert.assertFalse(verificator.plus(2.5).is(12.0));
         
-        Assert.assertTrue(verificator.minus(2L).is(8.5));
-        Assert.assertFalse(verificator.minus(2L).is(9));
+        Assert.assertTrue(verificator.minus(2.0).is(8.5));
+        Assert.assertFalse(verificator.minus(2.0).is(9.0));
     }
     
     @Test

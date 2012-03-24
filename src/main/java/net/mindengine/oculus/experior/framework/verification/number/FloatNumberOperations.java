@@ -15,57 +15,57 @@
 ******************************************************************************/
 package net.mindengine.oculus.experior.framework.verification.number;
 
-public class FloatNumberOperations extends NumberOperations {
+public class FloatNumberOperations extends NumberOperations<Float> {
 
     public FloatNumberOperations(float number) {
         setNumber(number);
     }
 
     @Override
-    public Number divide(Number number) {
+    public Float divide(Float number) {
         if(number==null) throw new IllegalArgumentException("Number shouldn't be null");
-        return getNumber().intValue() / number.floatValue();
+        return getNumber() / number;
     }
 
     @Override
-    public boolean is(Number number) {
+    public boolean is(Float number) {
         if(number==null) throw new IllegalArgumentException("Number shouldn't be null");
-        return getNumber().floatValue() == number.floatValue();
+        return getNumber().equals(number);
     }
 
     @Override
-    public boolean isGreaterThan(Number number) {
+    public boolean isGreaterThan(Float number) {
         if(number==null) throw new IllegalArgumentException("Number shouldn't be null");
-        return getNumber().floatValue() > number.floatValue();
+        return getNumber() > number;
     }
 
     @Override
-    public boolean isLessThan(Number number) {
+    public boolean isLessThan(Float number) {
         if(number==null) throw new IllegalArgumentException("Number shouldn't be null");
-        return getNumber().floatValue() < number.floatValue();
+        return getNumber() < number;
     }
 
     @Override
-    public Number minus(Number number) {
+    public Float minus(Float number) {
         if(number==null) throw new IllegalArgumentException("Number shouldn't be null");
-        return getNumber().floatValue() - number.floatValue();
+        return getNumber() - number;
     }
 
     @Override
-    public Number mod(Number number) {
+    public Float mod(Float number) {
         if(number==null) throw new IllegalArgumentException("Number shouldn't be null");
-        return getNumber().floatValue() % number.floatValue();
+        return getNumber() % number;
     }
 
     @Override
-    public Number multiply(Number number) {
+    public Float multiply(Float number) {
         if(number==null) throw new IllegalArgumentException("Number shouldn't be null");
-        return getNumber().floatValue() * number.floatValue();
+        return getNumber() * number;
     }
 
     @Override
-    public Number plus(Number number) {
+    public Float plus(Float number) {
         if(number==null) throw new IllegalArgumentException("Number shouldn't be null");
-        return getNumber().floatValue() + number.floatValue();
+        return getNumber() + number;
     }
 }

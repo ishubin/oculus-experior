@@ -15,58 +15,58 @@
 ******************************************************************************/
 package net.mindengine.oculus.experior.framework.verification.number;
 
-public class LongNumberOperations extends NumberOperations {
+public class LongNumberOperations extends NumberOperations<Long> {
 
     public LongNumberOperations(long number) {
         setNumber(number);
     }
 
     @Override
-    public Number divide(Number number) {
+    public Long divide(Long number) {
         if(number==null) throw new IllegalArgumentException("Number shouldn't be null");
-        return getNumber().longValue() / number.longValue();
+        return getNumber() / number;
     }
 
     @Override
-    public boolean is(Number number) {
+    public boolean is(Long number) {
         if(number==null) throw new IllegalArgumentException("Number shouldn't be null");
-        return getNumber().longValue() == number.longValue();
+        return getNumber().equals(number);
     }
 
     @Override
-    public boolean isGreaterThan(Number number) {
+    public boolean isGreaterThan(Long number) {
         if(number==null) throw new IllegalArgumentException("Number shouldn't be null");
-        return getNumber().longValue() > number.longValue();
+        return getNumber() > number;
     }
 
     @Override
-    public boolean isLessThan(Number number) {
+    public boolean isLessThan(Long number) {
         if(number==null) throw new IllegalArgumentException("Number shouldn't be null");
-        return getNumber().longValue() < number.longValue();
+        return getNumber() < number;
     }
 
     @Override
-    public Number minus(Number number) {
+    public Long minus(Long number) {
         if(number==null) throw new IllegalArgumentException("Number shouldn't be null");
-        return getNumber().longValue() - number.longValue();
+        return getNumber() - number;
     }
 
     @Override
-    public Number mod(Number number) {
+    public Long mod(Long number) {
         if(number==null) throw new IllegalArgumentException("Number shouldn't be null");
-        return getNumber().longValue() % number.longValue();
+        return getNumber() % number;
     }
 
     @Override
-    public Number multiply(Number number) {
+    public Long multiply(Long number) {
         if(number==null) throw new IllegalArgumentException("Number shouldn't be null");
-        return getNumber().longValue() * number.longValue();
+        return getNumber() * number;
     }
 
     @Override
-    public Number plus(Number number) {
+    public Long plus(Long number) {
         if(number==null) throw new IllegalArgumentException("Number shouldn't be null");
-        return getNumber().longValue() + number.longValue();
+        return getNumber() + number;
     }
 
 }

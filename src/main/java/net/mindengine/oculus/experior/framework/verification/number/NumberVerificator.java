@@ -16,21 +16,21 @@
 package net.mindengine.oculus.experior.framework.verification.number;
 
 
-public interface NumberVerificator {
+public interface NumberVerificator<T extends Number> {
 
     /**
      * Verifies that the given expected argument is the same as real value
      * @param expected
      * @return true in case if expected argument is equal to real value
      */
-    public boolean is(Number expected);
+    public boolean is(T expected);
 
     /**
      * Verifies that the given expected argument is not equal to real value
      * @param expected
      * @return true in case if expected argument is equal to real value
      */
-    public boolean isNot(Number expected);
+    public boolean isNot(T expected);
 
     /**
      * Verifies that the real value is null
@@ -49,35 +49,35 @@ public interface NumberVerificator {
      * @param expected
      * @return true in case if real value is less then expected argument
      */
-    public boolean isLessThan(Number expected);
+    public boolean isLessThan(T expected);
     
     /**
      * Verifies that the real value is less then or is the same as expected argument
      * @param expected
      * @return true in case if real value is less then or is the same as expected argument
      */
-    public boolean isLessThanOrEquals(Number expected);
+    public boolean isLessThanOrEquals(T expected);
 
     /**
      * Verifies that the real value is bigger then expected 
      * @param expected
      * @return true if the real value is bigger then expected
      */
-    public boolean isGreaterThan(Number expected);
+    public boolean isGreaterThan(T expected);
     
     /**
      * Verifies that the real value is bigger then or same as expected 
      * @param expected
      * @return true if the real value is bigger then or same as expected
      */
-    public boolean isGreaterThanOrEquals(Number expected);
+    public boolean isGreaterThanOrEquals(T expected);
 
     /**
      * Verifies that the real value is in the specified array
      * @param args Array of expected values
      * @return true if the real value is in the specified array
      */
-    public boolean isOneOf(Number... args);
+    public boolean isOneOf(T... args);
 
     
     /**
@@ -85,7 +85,7 @@ public interface NumberVerificator {
      * @param args Array of expected values
      * @return true if the real value is not in the specified array
      */
-    public boolean isNotOneOf(Number...args);
+    public boolean isNotOneOf(T...args);
     
     
     /**
@@ -94,7 +94,7 @@ public interface NumberVerificator {
      * @param end End of expected range
      * @return true if the real value is in expected range inclusively
      */
-    public boolean isInRange(Number start, Number end);
+    public boolean isInRange(T start, T end);
 
     /**
      * Verifies that the real value is not in expected range inclusively 
@@ -102,42 +102,42 @@ public interface NumberVerificator {
      * @param end End of expected range
      * @return true if the real value is not in expected range inclusively
      */
-    public boolean isNotInRange(Number start, Number end);
+    public boolean isNotInRange(T start, T end);
 
     /**
      * Creates a new verificator with modified real value so it could be verified later. 
      * @param value
      * @return New instance of verificator with modified real value in it
      */
-    public NumberVerificator plus(Number value);
+    public NumberVerificator<T> plus(T value);
     
     /**
      * Creates a new verificator with modified real value so it could be verified later. 
      * @param value
      * @return New instance of verificator with modified real value in it
      */
-    public NumberVerificator minus(Number value);
+    public NumberVerificator<T> minus(T value);
     
     /**
      * Creates a new verificator with modified real value so it could be verified later. 
      * @param value
      * @return New instance of verificator with modified real value in it
      */
-    public NumberVerificator multiply(Number value);
+    public NumberVerificator<T> multiply(T value);
     
     /**
      * Creates a new verificator with modified real value so it could be verified later. 
      * @param value
      * @return New instance of verificator with modified real value in it
      */
-    public NumberVerificator divide(Number value);
+    public NumberVerificator<T> divide(T value);
     
     /**
      * Creates a new verificator with modified real value so it could be verified later. 
      * @param value
      * @return New instance of verificator with modified real value in it
      */
-    public NumberVerificator mod(Number value);
+    public NumberVerificator<T> mod(T value);
     
 
 }

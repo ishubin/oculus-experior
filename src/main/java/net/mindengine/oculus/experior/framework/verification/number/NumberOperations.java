@@ -15,53 +15,54 @@
 ******************************************************************************/
 package net.mindengine.oculus.experior.framework.verification.number;
 
-public abstract class NumberOperations {
+public abstract class NumberOperations<T extends Number> {
 
-    private Number number;
+    private T number;
     
-    public abstract Number divide(Number number);
-    public abstract Number multiply(Number number);
-    public abstract Number minus(Number number);
-    public abstract Number plus(Number number);
-    public abstract Number mod(Number number);
-    public abstract boolean is(Number number);
-    public abstract boolean isLessThan(Number number);
-    public abstract boolean isGreaterThan(Number number);
+    public abstract T divide(T number);
+    public abstract T multiply(T number);
+    public abstract T minus(T number);
+    public abstract T plus(T number);
+    public abstract T mod(T number);
+    public abstract boolean is(T number);
+    public abstract boolean isLessThan(T number);
+    public abstract boolean isGreaterThan(T number);
     
     
-    public static NumberOperations create(Number number){
+    @SuppressWarnings("unchecked")
+	public static <T extends Number> NumberOperations<T> create(T number){
         if(number==null) {
             throw new IllegalArgumentException("Number should not be null");
         }
         
         if(number instanceof Integer) {
-            return new IntegerNumberOperations(number.intValue());
+            return (NumberOperations<T>) new IntegerNumberOperations(number.intValue());
         }
         else if(number instanceof Long) {
-            return new LongNumberOperations(number.longValue());
+            return (NumberOperations<T>) new LongNumberOperations(number.longValue());
         }
         else if(number instanceof Short) {
-            return new ShortNumberOperations(number.shortValue());
+            return (NumberOperations<T>) new ShortNumberOperations(number.shortValue());
         }
         else if(number instanceof Double) {
-            return new DoubleNumberOperations(number.doubleValue());
+            return (NumberOperations<T>) new DoubleNumberOperations(number.doubleValue());
         }
         else if(number instanceof Float) {
-            return new FloatNumberOperations(number.floatValue());
+            return (NumberOperations<T>) new FloatNumberOperations(number.floatValue());
         }
         else if(number instanceof Byte) {
-            return new ByteNumberOperations(number.byteValue());
+            return (NumberOperations<T>) new ByteNumberOperations(number.byteValue());
         }
         
         
         else throw new IllegalArgumentException("Cannot work with type: "+number.getClass());
     }
 
-    public void setNumber(Number number) {
+    public void setNumber(T number) {
         this.number = number;
     }
 
-    public Number getNumber() {
+    public T getNumber() {
         return number;
     }
 }

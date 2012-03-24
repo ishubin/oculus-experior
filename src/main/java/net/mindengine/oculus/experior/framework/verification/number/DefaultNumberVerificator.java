@@ -23,7 +23,7 @@ import net.mindengine.oculus.experior.reporter.Report;
 import net.mindengine.oculus.experior.reporter.ReportDesign;
 import net.mindengine.oculus.experior.reporter.ReportIcon;
 
-public class DefaultNumberVerificator extends SimpleNumberVerificator{
+public class DefaultNumberVerificator<T extends Number> extends SimpleNumberVerificator<T> {
 
 	private static final String SHOULD_BE_IN_THE_LIST = "Should be in the list";
 	private static final String SHOULD_NOT_BE_IN_THE_LIST = "Should not be in the list";
@@ -60,11 +60,11 @@ public class DefaultNumberVerificator extends SimpleNumberVerificator{
         super();
     }
 
-    public DefaultNumberVerificator(Provider<Number> realValueProvider) {
+    public DefaultNumberVerificator(Provider<T> realValueProvider) {
         super(realValueProvider);
     }
     
-    public DefaultNumberVerificator(Provider<Number> realValueProvider, String name, Report report) {
+    public DefaultNumberVerificator(Provider<T> realValueProvider, String name, Report report) {
         super(realValueProvider);
         setName(name);
         setReport(report);
@@ -78,7 +78,7 @@ public class DefaultNumberVerificator extends SimpleNumberVerificator{
     }
     
     @Override
-    public boolean is(Number expected) {
+    public boolean is(T expected) {
     	return reportSimple(super.is(expected), 
     			expected, 
     			"is",  
@@ -87,7 +87,7 @@ public class DefaultNumberVerificator extends SimpleNumberVerificator{
 
 
 	@Override
-    public boolean isGreaterThan(Number expected) {
+    public boolean isGreaterThan(T expected) {
 		return reportSimple(super.isGreaterThan(expected), 
 				expected,
 				"isGreaterThan", 
@@ -95,7 +95,7 @@ public class DefaultNumberVerificator extends SimpleNumberVerificator{
     }
 
     @Override
-    public boolean isGreaterThanOrEquals(Number expected) {
+    public boolean isGreaterThanOrEquals(T expected) {
     	return reportSimple(super.isGreaterThanOrEquals(expected), 
     			expected,
     			"isGreaterThanOrEquals", 
@@ -103,7 +103,7 @@ public class DefaultNumberVerificator extends SimpleNumberVerificator{
     }
 
     @Override
-    public boolean isLessThan(Number expected) {
+    public boolean isLessThan(T expected) {
     	return reportSimple(super.isLessThan(expected), 
 				expected,
 				"isLessThan", 
@@ -111,7 +111,7 @@ public class DefaultNumberVerificator extends SimpleNumberVerificator{
     }
 
     @Override
-    public boolean isLessThanOrEquals(Number expected) {
+    public boolean isLessThanOrEquals(T expected) {
     	return reportSimple(super.isLessThanOrEquals(expected), 
     			expected,
     			"isLessThanOrEquals", 
@@ -119,7 +119,7 @@ public class DefaultNumberVerificator extends SimpleNumberVerificator{
     }
 
     @Override
-    public boolean isNot(Number expected) {
+    public boolean isNot(T expected) {
     	return reportSimple(super.isNot(expected), 
     			expected,
     			"isNot", 
@@ -143,7 +143,7 @@ public class DefaultNumberVerificator extends SimpleNumberVerificator{
     }
 
     @Override
-    public boolean isInRange(Number start, Number end) {
+    public boolean isInRange(T start, T end) {
     	Map<String, Object > map = new HashMap<String, Object>();
     	map.put("name", fetchName());
     	map.put("real", findRealValue());
@@ -160,7 +160,7 @@ public class DefaultNumberVerificator extends SimpleNumberVerificator{
     }
 
     @Override
-    public boolean isNotInRange(Number start, Number end) {
+    public boolean isNotInRange(T start, T end) {
     	Map<String, Object > map = new HashMap<String, Object>();
     	map.put("name", fetchName());
     	map.put("real", findRealValue());
@@ -177,7 +177,7 @@ public class DefaultNumberVerificator extends SimpleNumberVerificator{
     }
     
     @Override
-    public boolean isNotOneOf(Number... args) {
+    public boolean isNotOneOf(T... args) {
     	Map<String, Object > map = new HashMap<String, Object>();
     	map.put("name", fetchName());
     	map.put("real", findRealValue());
@@ -192,7 +192,7 @@ public class DefaultNumberVerificator extends SimpleNumberVerificator{
     }
 
     @Override
-    public boolean isOneOf(Number... args) {
+    public boolean isOneOf(T... args) {
     	Map<String, Object > map = new HashMap<String, Object>();
     	map.put("name", fetchName());
     	map.put("real", findRealValue());
@@ -206,13 +206,13 @@ public class DefaultNumberVerificator extends SimpleNumberVerificator{
         return check;
     }
 
-    private String expectedList(String caption, Number[] args) {
+    private String expectedList(String caption, T[] args) {
 		StringBuffer text = new StringBuffer();
 		text.append(ReportDesign.bold(caption)).append(ReportDesign.breakline()).append(ReportDesign.listValues((Object[])args));
 		return text.toString();
 	}
 
-	private boolean reportSimple(boolean state, Number expected, String methodName, String isPassDefaultTemplate, String isFailDefaultTemplate) {
+	private boolean reportSimple(boolean state, T expected, String methodName, String isPassDefaultTemplate, String isFailDefaultTemplate) {
     	if( state ) {
     		String title = report.message(NUMBER_VERIFICATOR_HEADER + "." + methodName + ".pass", isPassDefaultTemplate)
     				.put("name", fetchName())

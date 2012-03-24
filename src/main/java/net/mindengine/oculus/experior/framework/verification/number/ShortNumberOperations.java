@@ -15,56 +15,56 @@
 ******************************************************************************/
 package net.mindengine.oculus.experior.framework.verification.number;
 
-public class ShortNumberOperations extends NumberOperations {
+public class ShortNumberOperations extends NumberOperations<Short> {
     public ShortNumberOperations(short number) {
         setNumber(number);
     }
 
     @Override
-    public Number divide(Number number) {
+    public Short divide(Short number) {
         if(number==null) throw new IllegalArgumentException("Number shouldn't be null");
-        return getNumber().intValue() / number.shortValue();
+        return (short) (getNumber() / number);
     }
 
     @Override
-    public boolean is(Number number) {
+    public boolean is(Short number) {
         if(number==null) throw new IllegalArgumentException("Number shouldn't be null");
-        return getNumber().shortValue() == number.shortValue();
+        return getNumber().equals(number);
     }
 
     @Override
-    public boolean isGreaterThan(Number number) {
+    public boolean isGreaterThan(Short number) {
         if(number==null) throw new IllegalArgumentException("Number shouldn't be null");
-        return getNumber().shortValue() > number.shortValue();
+        return getNumber() > number;
     }
 
     @Override
-    public boolean isLessThan(Number number) {
+    public boolean isLessThan(Short number) {
         if(number==null) throw new IllegalArgumentException("Number shouldn't be null");
-        return getNumber().shortValue() < number.shortValue();
+        return getNumber() < number;
     }
 
     @Override
-    public Number minus(Number number) {
+    public Short minus(Short number) {
         if(number==null) throw new IllegalArgumentException("Number shouldn't be null");
-        return getNumber().shortValue() - number.shortValue();
+        return (short) (getNumber() - number);
     }
 
     @Override
-    public Number mod(Number number) {
+    public Short mod(Short number) {
         if(number==null) throw new IllegalArgumentException("Number shouldn't be null");
-        return getNumber().shortValue() % number.shortValue();
+        return (short) (getNumber() % number);
     }
 
     @Override
-    public Number multiply(Number number) {
+    public Short multiply(Short number) {
         if(number==null) throw new IllegalArgumentException("Number shouldn't be null");
-        return getNumber().shortValue() * number.shortValue();
+        return (short) (getNumber() * number);
     }
 
     @Override
-    public Number plus(Number number) {
+    public Short plus(Short number) {
         if(number==null) throw new IllegalArgumentException("Number shouldn't be null");
-        return getNumber().shortValue() + number.shortValue();
+        return (short) (getNumber() + number);
     }
 }

@@ -18,22 +18,23 @@ package net.mindengine.oculus.experior.framework.verification.number;
 import net.mindengine.oculus.experior.framework.verification.Provider;
 
 
-public class SimpleNumberVerificator implements NumberVerificator, Cloneable {
+public class SimpleNumberVerificator<T extends Number> implements NumberVerificator<T>, Cloneable {
 
-    private Number _realValue;
-    private Provider<Number> realValueProvider;
+    private T _realValue;
+    private Provider<T> realValueProvider;
 
     public SimpleNumberVerificator() {
     }
 
-    public SimpleNumberVerificator(Provider<Number> realValueProvider) {
+    public SimpleNumberVerificator(Provider<T> realValueProvider) {
         setRealValueProvider(realValueProvider);
     }
 
-    private SimpleNumberVerificator copy(Number realValue) {
-        SimpleNumberVerificator clone;
+    @SuppressWarnings("unchecked")
+	private SimpleNumberVerificator<T> copy(T realValue) {
+        SimpleNumberVerificator<T> clone;
         try {
-            clone = (SimpleNumberVerificator) this.clone();
+            clone = (SimpleNumberVerificator<T>) this.clone();
             clone._realValue = realValue;
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException(e);
@@ -42,12 +43,12 @@ public class SimpleNumberVerificator implements NumberVerificator, Cloneable {
     }
 
     @Override
-    public NumberVerificator divide(Number value) {
-    	Number realValue = findRealValue();
+    public NumberVerificator<T> divide(T value) {
+    	T realValue = findRealValue();
         return copy(NumberOperations.create(realValue).divide(value));
     }
 
-    protected Number findRealValue() {
+    protected T findRealValue() {
 		if ( this._realValue != null ) {
 			return this._realValue;
 		}
@@ -61,60 +62,61 @@ public class SimpleNumberVerificator implements NumberVerificator, Cloneable {
 	}
 
 	@Override
-    public boolean is(Number expected) {
-		Number realValue = findRealValue();
+    public boolean is(T expected) {
+		T realValue = findRealValue();
         if(realValue!=null){
             if(expected==null) return false;
-            return NumberOperations.create(realValue).is(expected);
+            NumberOperations<T> op = NumberOperations.create(realValue);
+            return op.is(expected);
         }
         else return expected==null;
     }
 
     @Override
-    public boolean isGreaterThan(Number expected) {
-    	Number realValue = findRealValue();
+    public boolean isGreaterThan(T expected) {
+    	T realValue = findRealValue();
         if(realValue==null) return false;
         if(expected==null) return false;
         return NumberOperations.create(realValue).isGreaterThan(expected);
     }
 
     @Override
-    public boolean isGreaterThanOrEquals(Number expected) {
-    	Number realValue = findRealValue();
+    public boolean isGreaterThanOrEquals(T expected) {
+    	T realValue = findRealValue();
         if(realValue==null) return false;
         if(expected==null) return false;
-        NumberOperations numberOperations = NumberOperations.create(realValue);
+        NumberOperations<T> numberOperations = NumberOperations.create(realValue);
         return numberOperations.isGreaterThan(expected) || numberOperations.is(expected);
     }
 
     @Override
-    public boolean isInRange(Number start, Number end) {
-    	Number realValue = findRealValue();
+    public boolean isInRange(T start, T end) {
+    	T realValue = findRealValue();
         if(start==null || end == null) throw new IllegalArgumentException("Range cannot be defined as null");
-        NumberOperations numberOperations = NumberOperations.create(realValue);
+        NumberOperations<T> numberOperations = NumberOperations.create(realValue);
         return numberOperations.isGreaterThan(start) || numberOperations.is(start) && (numberOperations.isLessThan(end) || numberOperations.is(end));
     }
 
     @Override
-    public boolean isLessThan(Number expected) {
-    	Number realValue = findRealValue();
+    public boolean isLessThan(T expected) {
+    	T realValue = findRealValue();
         if(realValue==null) return false;
         if(expected==null) return false;
         return NumberOperations.create(realValue).isLessThan(expected);
     }
 
     @Override
-    public boolean isLessThanOrEquals(Number expected) {
-    	Number realValue = findRealValue();
+    public boolean isLessThanOrEquals(T expected) {
+    	T realValue = findRealValue();
         if(realValue==null) return false;
         if(expected==null) return false;
-        NumberOperations numberOperations = NumberOperations.create(realValue);
+        NumberOperations<T> numberOperations = NumberOperations.create(realValue);
         return numberOperations.isLessThan(expected) || numberOperations.is(expected);
     }
 
     @Override
-    public boolean isNot(Number expected) {
-    	Number realValue = findRealValue();
+    public boolean isNot(T expected) {
+    	T realValue = findRealValue();
         if(realValue!=null){
             if(expected==null) return true;
             return !(NumberOperations.create(realValue).is(expected));
@@ -123,25 +125,25 @@ public class SimpleNumberVerificator implements NumberVerificator, Cloneable {
     }
 
     @Override
-    public boolean isNotInRange(Number start, Number end) {
-    	Number realValue = findRealValue();
+    public boolean isNotInRange(T start, T end) {
+    	T realValue = findRealValue();
         if(start==null || end == null) throw new IllegalArgumentException("Range cannot be defined as null");
-        NumberOperations numberOperations = NumberOperations.create(realValue);
+        NumberOperations<T> numberOperations = NumberOperations.create(realValue);
         return !(numberOperations.isGreaterThan(start) || numberOperations.is(start) && (numberOperations.isLessThan(end) || numberOperations.is(end)));
     }
 
     @Override
     public boolean isNotNull() {
-    	Number realValue = findRealValue();
+    	T realValue = findRealValue();
         return realValue!=null;
     }
 
     @Override
-    public boolean isNotOneOf(Number... args) {
-    	Number realValue = findRealValue();
+    public boolean isNotOneOf(T... args) {
+    	T realValue = findRealValue();
         if(args!=null && args.length>0) {
-            NumberOperations numberOperations = NumberOperations.create(realValue);
-            for(Number arg : args) {
+            NumberOperations<T> numberOperations = NumberOperations.create(realValue);
+            for(T arg : args) {
                 if(realValue!=null) {
                     if(arg!=null && numberOperations.is(arg)) {
                         return false;
@@ -157,16 +159,16 @@ public class SimpleNumberVerificator implements NumberVerificator, Cloneable {
    
     @Override
     public boolean isNull() {
-    	Number realValue = findRealValue();
+    	T realValue = findRealValue();
         return realValue==null;
     }
 
     @Override
-    public boolean isOneOf(Number... args) {
-    	Number realValue = findRealValue();
+    public boolean isOneOf(T... args) {
+    	T realValue = findRealValue();
         if(args!=null && args.length>0) {
-            NumberOperations numberOperations = NumberOperations.create(realValue);
-            for(Number arg : args) {
+            NumberOperations<T> numberOperations = NumberOperations.create(realValue);
+            for(T arg : args) {
                 if(realValue!=null) {
                     if(arg!=null && numberOperations.is(arg)) {
                         return true;
@@ -180,34 +182,34 @@ public class SimpleNumberVerificator implements NumberVerificator, Cloneable {
     }
 
     @Override
-    public NumberVerificator minus(Number value) {
-    	Number realValue = findRealValue();
+    public NumberVerificator<T> minus(T value) {
+    	T realValue = findRealValue();
         return copy(NumberOperations.create(realValue).minus(value));
     }
 
     @Override
-    public NumberVerificator mod(Number value) {
-    	Number realValue = findRealValue();
+    public NumberVerificator<T> mod(T value) {
+    	T realValue = findRealValue();
         return copy(NumberOperations.create(realValue).mod(value));
     }
 
     @Override
-    public NumberVerificator multiply(Number value) {
-    	Number realValue = findRealValue();
+    public NumberVerificator<T> multiply(T value) {
+    	T realValue = findRealValue();
         return copy(NumberOperations.create(realValue).multiply(value));
     }
 
     @Override
-    public NumberVerificator plus(Number value) {
-    	Number realValue = findRealValue();
+    public NumberVerificator<T> plus(T value) {
+    	T realValue = findRealValue();
         return copy(NumberOperations.create(realValue).plus(value));
     }
 
-	public Provider<Number> getRealValueProvider() {
+	public Provider<T> getRealValueProvider() {
 		return realValueProvider;
 	}
 
-	public void setRealValueProvider(Provider<Number> realValueProvider) {
+	public void setRealValueProvider(Provider<T> realValueProvider) {
 		this.realValueProvider = realValueProvider;
 	}
 

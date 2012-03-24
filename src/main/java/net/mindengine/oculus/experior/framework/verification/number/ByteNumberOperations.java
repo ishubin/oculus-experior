@@ -15,57 +15,57 @@
 ******************************************************************************/
 package net.mindengine.oculus.experior.framework.verification.number;
 
-public class ByteNumberOperations extends NumberOperations {
+public class ByteNumberOperations extends NumberOperations<Byte> {
 
     public ByteNumberOperations(byte number) {
         setNumber(number);
     }
 
     @Override
-    public Number divide(Number number) {
+    public Byte divide(Byte number) {
         if(number==null) throw new IllegalArgumentException("Number shouldn't be null");
-        return getNumber().intValue() / number.byteValue();
+        return (byte) (getNumber() / number);
     }
 
     @Override
-    public boolean is(Number number) {
+    public boolean is(Byte number) {
         if(number==null) throw new IllegalArgumentException("Number shouldn't be null");
-        return getNumber().byteValue() == number.byteValue();
+        return getNumber().equals(number);
     }
 
     @Override
-    public boolean isGreaterThan(Number number) {
+    public boolean isGreaterThan(Byte number) {
         if(number==null) throw new IllegalArgumentException("Number shouldn't be null");
-        return getNumber().byteValue() > number.byteValue();
+        return getNumber() > number;
     }
 
     @Override
-    public boolean isLessThan(Number number) {
+    public boolean isLessThan(Byte number) {
         if(number==null) throw new IllegalArgumentException("Number shouldn't be null");
-        return getNumber().byteValue() < number.byteValue();
+        return getNumber() < number;
     }
 
     @Override
-    public Number minus(Number number) {
+    public Byte minus(Byte number) {
         if(number==null) throw new IllegalArgumentException("Number shouldn't be null");
-        return getNumber().byteValue() - number.byteValue();
+        return (byte) (getNumber() - number);
     }
 
     @Override
-    public Number mod(Number number) {
+    public Byte mod(Byte number) {
         if(number==null) throw new IllegalArgumentException("Number shouldn't be null");
-        return getNumber().byteValue() % number.byteValue();
+        return (byte) (getNumber() % number);
     }
 
     @Override
-    public Number multiply(Number number) {
+    public Byte multiply(Byte number) {
         if(number==null) throw new IllegalArgumentException("Number shouldn't be null");
-        return getNumber().byteValue() * number.byteValue();
+        return (byte) (getNumber() * number);
     }
 
     @Override
-    public Number plus(Number number) {
+    public Byte plus(Byte number) {
         if(number==null) throw new IllegalArgumentException("Number shouldn't be null");
-        return getNumber().byteValue() + number.byteValue();
+        return (byte) (getNumber() + number);
     }
 }

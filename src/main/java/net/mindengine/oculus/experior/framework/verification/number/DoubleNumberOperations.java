@@ -15,57 +15,57 @@
 ******************************************************************************/
 package net.mindengine.oculus.experior.framework.verification.number;
 
-public class DoubleNumberOperations extends NumberOperations {
+public class DoubleNumberOperations extends NumberOperations<Double> {
 
     public DoubleNumberOperations(double number) {
         setNumber(number);
     }
 
     @Override
-    public Number divide(Number number) {
+    public Double divide(Double number) {
         if(number==null) throw new IllegalArgumentException("Number shouldn't be null");
         return getNumber().intValue() / number.doubleValue();
     }
 
     @Override
-    public boolean is(Number number) {
+    public boolean is(Double number) {
         if(number==null) throw new IllegalArgumentException("Number shouldn't be null");
-        return getNumber().doubleValue() == number.doubleValue();
+        return getNumber().equals(number);
     }
 
     @Override
-    public boolean isGreaterThan(Number number) {
+    public boolean isGreaterThan(Double number) {
         if(number==null) throw new IllegalArgumentException("Number shouldn't be null");
-        return getNumber().doubleValue() > number.doubleValue();
+        return getNumber() > number;
     }
 
     @Override
-    public boolean isLessThan(Number number) {
+    public boolean isLessThan(Double number) {
         if(number==null) throw new IllegalArgumentException("Number shouldn't be null");
-        return getNumber().doubleValue() < number.doubleValue();
+        return getNumber() < number;
     }
 
     @Override
-    public Number minus(Number number) {
+    public Double minus(Double number) {
         if(number==null) throw new IllegalArgumentException("Number shouldn't be null");
-        return getNumber().doubleValue() - number.doubleValue();
+        return getNumber() - number;
     }
 
     @Override
-    public Number mod(Number number) {
+    public Double mod(Double number) {
         if(number==null) throw new IllegalArgumentException("Number shouldn't be null");
-        return getNumber().doubleValue() % number.doubleValue();
+        return getNumber() % number;
     }
 
     @Override
-    public Number multiply(Number number) {
+    public Double multiply(Double number) {
         if(number==null) throw new IllegalArgumentException("Number shouldn't be null");
-        return getNumber().doubleValue() * number.doubleValue();
+        return getNumber() * number;
     }
 
     @Override
-    public Number plus(Number number) {
+    public Double plus(Double number) {
         if(number==null) throw new IllegalArgumentException("Number shouldn't be null");
-        return getNumber().doubleValue() + number.doubleValue();
+        return getNumber() + number;
     }
 }
