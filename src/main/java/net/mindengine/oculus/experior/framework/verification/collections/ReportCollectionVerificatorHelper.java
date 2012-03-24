@@ -22,39 +22,38 @@ import net.mindengine.oculus.experior.reporter.Report;
 import net.mindengine.oculus.experior.reporter.ReportDesign;
 import net.mindengine.oculus.experior.reporter.ReportIcon;
 
-public class ReportCollectionVerificatorHelper {
+public class ReportCollectionVerificatorHelper<T> {
 
 	private String verificatorName = "CollectionVerificator";
 	private Report report;
 	private String collectionName;
-	private List<?> realCollection;
+	private List<T> realCollection;
 	
-	public boolean report(boolean checkState, String methodName, String passDefaultTemplate, String failDefaultTemplate, Object... args) {
+	public boolean report(boolean checkState, String methodName, String passDefaultTemplate, String failDefaultTemplate, List<T> expectedList) {
 		if(report != null) {
 			if(checkState) {
-	            reportInfo(msg(methodName + ".pass").put("name", getCollectionName()).toString(), args);
+	            reportInfo(msg(methodName + ".pass").put("name", getCollectionName()).toString(), expectedList);
 	        }
-	        else reportError(msg(methodName + ".fail").put("name", getCollectionName()).toString(), args);
+	        else reportError(msg(methodName + ".fail").put("name", getCollectionName()).toString(), expectedList);
 		}
 		return checkState;
 	}
     
-    private void reportInfo(String message, Object[] expectedValues) {
+    private void reportInfo(String message, List<T> expectedList) {
         if(getReport()!=null) {
-            getReport().info(message).details(generateDetails("Expected items", expectedValues)).icon(ReportIcon.VALIDATION_PASSED);
+            getReport().info(message).details(generateDetails("Expected items", expectedList)).icon(ReportIcon.VALIDATION_PASSED);
         }
     }
     
-    private void reportError(String message, Object[] expectedValues) {
+    private void reportError(String message, List<T> expectedList) {
         if(getReport()!=null) {
-            getReport().error(message).details(generateDetails("Expected items", expectedValues)).icon(ReportIcon.VALIDATION_FAILED);
+            getReport().error(message).details(generateDetails("Expected items", expectedList)).icon(ReportIcon.VALIDATION_FAILED);
         }
     }
     
-	private String generateDetails(String expectedCaption,
-			Object[] expectedValues) {
-		String details = ReportDesign.bold("Real values: ")+ReportDesign.breakline()+ReportDesign.listValues(getRealCollection())
-		    + ReportDesign.bold(expectedCaption + ": ")+ReportDesign.breakline()+ReportDesign.listValues(expectedValues);
+	private String generateDetails(String expectedCaption, List<T> expectedList) {
+		String details = ReportDesign.bold("Real values: ") + ReportDesign.breakline()+ReportDesign.listValues(getRealCollection())
+		    + ReportDesign.bold(expectedCaption + ": ") + ReportDesign.breakline() + ReportDesign.listValues(expectedList);
 		return details;
 	}
 
@@ -62,7 +61,7 @@ public class ReportCollectionVerificatorHelper {
 		return report;
 	}
 
-	public ReportCollectionVerificatorHelper setReport(Report report) {
+	public ReportCollectionVerificatorHelper<T> setReport(Report report) {
 		this.report = report;
 		return this;
 	}
@@ -75,7 +74,7 @@ public class ReportCollectionVerificatorHelper {
 		return collectionName;
 	}
 
-	public ReportCollectionVerificatorHelper setCollectionName(String collectionName) {
+	public ReportCollectionVerificatorHelper<T> setCollectionName(String collectionName) {
 		this.collectionName = collectionName;
 		return this;
 	}
@@ -84,7 +83,7 @@ public class ReportCollectionVerificatorHelper {
 		return realCollection;
 	}
 
-	public ReportCollectionVerificatorHelper setRealCollection(List<?> realCollection) {
+	public ReportCollectionVerificatorHelper<T> setRealCollection(List<T> realCollection) {
 		this.realCollection = realCollection;
 		return this;
 	}
@@ -93,7 +92,7 @@ public class ReportCollectionVerificatorHelper {
 		return verificatorName;
 	}
 
-	public ReportCollectionVerificatorHelper setVerificatorName(String verificatorName) {
+	public ReportCollectionVerificatorHelper<T> setVerificatorName(String verificatorName) {
 		this.verificatorName = verificatorName;
 		return this;
 	}

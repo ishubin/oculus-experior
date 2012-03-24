@@ -15,43 +15,52 @@
 ******************************************************************************/
 package net.mindengine.oculus.experior.framework.verification.collections;
 
-public interface CollectionVerificator {
+import java.util.List;
+
+public interface CollectionVerificator<T> {
 
     /**
      * Checks if real collection contains all of specified expected values
-     * @param args
+     * @param expectedList
      * @return
      */
-    public boolean hasAll(Object...args);
+    public boolean hasAll(List<T> expectedList);
+    
+    public boolean hasAll(T... expectedValues);
 
     /**
      * Checks if the real collection contains only expected values. Order of elements is not checked
-     * @param args
+     * @param expectedList
      * @return
      */
-    public boolean hasOnly(Object...args);
+    public boolean hasOnly(List<T> expectedList);
+    
+    public boolean hasOnly(T... expectedValues);
 
     /**
      * Checks if real collection has any of specified expected values
-     * @param args
+     * @param expectedList
      * @return
      */
-    public boolean hasAny(Object...args);
+    public boolean hasAny(List<T> expectedList);
+    public boolean hasAny(T... expectedValues);
 
     /**
      * Checks if real collection doesn't contain any of the expected values
-     * @param args
+     * @param expectedList
      * @return
      */
-    public boolean hasNone(Object...args);
+    public boolean hasNone(List<T> expectedList);
+    public boolean hasNone(T... expectedValues);
 
     /**
      * Checks if all of expected values are in collection and are in exactly the same order
-     * @param args
+     * @param expectedList
      * @return
      */
-    public boolean hasExactly(Object...args);
+    public boolean hasExactly(List<T> expectedList);
+    public boolean hasExactly(T... expectedValues);
 
-    public CollectionVerificator reverse();
+    public CollectionVerificator<T> reverse();
 
 }

@@ -16,126 +16,77 @@
 package net.mindengine.oculus.experior.framework.verification.collections;
 
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import net.mindengine.oculus.experior.framework.verification.Provider;
 import net.mindengine.oculus.experior.framework.verification.number.NumberOperations;
 
-public class SimpleNumberCollectionVerificator extends AbstractCollectionVerificator {
-
-    private List<?> realCollection;
+public class SimpleNumberCollectionVerificator<T extends Number> extends AbstractCollectionVerificator<T> {
     
     
     public SimpleNumberCollectionVerificator() {
-        
     }
     
-    public SimpleNumberCollectionVerificator(List<?> realCollection){
-        this.realCollection = realCollection;
-    }
-    
-    public SimpleNumberCollectionVerificator(Number...realCollection){
-        LinkedList<Number> list = new LinkedList<Number>();
-        for(Number number : realCollection) {
-            list.add(number);
-        }
-        this.realCollection = list;
+    public SimpleNumberCollectionVerificator(Provider<List<T>> realCollectionProvider){
+        this.setRealCollectionProvider(realCollectionProvider);
     }
     
     @Override
-    public int size() {
-        return realCollection.size();
+    protected SimpleNumberCollectionVerificator<T> copy(List<T> newList) {
+    	return (SimpleNumberCollectionVerificator<T>) super.copy(newList);
+    }
+    
+    @SuppressWarnings("unchecked")
+	public SimpleNumberCollectionVerificator<T> plus(T value) {
+        List<T> newList = new LinkedList<T>();
+        for(T number : findRealCollection()) {
+            newList.add((T)NumberOperations.create(number).plus(value));
+        }
+        return copy(newList);
     }
 
     @SuppressWarnings("unchecked")
-    @Override
-    public Iterator<Object> iterator() {
-        return (Iterator<Object>) realCollection.iterator();
-    }
-
-    public void setRealCollection(List<?> realCollection) {
-        this.realCollection = realCollection;
-    }
-
-    public List<?> getRealCollection() {
-        return realCollection;
-    }
-
-    public SimpleNumberCollectionVerificator plus(Number value) {
-        SimpleNumberCollectionVerificator copy = copy();
-        List<Object> newList = new LinkedList<Object>();
-        
-        for(Object object : realCollection) {
-            newList.add(NumberOperations.create((Number)object).plus(value));
+	public SimpleNumberCollectionVerificator<T> minus(T value) {
+    	List<T> newList = new LinkedList<T>();
+        for(T number : findRealCollection()) {
+            newList.add((T)NumberOperations.create(number).minus(value));
         }
-        copy.setRealCollection(newList);
-        return copy;
+        return copy(newList);
     }
     
-
-    private SimpleNumberCollectionVerificator copy() {
-        SimpleNumberCollectionVerificator copy;
-        try {
-            copy = (SimpleNumberCollectionVerificator) this.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e);
+    @SuppressWarnings("unchecked")
+	public SimpleNumberCollectionVerificator<T> multiply(T value) {
+    	List<T> newList = new LinkedList<T>();
+        for(T number : findRealCollection()) {
+            newList.add((T)NumberOperations.create(number).multiply(value));
         }
-        return copy;
+        return copy(newList);
     }
 
-    public SimpleNumberCollectionVerificator minus(Number value) {
-        SimpleNumberCollectionVerificator copy = copy();
-        List<Object> newList = new LinkedList<Object>();
-        
-        for(Object object : realCollection) {
-            newList.add(NumberOperations.create((Number)object).minus(value));
+    @SuppressWarnings("unchecked")
+	public SimpleNumberCollectionVerificator<T> divide(T value) {
+    	List<T> newList = new LinkedList<T>();
+        for(T number : findRealCollection()) {
+            newList.add((T)NumberOperations.create(number).divide(value));
         }
-        copy.setRealCollection(newList);
-        return copy;
+        return copy(newList);
     }
     
-    public SimpleNumberCollectionVerificator multiply(Number value) {
-        SimpleNumberCollectionVerificator copy = copy();
-        List<Object> newList = new LinkedList<Object>();
-        
-        for(Object object : realCollection) {
-            newList.add(NumberOperations.create((Number)object).multiply(value));
+    @SuppressWarnings("unchecked")
+	public SimpleNumberCollectionVerificator<T> mod(T value) {
+    	List<T> newList = new LinkedList<T>();
+        for(T number : findRealCollection()) {
+            newList.add((T)NumberOperations.create(number).mod(value));
         }
-        copy.setRealCollection(newList);
-        return copy;
-    }
-
-    public SimpleNumberCollectionVerificator divide(Number value) {
-        SimpleNumberCollectionVerificator copy = copy();
-        List<Object> newList = new LinkedList<Object>();
-        
-        for(Object object : realCollection) {
-            newList.add(NumberOperations.create((Number)object).divide(value));
-        }
-        copy.setRealCollection(newList);
-        return copy;
-    }
-    
-    public SimpleNumberCollectionVerificator mod(Number value) {
-        SimpleNumberCollectionVerificator copy = copy();
-        List<Object> newList = new LinkedList<Object>();
-        
-        for(Object object : realCollection) {
-            newList.add(NumberOperations.create((Number)object).mod(value));
-        }
-        copy.setRealCollection(newList);
-        return copy;
+        return copy(newList);
     }
     
 
     @Override
-    public CollectionVerificator reverse() {
-        SimpleNumberCollectionVerificator copy = copy();
-        
-        List<?> newList = realCollection.subList(0, realCollection.size());
+    public CollectionVerificator<T> reverse() {
+        List<T> newList = (List<T>) findRealCollection().subList(0, findRealCollection().size());
         Collections.reverse(newList);
-        copy.setRealCollection(newList);
-        return copy;
+        return copy(newList);
     }
 }

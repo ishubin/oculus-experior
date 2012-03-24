@@ -17,31 +17,23 @@ package net.mindengine.oculus.experior.framework.verification.collections;
 
 import java.util.List;
 
+import net.mindengine.oculus.experior.framework.verification.Provider;
 import net.mindengine.oculus.experior.reporter.Report;
 
-public class DefaultNumberCollectionVerificator extends SimpleNumberCollectionVerificator {
+public class DefaultNumberCollectionVerificator<T extends Number> extends SimpleNumberCollectionVerificator<T> {
 
     private String name;
     private Report report;
-	private ReportCollectionVerificatorHelper reportHelper;
+	private ReportCollectionVerificatorHelper<T> reportHelper;
     
     public DefaultNumberCollectionVerificator() {
         super();
     }
-    public DefaultNumberCollectionVerificator(List<?> realCollection) {
-        super(realCollection);
+    public DefaultNumberCollectionVerificator(Provider<List<T>> realCollectionProvider) {
+        super(realCollectionProvider);
     }
-    public DefaultNumberCollectionVerificator(Number... realCollection) {
-        super(realCollection);
-    }
-    
-    public DefaultNumberCollectionVerificator(String name, Report report, List<?> realCollection) {
-        super(realCollection);
-        setName(name);
-        setReport(report);
-    }
-    public DefaultNumberCollectionVerificator(String name, Report report, Number... realCollection) {
-        super(realCollection);
+    public DefaultNumberCollectionVerificator(String name, Report report, Provider<List<T>> realCollectionProvider) {
+        super(realCollectionProvider);
         setName(name);
         setReport(report);
     }
@@ -66,36 +58,34 @@ public class DefaultNumberCollectionVerificator extends SimpleNumberCollectionVe
         return "Undefined list";
     }
     
-    
-    
     @Override
-    public boolean hasAll(Object... args) {
-        return getReportHelper().report(super.hasAll(args), "hasAll", HASALL_PASS_DEFAULT_TEMPLATE, HASALL_FAIL_DEFAULT_TEMPLATE, args);
+    public boolean hasAll(List<T> expectedList) {
+        return reportHelper().report(super.hasAll(expectedList), "hasAll", HASALL_PASS_DEFAULT_TEMPLATE, HASALL_FAIL_DEFAULT_TEMPLATE, expectedList);
     }
 	
     @Override
-    public boolean hasAny(Object... args) {
-    	return getReportHelper().report(super.hasAny(args), "hasAny", HASANY_PASS_DEFAULT_TEMPLATE, HASANY_FAIL_DEFAULT_TEMPLATE, args);
+    public boolean hasAny(List<T> expectedList) {
+    	return reportHelper().report(super.hasAny(expectedList), "hasAny", HASANY_PASS_DEFAULT_TEMPLATE, HASANY_FAIL_DEFAULT_TEMPLATE, expectedList);
     }
     @Override
-    public boolean hasExactly(Object... args) {
-    	return getReportHelper().report(super.hasExactly(args), "hasExactly", HASEXACTLY_PASS_DEFAULT_TEMPLATE, HASEXACTLY_FAIL_DEFAULT_TEMPLATE, args);
+    public boolean hasExactly(List<T> expectedList) {
+    	return reportHelper().report(super.hasExactly(expectedList), "hasExactly", HASEXACTLY_PASS_DEFAULT_TEMPLATE, HASEXACTLY_FAIL_DEFAULT_TEMPLATE, expectedList);
     }
     @Override
-    public boolean hasNone(Object... args) {
-        return getReportHelper().report(super.hasNone(args), "hasNone", HASNONE_PASS_DEFAULT_TEMPLATE, HASNONE_FAIL_DEFAULT_TEMPLATE, args);
+    public boolean hasNone(List<T> expectedList) {
+        return reportHelper().report(super.hasNone(expectedList), "hasNone", HASNONE_PASS_DEFAULT_TEMPLATE, HASNONE_FAIL_DEFAULT_TEMPLATE, expectedList);
     }
     
     @Override
-    public boolean hasOnly(Object... args) {
-        return getReportHelper().report(super.hasOnly(args), "hasOnly", HASONLY_PASS_DEFAULT_TEMPLATE, HASONLY_FAIL_DEFAULT_TEMPLATE, args);
+    public boolean hasOnly(List<T> expectedList) {
+        return reportHelper().report(super.hasOnly(expectedList), "hasOnly", HASONLY_PASS_DEFAULT_TEMPLATE, HASONLY_FAIL_DEFAULT_TEMPLATE, expectedList);
     }
-    
 
-    private ReportCollectionVerificatorHelper getReportHelper() {
+    private ReportCollectionVerificatorHelper<T> reportHelper() {
 		if ( this.reportHelper == null ) {
-			this.reportHelper = new ReportCollectionVerificatorHelper();
+			this.reportHelper = new ReportCollectionVerificatorHelper<T>();
 		}
-		return this.reportHelper.setCollectionName(getName()).setReport(getReport()).setRealCollection(getRealCollection());
+		return this.reportHelper.setCollectionName(getName()).setReport(getReport()).setRealCollection(findRealCollection());
 	}
 }
+	

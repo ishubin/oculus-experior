@@ -24,7 +24,6 @@ import net.mindengine.oculus.experior.ExperiorConfig;
 import net.mindengine.oculus.experior.framework.report.DefaultReport;
 import net.mindengine.oculus.experior.framework.verification.Provider;
 import net.mindengine.oculus.experior.framework.verification.checkpoint.Checkpoint;
-import net.mindengine.oculus.experior.framework.verification.collections.CollectionVerificator;
 import net.mindengine.oculus.experior.framework.verification.collections.DefaultNumberCollectionVerificator;
 import net.mindengine.oculus.experior.framework.verification.collections.DefaultTextCollectionVerificator;
 import net.mindengine.oculus.experior.framework.verification.collections.SimpleNumberCollectionVerificator;
@@ -403,9 +402,18 @@ public class VerificatorTest {
     
     @Test
     public void simpleNumberCollectionVerificatorCheck() {
-        Integer[] array = new Integer[]{1,2,3,4,5};
-        
-        CollectionVerificator verificator = new SimpleNumberCollectionVerificator(array);
+    	SimpleNumberCollectionVerificator<Integer> verificator = new SimpleNumberCollectionVerificator<Integer>(new Provider<List<Integer>>() {
+			@Override
+			public List<Integer> provide() {
+				List<Integer> list = new LinkedList<Integer>();
+				list.add(1);
+				list.add(2);
+				list.add(3);
+				list.add(4);
+				list.add(5);
+				return list;
+			}
+		});
         
         Assert.assertTrue(verificator.hasAll(1,3,4));
         Assert.assertFalse(verificator.hasAll(1,3,4,6));
@@ -422,33 +430,50 @@ public class VerificatorTest {
         Assert.assertTrue(verificator.hasExactly(1,2,3,4,5));
         Assert.assertFalse(verificator.hasExactly(1,3,4,5,2));
         
-        List<Integer> list = new LinkedList<Integer>();
+        final List<Integer> list = new LinkedList<Integer>();
         list.add(1);
         list.add(2);
         list.add(3);
         list.add(4);
         list.add(5);
-        verificator = new SimpleNumberCollectionVerificator(list);
+        verificator = new SimpleNumberCollectionVerificator<Integer>(new Provider<List<Integer>>() {
+			@Override
+			public List<Integer> provide() {
+				return list;
+			}
+		});
         
-        Assert.assertTrue(((SimpleNumberCollectionVerificator)verificator).plus(10).hasAny(11,12));
-        Assert.assertFalse(((SimpleNumberCollectionVerificator)verificator).plus(10).hasAny(2,3,4,5));
+        Assert.assertTrue((verificator).plus(10).hasAny(11,12));
+        Assert.assertFalse((verificator).plus(10).hasAny(2,3,4,5));
         
-        Assert.assertTrue(((SimpleNumberCollectionVerificator)verificator).minus(10).hasOnly(-9,-8,-7,-6,-5));
-        Assert.assertFalse(((SimpleNumberCollectionVerificator)verificator).minus(10).hasAny(2,3,4,5));
+        Assert.assertTrue((verificator).minus(10).hasOnly(-9,-8,-7,-6,-5));
+        Assert.assertFalse((verificator).minus(10).hasAny(2,3,4,5));
         
-        Assert.assertTrue(((SimpleNumberCollectionVerificator)verificator).multiply(10).hasExactly(10,20,30,40,50));
-        Assert.assertTrue(((SimpleNumberCollectionVerificator)verificator).multiply(10).divide(2).hasExactly(5,10,15,20,25));
+        Assert.assertTrue((verificator).multiply(10).hasExactly(10,20,30,40,50));
+        Assert.assertTrue((verificator).multiply(10).divide(2).hasExactly(5,10,15,20,25));
         
-        Assert.assertTrue(((SimpleNumberCollectionVerificator)verificator).mod(2).hasExactly(1%2,2%2,3%2,4%2,5%2));
+        Assert.assertTrue((verificator).mod(2).hasExactly(1%2,2%2,3%2,4%2,5%2));
         
         Assert.assertTrue(verificator.reverse().hasExactly(5,4,3,2,1));
     }
     
     @Test
     public void defaultNumberCollectionVerificatorCheck() {
-        Integer[] array = new Integer[]{1,2,3,4,5};
-        
-        CollectionVerificator verificator = new DefaultNumberCollectionVerificator(array);
+    	final List<Integer> list = new LinkedList<Integer>();
+        list.add(1);
+        list.add(2);
+        list.add(3);
+        list.add(4);
+        list.add(5);
+        DefaultReport report = new DefaultReport(ExperiorConfig.getInstance().getReportConfiguration());
+        DefaultNumberCollectionVerificator<Integer> verificator = new DefaultNumberCollectionVerificator<Integer>(new Provider<List<Integer>>() {
+			@Override
+			public List<Integer> provide() {
+				return list;
+			}
+		});
+        verificator.setName("Test-list");
+        verificator.setReport(report);
         
         Assert.assertTrue(verificator.hasAll(1,3,4));
         Assert.assertFalse(verificator.hasAll(1,3,4,6));
@@ -465,31 +490,44 @@ public class VerificatorTest {
         Assert.assertTrue(verificator.hasExactly(1,2,3,4,5));
         Assert.assertFalse(verificator.hasExactly(1,3,4,5,2));
         
-        List<Integer> list = new LinkedList<Integer>();
-        list.add(1);
-        list.add(2);
-        list.add(3);
-        list.add(4);
-        list.add(5);
-        verificator = new SimpleNumberCollectionVerificator(list);
         
-        Assert.assertTrue(((SimpleNumberCollectionVerificator)verificator).plus(10).hasAny(11,12));
-        Assert.assertFalse(((SimpleNumberCollectionVerificator)verificator).plus(10).hasAny(2,3,4,5));
+        verificator = new DefaultNumberCollectionVerificator<Integer>(new Provider<List<Integer>>() {
+			@Override
+			public List<Integer> provide() {
+				return list;
+			}
+		});
+        verificator.setName("Test-list");
+        verificator.setReport(report);
         
-        Assert.assertTrue(((SimpleNumberCollectionVerificator)verificator).minus(10).hasOnly(-9,-8,-7,-6,-5));
-        Assert.assertFalse(((SimpleNumberCollectionVerificator)verificator).minus(10).hasAny(2,3,4,5));
+        Assert.assertTrue((verificator).plus(10).hasAny(11,12));
+        Assert.assertFalse((verificator).plus(10).hasAny(2,3,4,5));
         
-        Assert.assertTrue(((SimpleNumberCollectionVerificator)verificator).multiply(10).hasExactly(10,20,30,40,50));
-        Assert.assertTrue(((SimpleNumberCollectionVerificator)verificator).multiply(10).divide(2).hasExactly(5,10,15,20,25));
+        Assert.assertTrue((verificator).minus(10).hasOnly(-9,-8,-7,-6,-5));
+        Assert.assertFalse((verificator).minus(10).hasAny(2,3,4,5));
         
-        Assert.assertTrue(((SimpleNumberCollectionVerificator)verificator).mod(2).hasExactly(1%2,2%2,3%2,4%2,5%2));
+        Assert.assertTrue((verificator).multiply(10).hasExactly(10,20,30,40,50));
+        Assert.assertTrue((verificator).multiply(10).divide(2).hasExactly(5,10,15,20,25));
+        
+        Assert.assertTrue((verificator).mod(2).hasExactly(1%2,2%2,3%2,4%2,5%2));
         
         Assert.assertTrue(verificator.reverse().hasExactly(5,4,3,2,1));
     }
     
     @Test
     public void textCollectionVerificatorCheck() {
-        SimpleTextCollectionVerificator verificator= new SimpleTextCollectionVerificator("One","Two","Three","Four","Five");
+        SimpleTextCollectionVerificator verificator= new SimpleTextCollectionVerificator(new Provider<List<String>>() {
+			@Override
+			public List<String> provide() {
+				List<String> list = new LinkedList<String>();
+				list.add("One");
+				list.add("Two");
+				list.add("Three");
+				list.add("Four");
+				list.add("Five");
+				return list;
+			}
+		});
         
         Assert.assertTrue(verificator.toLowerCase().hasExactly("one", "two", "three", "four", "five"));
         Assert.assertTrue(verificator.toUpperCase().hasExactly("ONE", "TWO", "THREE", "FOUR", "FIVE"));
@@ -502,7 +540,18 @@ public class VerificatorTest {
     
     @Test
     public void defaultTextCollectionVerificatorCheckWithReport() {
-    	DefaultTextCollectionVerificator verificator= new DefaultTextCollectionVerificator("One","Two","Three","Four","Five");
+    	DefaultTextCollectionVerificator verificator= new DefaultTextCollectionVerificator(new Provider<List<String>>() {
+			@Override
+			public List<String> provide() {
+				List<String> list = new LinkedList<String>();
+				list.add("One");
+				list.add("Two");
+				list.add("Three");
+				list.add("Four");
+				list.add("Five");
+				return list;
+			}
+		});
     	DefaultReport report = new DefaultReport(ExperiorConfig.getInstance().getReportConfiguration());
     	ByteArrayOutputStream baos = new ByteArrayOutputStream();
     	report.getReportConfiguration().setOutputStreamOut(baos);

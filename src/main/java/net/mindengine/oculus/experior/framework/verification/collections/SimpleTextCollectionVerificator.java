@@ -16,174 +16,89 @@
 package net.mindengine.oculus.experior.framework.verification.collections;
 
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import net.mindengine.oculus.experior.framework.verification.Provider;
 
-public class SimpleTextCollectionVerificator extends AbstractCollectionVerificator {
 
-    private List<?> realCollection;
-    
-    
+public class SimpleTextCollectionVerificator extends AbstractCollectionVerificator<String> {
+
     public SimpleTextCollectionVerificator() {
-        
     }
     
-    public SimpleTextCollectionVerificator(List<String> realCollection) {
-        this.realCollection = realCollection;
-    }
-    
-    public SimpleTextCollectionVerificator(String ... strings ) {
-        LinkedList<String> list = new LinkedList<String>();
-        for(String string : strings) {
-            list.add(string);
-        }
-        this.realCollection = list;
-    }
-    
-    
-    @Override
-    public int size() {
-        return realCollection.size();
-    }
-
-    
-    private SimpleTextCollectionVerificator copy() {
-        SimpleTextCollectionVerificator copy;
-        try {
-            copy = (SimpleTextCollectionVerificator) this.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e);
-        }
-        return copy;
+    public SimpleTextCollectionVerificator(Provider<List<String>> realCollectionProvider) {
+        setRealCollectionProvider(realCollectionProvider);
     }
     
     @Override
-    public CollectionVerificator reverse() {
-        SimpleTextCollectionVerificator copy = copy();
+    protected SimpleTextCollectionVerificator copy(List<String> newList) {
+    	return (SimpleTextCollectionVerificator) super.copy(newList);
+    }
+    
+    @Override
+    public CollectionVerificator<String> reverse() {
+    	List<String> realCollection = findRealCollection();
         
-        List<?> newList = realCollection.subList(0, realCollection.size());
+        List<String> newList = realCollection.subList(0, realCollection.size());
         Collections.reverse(newList);
-        copy.setRealCollection(newList);
-        return copy;
+        return copy(newList);
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public Iterator<Object> iterator() {
-        return (Iterator<Object>) realCollection.iterator();
-    }
-    
-
-    public void setRealCollection(List<?> realCollection) {
-        this.realCollection = realCollection;
-    }
-
-    public List<?> getRealCollection() {
-        return realCollection;
-    }
-
-    public SimpleTextCollectionVerificator toLowerCase() {
-        SimpleTextCollectionVerificator copy = copy();
-        List<Object> newList = new LinkedList<Object>();
+	public SimpleTextCollectionVerificator toLowerCase() {
+		List<String> realCollection = findRealCollection();
+        List<String> newList = new LinkedList<String>();
         
-        for(Object object : realCollection) {
-            String string;
-            if(object instanceof String) {
-                string = (String)object;
-            }
-            else string = object.toString();
-            
+        for(String string : realCollection) {
             newList.add(string.toLowerCase());
         }
-        copy.setRealCollection(newList);
-        return copy;
+        return copy(newList);
     }
     
     public SimpleTextCollectionVerificator toUpperCase() {
-        SimpleTextCollectionVerificator copy = copy();
-        List<Object> newList = new LinkedList<Object>();
-        
-        for(Object object : realCollection) {
-            String string;
-            if(object instanceof String) {
-                string = (String)object;
-            }
-            else string = object.toString();
-            
+    	List<String> realCollection = findRealCollection();
+        List<String> newList = new LinkedList<String>();
+        for(String string : realCollection) {
             newList.add(string.toUpperCase());
         }
-        copy.setRealCollection(newList);
-        return copy;
+        return copy(newList);
     }
     
     public SimpleTextCollectionVerificator replace(String target, String replacement) {
-        SimpleTextCollectionVerificator copy = copy();
-        List<Object> newList = new LinkedList<Object>();
-        
-        for(Object object : realCollection) {
-            String string;
-            if(object instanceof String) {
-                string = (String)object;
-            }
-            else string = object.toString();
-            
+    	List<String> realCollection = findRealCollection();
+        List<String> newList = new LinkedList<String>();
+        for(String string : realCollection) {            
             newList.add(string.replace(target, replacement));
         }
-        copy.setRealCollection(newList);
-        return copy;
+        return copy(newList);
     }
     
     public SimpleTextCollectionVerificator replaceAll(String regex, String replacement) {
-        SimpleTextCollectionVerificator copy = copy();
-        List<Object> newList = new LinkedList<Object>();
-        
-        for(Object object : realCollection) {
-            String string;
-            if(object instanceof String) {
-                string = (String)object;
-            }
-            else string = object.toString();
-            
+    	List<String> realCollection = findRealCollection();
+        List<String> newList = new LinkedList<String>();
+        for(String string : realCollection) {
             newList.add(string.replaceAll(regex, replacement));
         }
-        copy.setRealCollection(newList);
-        return copy;
+        return copy(newList);
     }
     
     public SimpleTextCollectionVerificator substring(int start, int end) {
-        SimpleTextCollectionVerificator copy = copy();
-        List<Object> newList = new LinkedList<Object>();
-        
-        for(Object object : realCollection) {
-            String string;
-            if(object instanceof String) {
-                string = (String)object;
-            }
-            else string = object.toString();
-            
+    	List<String> realCollection = findRealCollection();
+        List<String> newList = new LinkedList<String>();
+        for(String string : realCollection) {
             newList.add(string.substring(start, end));
         }
-        copy.setRealCollection(newList);
-        return copy;
+        return copy(newList);
     }
     
     public SimpleTextCollectionVerificator substring(int start) {
-        SimpleTextCollectionVerificator copy = copy();
-        List<Object> newList = new LinkedList<Object>();
+    	List<String> realCollection = findRealCollection();
+        List<String> newList = new LinkedList<String>();
         
-        for(Object object : realCollection) {
-            String string;
-            if(object instanceof String) {
-                string = (String)object;
-            }
-            else string = object.toString();
-            
+        for(String string : realCollection) {
             newList.add(string.substring(start));
         }
-        copy.setRealCollection(newList);
-        return copy;
+        return copy(newList);
     }
 
 }
