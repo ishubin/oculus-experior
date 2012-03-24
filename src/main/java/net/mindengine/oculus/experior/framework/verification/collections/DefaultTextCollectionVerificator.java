@@ -32,6 +32,13 @@ public class DefaultTextCollectionVerificator extends SimpleTextCollectionVerifi
 	public DefaultTextCollectionVerificator(Provider<List<String>> realCollectionProvider) {
 		super(realCollectionProvider);
 	}
+	
+	public DefaultTextCollectionVerificator(Provider<List<String>> realCollectionProvider, String name, Report report) {
+		super(realCollectionProvider);
+		setName(name);
+		setReport(report);
+	}
+	
 	public void setReport(Report report) {
         this.report = report;
     }

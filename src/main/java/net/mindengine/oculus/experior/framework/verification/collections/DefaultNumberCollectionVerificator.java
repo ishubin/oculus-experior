@@ -32,7 +32,7 @@ public class DefaultNumberCollectionVerificator<T extends Number> extends Simple
     public DefaultNumberCollectionVerificator(Provider<List<T>> realCollectionProvider) {
         super(realCollectionProvider);
     }
-    public DefaultNumberCollectionVerificator(String name, Report report, Provider<List<T>> realCollectionProvider) {
+    public DefaultNumberCollectionVerificator(Provider<List<T>> realCollectionProvider, String name, Report report) {
         super(realCollectionProvider);
         setName(name);
         setReport(report);

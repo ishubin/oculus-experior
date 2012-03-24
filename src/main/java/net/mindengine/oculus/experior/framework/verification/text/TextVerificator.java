@@ -17,6 +17,8 @@ package net.mindengine.oculus.experior.framework.verification.text;
 
 
 public interface TextVerificator {
+	
+	public String realValue();
 
     public boolean is(String string);
 

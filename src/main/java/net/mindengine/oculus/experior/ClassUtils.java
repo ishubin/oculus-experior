@@ -219,31 +219,22 @@ public class ClassUtils {
      * @return
      */
     public static Field getField(Class<?> clazz, String fieldName) {
-        Field field = null;
-        try {
-            field = findField(clazz, fieldName);
-        }
-        catch (Exception e) {
-            try {
-                field = clazz.getDeclaredField(fieldName);
-            } catch (Exception e2) {
-                throw new IllegalArgumentException("Cannot fetch field '"+fieldName+"' from "+clazz, e2);
-            }
+        Field field = findField(clazz, fieldName);
+        if ( field ==null ) {
+        	throw new IllegalArgumentException("Cannot fetch field '"+fieldName+"' from "+clazz);
         }
         return field;
     }
 
-	private static Field findField(Class<?> clazz, String fieldName) throws NoSuchFieldException {
+	private static Field findField(Class<?> clazz, String fieldName) {
 		try {
-			return clazz.getField(fieldName);
-		} catch (SecurityException e) {
-			throw e;
-		} catch (NoSuchFieldException e) {
+			return clazz.getDeclaredField(fieldName);
+		} catch (Exception e) {
 			if (clazz.getSuperclass() != null ) {
 				return findField(clazz.getSuperclass(), fieldName);
 			}
-			throw e;
 		}
+		return null;
 	}
     
    

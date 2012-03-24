@@ -32,6 +32,11 @@ public class SimpleTextVerificator implements TextVerificator, Cloneable {
     public SimpleTextVerificator(Provider<String> realValueProvider) {
     	this.setRealValueProvider(realValueProvider);
     }
+    
+    @Override
+    public String realValue() {
+    	return findRealValue();
+    }
 
     @Override
     public boolean contains(String string) {
