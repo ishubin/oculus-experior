@@ -54,10 +54,15 @@ public class ReportConfiguration {
 	private static void loadMessageContainer(Properties properties, ReportConfiguration reportConfiguration) {
 		try {
 			String messagesPropertiesPath = properties.getProperty(MESSAGES_PATH);
+			
 			if ( messagesPropertiesPath != null ) {
-				Properties messageProperties = new Properties();
-				messageProperties.load(new FileReader(new File(messagesPropertiesPath.trim())));
-				reportConfiguration.getMessageContainer().loadMessages(messageProperties);
+				String paths[] = messagesPropertiesPath.split(";");
+				
+				for ( int i=0; i<paths.length; i++) {
+					Properties messageProperties = new Properties();
+					messageProperties.load(new FileReader(new File(paths[i].trim())));
+					reportConfiguration.getMessageContainer().loadMessages(messageProperties);
+				}
 			}
 		}
 		catch (Exception e) {

@@ -138,6 +138,8 @@ public interface NumberVerificator<T extends Number> {
      * @return New instance of verificator with modified real value in it
      */
     public NumberVerificator<T> mod(T value);
+
+	public T realValue();
     
 
 }

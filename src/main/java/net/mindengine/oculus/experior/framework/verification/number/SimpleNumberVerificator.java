@@ -47,6 +47,11 @@ public class SimpleNumberVerificator<T extends Number> implements NumberVerifica
     	T realValue = findRealValue();
         return copy(NumberOperations.create(realValue).divide(value));
     }
+    
+    @Override
+    public T realValue() {
+    	return findRealValue();
+    }
 
     protected T findRealValue() {
 		if ( this._realValue != null ) {

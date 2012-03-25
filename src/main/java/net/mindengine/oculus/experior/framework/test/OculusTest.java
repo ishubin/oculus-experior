@@ -239,7 +239,7 @@ public class OculusTest {
 
     @BeforeAction
     public void onBeforeAction(ActionInformation actionInformation) {
-        report.branch(BranchReportNode.ACTION).title(actionInformation.getActionName());
+        report.branch(BranchReportNode.ACTION).title(actionInformation.getActionName()).icon(ReportIcon.ACTION);
     }
 
     @BeforeRollback
@@ -249,7 +249,7 @@ public class OculusTest {
 
     @BeforeErrorHandler
     public void onBeforeError(ErrorInformation errorInformation) {
-        report.branch(BranchReportNode.ACTION).title(errorInformation.getName());
+        report.branch(BranchReportNode.ACTION).title(errorInformation.getName()).icon(ReportIcon.ACTION);
     }
 
     @OnTestFailure
