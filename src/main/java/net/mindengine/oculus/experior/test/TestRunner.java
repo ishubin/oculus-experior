@@ -98,7 +98,6 @@ public class TestRunner {
         try {
             if(checkStatusDependency()) {
                 instantiateTestInputParameters();
-                instantiateTestComponents();
                 executeTestFlow(actionSequences);
             }
             else {
@@ -244,6 +243,11 @@ public class TestRunner {
                 e.printStackTrace();
             }
         }
+        
+        /**
+         * Instantiating all data-source components
+         */
+        instantiateTestComponents();
         
         Throwable errorToThrow = null;
         /*
