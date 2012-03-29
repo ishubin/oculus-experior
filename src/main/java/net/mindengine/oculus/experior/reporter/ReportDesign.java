@@ -119,9 +119,9 @@ public class ReportDesign {
         return "";
     }
 
-    public static String screenshot(String url) {
-        if (url != null)
-            return "[screenshot]" + url + "[/screenshot]";
+    public static String screenshot(String screenShotId) {
+        if (screenShotId != null)
+            return "[screenshot]" + screenShotId + "[/screenshot]";
         return "";
     }
 

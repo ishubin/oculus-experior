@@ -31,7 +31,7 @@ public class SampleWithError {
     public TestInformation onExceptionArgument;
     public TestInformation onTestFailureArgument;
     
-    @OnException(exception=NullPointerException.class)
+    @OnException({NullPointerException.class})
     public void onException(TestInformation testInformation) {
         onExceptionArgument = testInformation;
     }

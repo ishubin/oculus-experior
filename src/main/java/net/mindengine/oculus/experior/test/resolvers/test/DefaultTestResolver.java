@@ -81,13 +81,18 @@ public class DefaultTestResolver implements TestResolver {
             for (EventDescriptor eventDescriptor : edc.getDescriptors().values()) {
                 Method method = eventDescriptor.getMethod();
                 OnException onExceptionAnnotation = method.getAnnotation(OnException.class);
-                if (onExceptionAnnotation.exception().equals(error.getClass())) {
-                    try {
-                        method.setAccessible(true);
-                        method.invoke(testRunner.getTestInstance(), testInformation);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                if ( onExceptionAnnotation != null ) {
+                	for ( Class<?> expectedExceptionClass : onExceptionAnnotation.value() ) {
+                		if ( expectedExceptionClass.isAssignableFrom(error.getClass())) {
+                			try {
+                                method.setAccessible(true);
+                                method.invoke(testRunner.getTestInstance(), testInformation);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                			break;
+                		}
+                	}
                 }
             }
         }
