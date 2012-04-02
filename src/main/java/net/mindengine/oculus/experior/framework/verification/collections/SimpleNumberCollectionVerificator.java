@@ -37,7 +37,6 @@ public class SimpleNumberCollectionVerificator<T extends Number> extends Abstrac
     	return (SimpleNumberCollectionVerificator<T>) super.copy(newList);
     }
     
-    @SuppressWarnings("unchecked")
 	public SimpleNumberCollectionVerificator<T> plus(T value) {
         List<T> newList = new LinkedList<T>();
         for(T number : findRealCollection()) {
@@ -46,7 +45,6 @@ public class SimpleNumberCollectionVerificator<T extends Number> extends Abstrac
         return copy(newList);
     }
 
-    @SuppressWarnings("unchecked")
 	public SimpleNumberCollectionVerificator<T> minus(T value) {
     	List<T> newList = new LinkedList<T>();
         for(T number : findRealCollection()) {
@@ -55,7 +53,6 @@ public class SimpleNumberCollectionVerificator<T extends Number> extends Abstrac
         return copy(newList);
     }
     
-    @SuppressWarnings("unchecked")
 	public SimpleNumberCollectionVerificator<T> multiply(T value) {
     	List<T> newList = new LinkedList<T>();
         for(T number : findRealCollection()) {
@@ -64,7 +61,6 @@ public class SimpleNumberCollectionVerificator<T extends Number> extends Abstrac
         return copy(newList);
     }
 
-    @SuppressWarnings("unchecked")
 	public SimpleNumberCollectionVerificator<T> divide(T value) {
     	List<T> newList = new LinkedList<T>();
         for(T number : findRealCollection()) {
@@ -73,7 +69,6 @@ public class SimpleNumberCollectionVerificator<T extends Number> extends Abstrac
         return copy(newList);
     }
     
-    @SuppressWarnings("unchecked")
 	public SimpleNumberCollectionVerificator<T> mod(T value) {
     	List<T> newList = new LinkedList<T>();
         for(T number : findRealCollection()) {
@@ -84,7 +79,7 @@ public class SimpleNumberCollectionVerificator<T extends Number> extends Abstrac
     
 
     @Override
-    public CollectionVerificator<T> reverse() {
+    public SimpleNumberCollectionVerificator<T> reverse() {
         List<T> newList = (List<T>) findRealCollection().subList(0, findRealCollection().size());
         Collections.reverse(newList);
         return copy(newList);

@@ -61,6 +61,14 @@ public class OculusTest {
     protected Date startTime;
     protected Suite suite;
 
+    
+    public String getSuiteParameter(String parameterName) {
+    	if ( suite != null && suite.getParameters() != null ) {
+    		return suite.getParameters().get(parameterName);
+    	}
+    	return null;
+    }
+    
     /**
      * 
      * @param testInformation

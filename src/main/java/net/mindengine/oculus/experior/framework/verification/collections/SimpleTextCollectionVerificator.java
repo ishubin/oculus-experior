@@ -37,7 +37,7 @@ public class SimpleTextCollectionVerificator extends AbstractCollectionVerificat
     }
     
     @Override
-    public CollectionVerificator<String> reverse() {
+    public SimpleTextCollectionVerificator reverse() {
     	List<String> realCollection = findRealCollection();
         
         List<String> newList = realCollection.subList(0, realCollection.size());

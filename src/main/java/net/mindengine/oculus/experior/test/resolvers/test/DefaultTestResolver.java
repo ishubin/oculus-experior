@@ -86,7 +86,12 @@ public class DefaultTestResolver implements TestResolver {
                 		if ( expectedExceptionClass.isAssignableFrom(error.getClass())) {
                 			try {
                                 method.setAccessible(true);
-                                method.invoke(testRunner.getTestInstance(), testInformation);
+                                if ( method.getParameterTypes().length == 0 ) {
+                                	method.invoke(testRunner.getTestInstance());
+                                }
+                                else {
+                                	method.invoke(testRunner.getTestInstance(), testInformation);
+                                }
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }

@@ -112,8 +112,6 @@ public class OculusReportFileUploader {
         inp.close();
 
         if (response.startsWith("[uploaded]")) {
-            System.out.println(response);
-
             String paths[] = response.split("\\[uploaded\\]");
             
             for (int j = 0; j < paths.length; j++) {
@@ -129,5 +127,5 @@ public class OculusReportFileUploader {
         ExperiorConfig config = ExperiorConfig.getInstance();
         return new OculusReportFileUploader(config.get(ExperiorConfig.OCULUS_URL) + "/report/upload-file");
     }
-
+    
 }
