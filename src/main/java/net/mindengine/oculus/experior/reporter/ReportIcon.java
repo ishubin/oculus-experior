@@ -31,5 +31,6 @@ public class ReportIcon {
     public final static String ACTION = "action";
     public final static String COMPONENT = "component";
     public final static String ROLLBACK = "rollback";
+    public final static String SCREENSHOT = "screenshot";
 
 }
