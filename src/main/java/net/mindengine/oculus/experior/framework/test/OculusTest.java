@@ -23,6 +23,7 @@ import java.util.Map;
 
 import net.mindengine.oculus.experior.ClassUtils;
 import net.mindengine.oculus.experior.ExperiorConfig;
+import net.mindengine.oculus.experior.annotations.Action;
 import net.mindengine.oculus.experior.annotations.InputParameter;
 import net.mindengine.oculus.experior.annotations.OutputParameter;
 import net.mindengine.oculus.experior.annotations.events.AfterTest;
@@ -247,6 +248,12 @@ public class OculusTest {
 
     @BeforeAction
     public void onBeforeAction(ActionInformation actionInformation) {
+        Action action = actionInformation.getActionMethod().getAnnotation(Action.class);
+        
+        if ( action != null && action.silent()) {
+            //Avoid making report branch for this action
+            return;
+        }
         report.branch(BranchReportNode.ACTION).title(actionInformation.getActionName()).icon(ReportIcon.ACTION);
     }
 

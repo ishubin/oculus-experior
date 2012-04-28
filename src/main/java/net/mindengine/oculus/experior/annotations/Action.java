@@ -45,4 +45,9 @@ public @interface Action {
      */
     String rollback() default "";
 
+    /**
+     * Specifies whether this action should be logged as a branch in report
+     * @return
+     */
+    boolean silent() default false;
 }
