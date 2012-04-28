@@ -43,86 +43,69 @@ public class DefaultActionResolver implements ActionResolver{
 
     @Override
     public List<List<EventDescriptor>> getActionsSequences(TestDescriptor testDescriptor) throws TestConfigurationException {
-        if(testDescriptor.getEventContainer()==null) throw new TestConfigurationException("There are no action in test: "+testDescriptor.getTestName());
-        EventDescriptorsContainer edc = testDescriptor.getEventContainer().get(Action.class);
-        if(edc==null || edc.getDescriptors()==null || edc.getDescriptors().size()==0) throw new TestConfigurationException("There are no actions in test: "+testDescriptor.getTestName());
-        
-        Set<Map.Entry<String, EventDescriptor>> entries = edc.getDescriptors().entrySet();
-        
-        //Converting all actions to array so later it will be sorted based on references between each other
-        
-        EventDescriptor[] actions = new EventDescriptor[entries.size()];
-        Iterator<Map.Entry<String, EventDescriptor>>it = entries.iterator();
-        int i=0;
-        while(it.hasNext()) {
-            actions[i] = it.next().getValue();
-            i++;
-        }
-        
-        //Sorting actions based on references between each other
-        
-        for(i=0; i<actions.length-1; i++) {
-            for(int j=i+1; j<actions.length; j++) {
-                //Checking if lower method references to upper method. In this case they should be switched 
-                Action annotation = (Action) actions[j].getAnnotation();
-                if(annotation.next()!=null && annotation.next().equals(actions[i].getMethod().getName())) {
-                    EventDescriptor temp = actions[i];
-                    actions[i] = actions[j];
-                    actions[j] = temp;
-                }
-            }
-        }
-        
-        List<List<EventDescriptor>> sequences = new LinkedList<List<EventDescriptor>>();
-        List<EventDescriptor> currentSequence = new LinkedList<EventDescriptor>();
-        sequences.add(currentSequence);
-        
-        for(i=0; i<actions.length; i++) {
-            /*
-             * Verifying if the reference to the next action is correct.
-             * It should be either empty or reference to next action in sorted array of actions
-             */
-            Action annotation = (Action) actions[i].getAnnotation();
-            currentSequence.add(actions[i]);
+        if (testDescriptor.getEventContainer() != null) {
+            EventDescriptorsContainer edc = testDescriptor.getEventContainer().get(Action.class);
             
-            if(annotation.next()!=null && !annotation.next().isEmpty()) {
-                if(i==actions.length-1) {
-                    throw new TestConfigurationException("Action "+actions[i].getName()+" references to unexistent action in test "+testDescriptor.getTestClass());
+            if(edc != null && edc.getDescriptors()!=null && edc.getDescriptors().size() > 0 ) {
+            
+                Set<Map.Entry<String, EventDescriptor>> entries = edc.getDescriptors().entrySet();
+                
+                //Converting all actions to array so later it will be sorted based on references between each other
+                
+                EventDescriptor[] actions = new EventDescriptor[entries.size()];
+                Iterator<Map.Entry<String, EventDescriptor>>it = entries.iterator();
+                int i=0;
+                while(it.hasNext()) {
+                    actions[i] = it.next().getValue();
+                    i++;
                 }
-                if(!annotation.next().equals(actions[i+1].getName())) {
-                    throw new TestConfigurationException("Incorrect actions sequence. Perhaps cross-references between actions: "+testDescriptor.getTestName());
+                
+                //Sorting actions based on references between each other
+                
+                for(i=0; i<actions.length-1; i++) {
+                    for(int j=i+1; j<actions.length; j++) {
+                        //Checking if lower method references to upper method. In this case they should be switched 
+                        Action annotation = (Action) actions[j].getAnnotation();
+                        if(annotation.next()!=null && annotation.next().equals(actions[i].getMethod().getName())) {
+                            EventDescriptor temp = actions[i];
+                            actions[i] = actions[j];
+                            actions[j] = temp;
+                        }
+                    }
                 }
-            }
-            else {
-                //Creating new action sequence
-                currentSequence = new LinkedList<EventDescriptor>();
+                
+                List<List<EventDescriptor>> sequences = new LinkedList<List<EventDescriptor>>();
+                List<EventDescriptor> currentSequence = new LinkedList<EventDescriptor>();
                 sequences.add(currentSequence);
+                
+                for(i=0; i<actions.length; i++) {
+                    /*
+                     * Verifying if the reference to the next action is correct.
+                     * It should be either empty or reference to next action in sorted array of actions
+                     */
+                    Action annotation = (Action) actions[i].getAnnotation();
+                    currentSequence.add(actions[i]);
+                    
+                    if(annotation.next()!=null && !annotation.next().isEmpty()) {
+                        if(i==actions.length-1) {
+                            throw new TestConfigurationException("Action "+actions[i].getName()+" references to unexistent action in test "+testDescriptor.getTestClass());
+                        }
+                        if(!annotation.next().equals(actions[i+1].getName())) {
+                            throw new TestConfigurationException("Incorrect actions sequence. Perhaps cross-references between actions: "+testDescriptor.getTestName());
+                        }
+                    }
+                    else {
+                        //Creating new action sequence
+                        currentSequence = new LinkedList<EventDescriptor>();
+                        sequences.add(currentSequence);
+                    }
+                }
+                return sequences;
             }
         }
-        
-        return sequences;
+        return new LinkedList<List<EventDescriptor>>();
     }
     
-//    private int fetchNumberOfActionInSequence(TestDescriptor testDescriptor, EventDescriptor currentAction, int iteration, int max, Collection<String> actionSequence) throws TestConfigurationException {
-//        Method method = currentAction.getMethod();
-//        
-//        Action action = method.getAnnotation(Action.class);
-//        if (action == null) {
-//            throw new TestConfigurationException("The method " + method.getName() + " is not marked as an action");
-//        }
-//
-//        // Fetching name of action and storing it in actionSequence
-//        if (action.name() != null && !action.name().isEmpty()) {
-//            actionSequence.add(action.name());
-//        } else
-//            actionSequence.add(method.getName());
-//
-//        EventDescriptor nextAction = getNextAction(testDescriptor, currentAction);
-//        if (nextAction != null) {
-//            return fetchNumberOfActionInSequence(testDescriptor, nextAction, iteration + 1, max, actionSequence);
-//        } else
-//            return iteration + 1;
-//    }
 
     public EventDescriptor getNextAction(TestDescriptor testDescriptor, EventDescriptor currentAction) throws TestConfigurationException {
         Action action = currentAction.getMethod().getAnnotation(Action.class);

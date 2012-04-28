@@ -119,19 +119,19 @@ public class XmlTestParser {
         writer.write("\"");
         
         if(test.getMapping()!=null) {
-            writer.write("mapping=\"");
+            writer.write(" mapping=\"");
             writer.write(StringEscapeUtils.escapeXml(test.getMapping()));
             writer.write("\" ");
         }
         
         if(test.getName()!=null){
-            writer.write("name=\"");
+            writer.write(" name=\"");
             writer.write(StringEscapeUtils.escapeXml(test.getName()));
             writer.write("\" ");
         }
         
         if(test.getProject()!=null) {
-            writer.write("project=\"");
+            writer.write(" project=\"");
             writer.write(StringEscapeUtils.escapeXml(test.getProject()));
             writer.write("\"");
         }
@@ -174,6 +174,16 @@ public class XmlTestParser {
             writer.write(StringEscapeUtils.escapeXml(test.getDescription()));
             writer.write("</description>");
         }
+        
+        
+        if ( test.getInjectedTests() != null && test.getInjectedTests().size() > 0 ) {
+            writer.write("<tests>");
+            for ( TestDefinition injectedTest : test.getInjectedTests() ) {
+                save(writer, injectedTest);
+            }
+            writer.write("</tests>");
+        }
+        
         writer.write("</test>");
 
     }
