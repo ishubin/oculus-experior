@@ -39,7 +39,7 @@ public @interface DataSource {
     String provider() default "";
     
     /**
-     * Array of dependencies. This will be later picked up by a {@link DataDependencyResolver}
+     * Array of dependencies. This will processed picked up by a {@link DataDependencyResolver}
      * @return
      */
     String[] dependencies() default {};

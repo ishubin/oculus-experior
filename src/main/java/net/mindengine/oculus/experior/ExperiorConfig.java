@@ -18,8 +18,10 @@ package net.mindengine.oculus.experior;
 import java.io.File;
 import java.io.FileInputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Properties;
 
 import net.mindengine.oculus.experior.reporter.ReportConfiguration;
@@ -32,6 +34,7 @@ import net.mindengine.oculus.experior.test.resolvers.errors.ErrorResolver;
 import net.mindengine.oculus.experior.test.resolvers.parameters.ParameterResolver;
 import net.mindengine.oculus.experior.test.resolvers.rollbacks.RollbackResolver;
 import net.mindengine.oculus.experior.test.resolvers.test.TestResolver;
+import net.mindengine.oculus.experior.utils.PropertyUtils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -70,12 +73,24 @@ public class ExperiorConfig {
         properties = new Properties();
         
         File file = new File("experior.properties");
+        if ( !file.exists() ) {
+            file = null;
+            URL resource = getClass().getClassLoader().getResource("/experior.properties");
+            if ( resource != null ) {
+                file = new File(resource.toURI());
+            }
+        }
 
-        logger.info("Loading properties from " + file.getAbsolutePath());
-        FileInputStream fis = new FileInputStream(file);
-        properties.load(fis);
-        fis.close();
+        if ( file != null && file.exists() ) {
+            logger.info("Loading properties from " + file.getAbsolutePath());
+            FileInputStream fis = new FileInputStream(file);
+            properties.load(fis);
+            fis.close();
+        }
+        PropertyUtils.overridePropertiesWithSystemProperties(properties);
     }
+    
+
     
 
     public String get(String name) {
