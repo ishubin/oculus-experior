@@ -17,6 +17,7 @@ package net.mindengine.oculus.experior.framework.report;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.StringReader;
 
 import net.mindengine.oculus.experior.framework.test.OculusTest;
 import net.mindengine.oculus.experior.reporter.MessageBuilder;
@@ -33,6 +34,11 @@ import net.mindengine.oculus.experior.reporter.nodes.TextReportNode;
 import net.mindengine.oculus.experior.utils.ExceptionUtils;
 
 import org.apache.commons.lang3.StringUtils;
+
+import freemarker.cache.StringTemplateLoader;
+import freemarker.template.Configuration;
+import freemarker.template.DefaultObjectWrapper;
+import freemarker.template.Template;
 
 /**
  * This is a simple implementation of the report. It is used in
@@ -184,10 +190,21 @@ public class DefaultReport implements Report {
     public MessageBuilder message(String messageName, String defaultValue) {
     	if( getMessageContainer() != null ) {
     		return getMessageContainer().message(messageName, defaultValue);
-    	}
-    	else return new MessageBuilder(defaultValue);
+    	} else
+            try {
+                return defaultMessageBuilder(messageName, defaultValue);
+            } catch (IOException e) {
+                throw new RuntimeException("Couldn't process template for default message", e);
+            }
     }
     
+    private MessageBuilder defaultMessageBuilder(String name, String defaultValue) throws IOException {
+        Configuration cfg = new Configuration();
+        cfg.setObjectWrapper(new DefaultObjectWrapper());
+        cfg.setTemplateLoader(new StringTemplateLoader());
+        return new MessageBuilder(new Template(name, new StringReader(defaultValue), cfg));
+    }
+
     private void outputInfo(String text) {
     	try {
     		if ( getReportConfiguration().getOutputStreamOut() != null ) {

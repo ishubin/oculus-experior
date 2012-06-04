@@ -15,15 +15,18 @@
 ******************************************************************************/
 package net.mindengine.oculus.experior.reporter;
 
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 
+import freemarker.template.Template;
+
 public class MessageBuilder {
 
-	private String template;
+	private Template template;
 	private Map<String, Object> variables = new HashMap<String, Object>();
 	
-	public MessageBuilder(String template) {
+	public MessageBuilder(Template template) {
 		this.template = template;
 	}
 	
@@ -42,24 +45,22 @@ public class MessageBuilder {
 	
 	@Override
 	public String toString() {
-		String text = template;
-		if( text == null ) {
-			text = "";
-		}
-		
-		text = text.trim();
-		
-		for(Map.Entry<String, Object> var : variables.entrySet()) {
-			Object varValue = var.getValue();
-			if (varValue == null) {
-				varValue = "";
-			}
-			text = text.replace("${" + var.getKey() + "}", varValue.toString());
-		}
-		return text;
+	    if ( template != null ) {
+	        StringWriter sw = new StringWriter();
+	        try {
+                template.process(variables, sw);
+            } catch (Exception e) {
+                throw new RuntimeException("Couldn't process template", e);
+            }
+	        return sw.toString();
+	    }
+	    else {
+	        return "";
+	    }
+	    
 	}
 	
-	public MessageBuilder setTemplate(String template) {
+	public MessageBuilder setTemplate(Template template) {
 		this.template = template;
 		return this;
 	}

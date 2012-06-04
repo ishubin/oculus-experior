@@ -15,10 +15,15 @@
 ******************************************************************************/
 package net.mindengine.oculus.experior.reporter;
 
-import java.util.HashMap;
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Properties;
+
+import freemarker.cache.StringTemplateLoader;
+import freemarker.template.Configuration;
+import freemarker.template.DefaultObjectWrapper;
+import freemarker.template.Template;
 
 /**
  * Used for storing message templates which are configured in experior.properties
@@ -27,41 +32,64 @@ import java.util.Properties;
  */
 public class MessageContainer {
 
-	private Map<String, String> messages = new HashMap<String, String>();
+    private Configuration templateConfiguration;
+    
 	
 	public MessageBuilder message(String name) {
 		return message(name, String.format("\"%s\" is not configured in message properties", name));
 	}
 
 	public MessageBuilder message(String name, String defaultValue) {
-		if( messages != null ) {
-			if ( messages.containsKey(name)) {
-				return new MessageBuilder(messages.get(name));
+		if( templateConfiguration != null ) {
+		    Template template = getTemplate(name);
+			if ( template!=null) {
+				return new MessageBuilder(template);
 			}
 		}
-		return new MessageBuilder(defaultValue);
+		Template template;
+        try {
+            template = new Template(name, new StringReader(defaultValue), templateConfiguration);
+        } catch (IOException e) {
+            throw new RuntimeException("Couldn't process default template", e);
+        }
+		return new MessageBuilder(template);
 	}
 
-	public Map<String, String> getMessages() {
-		return messages;
-	}
-
-	public void setMessages(Map<String, String> messages) {
-		this.messages = messages;
-	}
+    private Template getTemplate(String name) {
+        Template template = null;
+        try {
+            template = templateConfiguration.getTemplate(name);
+        }
+        catch (Exception e) {
+        }
+        return template;
+    }
 
 	public void loadMessages(Properties messageProperties) {
-		if( messages == null ) {
-			messages = new HashMap<String, String>();
+		if( templateConfiguration == null ) {
+			templateConfiguration = new Configuration();
+			templateConfiguration.setObjectWrapper(new DefaultObjectWrapper());
 		}
+		
+		StringTemplateLoader templateLoader = new StringTemplateLoader();
 		
 		if( messageProperties != null ) {
 			Iterator<String> propertyIterator = messageProperties.stringPropertyNames().iterator();
 			while( propertyIterator.hasNext() ) {
 				String name = propertyIterator.next();
 				String value = messageProperties.getProperty(name);
-				messages.put(name, value);
+				templateLoader.putTemplate(name, value);
 			}
 		}
+		
+		templateConfiguration.setTemplateLoader(templateLoader);
 	}
+
+    public Configuration getTemplateConfiguration() {
+        return templateConfiguration;
+    }
+
+    public void setTemplateConfiguration(Configuration templateConfiguration) {
+        this.templateConfiguration = templateConfiguration;
+    }
 }
