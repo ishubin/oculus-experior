@@ -132,6 +132,10 @@ public class ReporterTest {
         public void setValue(String value) {
             this.value = value;
         }
+        
+        public String getNoFieldValue() {
+            return "no-field-value";
+        }
     }
     
     @Test
@@ -139,8 +143,8 @@ public class ReporterTest {
         Report report = new DefaultReport(ExperiorConfig.getInstance().getReportConfiguration());
         TestObject testObject = new TestObject();
         testObject.setValue("test value");
-        String message = report.message("some.undefined.message", "This is a test for '${obj.value}' value").put("obj", testObject).toString();
-        Assert.assertEquals("This is a test for 'test value' value", message);
+        String message = report.message("some.undefined.message", "This is a test for '${obj.value}', '${obj.noFieldValue}' value").put("obj", testObject).toString();
+        Assert.assertEquals("This is a test for 'test value', 'no-field-value' value", message);
     }
 
     private void assertReasonIsSame(ReportReason reason, ReportReason reason2) {
