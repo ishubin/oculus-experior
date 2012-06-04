@@ -121,6 +121,27 @@ public class ReporterTest {
     	String message = report.message("CollectionVerificator.hasAny.pass").put("name","some test name").toString();
     	Assert.assertEquals("some test name contains at least on item from expected list", message);
     }
+    
+    
+    public static class TestObject {
+        private String value;
+
+        public String getValue() {
+            return value;
+        }
+        public void setValue(String value) {
+            this.value = value;
+        }
+    }
+    
+    @Test
+    public void messagesAreProcessedWithComplexStructures() throws Exception {
+        Report report = new DefaultReport(ExperiorConfig.getInstance().getReportConfiguration());
+        TestObject testObject = new TestObject();
+        testObject.setValue("test value");
+        String message = report.message("some.undefined.message", "This is a test for '${obj.value}' value").put("obj", testObject).toString();
+        Assert.assertEquals("This is a test for 'test value' value", message);
+    }
 
     private void assertReasonIsSame(ReportReason reason, ReportReason reason2) {
         Assert.assertEquals("Level is not same", reason.getLevel(), reason2.getLevel());
