@@ -69,6 +69,7 @@ public class MessageContainer {
 		if( templateConfiguration == null ) {
 			templateConfiguration = new Configuration();
 			templateConfiguration.setObjectWrapper(new DefaultObjectWrapper());
+			templateConfiguration.setNumberFormat("0.######");
 		}
 		
 		StringTemplateLoader templateLoader = new StringTemplateLoader();
