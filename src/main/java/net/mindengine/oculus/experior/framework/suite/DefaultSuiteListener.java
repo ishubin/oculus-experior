@@ -16,9 +16,9 @@
 package net.mindengine.oculus.experior.framework.suite;
 
 import net.mindengine.oculus.experior.ExperiorConfig;
-import net.mindengine.oculus.experior.db.TestRunBean;
 import net.mindengine.oculus.experior.reporter.remote.ReportClient;
 import net.mindengine.oculus.experior.reporter.remote.wrappers.SuiteRun;
+import net.mindengine.oculus.experior.reporter.remote.wrappers.TestRun;
 import net.mindengine.oculus.experior.suite.Suite;
 import net.mindengine.oculus.experior.suite.SuiteListener;
 import net.mindengine.oculus.experior.suite.SuiteRunner;
@@ -72,13 +72,20 @@ public class DefaultSuiteListener implements SuiteListener {
             int failed = 0;
             int warning = 0;
 
-            for (TestRunBean testRun : suite.getTestRuns()) {
-                if (testRun.getStatus().equals("PASSED")) {
+            for (TestRun testRun : suite.getTestRuns()) {
+                switch(testRun.getStatus()) {
+                case PASSED: {
                     passed++;
-                } else if (testRun.getStatus().equals("FAILED")) {
+                    break;
+                    }
+                case FAILED: {
                     failed++;
-                } else if (testRun.getStatus().equals("Warning")) {
+                    break;
+                    }
+                case WARNING: {
                     warning++;
+                    break;
+                    }
                 }
             }
 

@@ -21,7 +21,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Properties;
 
 import net.mindengine.oculus.experior.reporter.ReportConfiguration;
@@ -41,10 +40,6 @@ import org.apache.commons.logging.LogFactory;
 
 public class ExperiorConfig {
 
-    public static final String REPORT_DB_URL = "report.db.url";
-    public static final String REPORT_DB_DRIVERCLASSNAME = "report.db.driverClassName";
-    public static final String REPORT_DB_USERNAME = "report.db.username";
-    public static final String REPORT_DB_PASSWORD = "report.db.password";
     public static final String SUITE_LISTENER = "suite.listener";
     public static final String OCULUS_URL = "oculus.url";
     public static final String COMPONENT_PROVIDER = "component.provider";
@@ -60,7 +55,6 @@ public class ExperiorConfig {
     public static final String TESTRUNNER_SUPPOERTEDANNOTATIONS_FIELDS = "testrunner.supportedAnnotations.fields";
     public static final String TESTRUNNER_SUPPORTEDANNOTATIONS_EVENTS = "testrunner.supportedAnnotations.events";
     public static final String OCULUS_API_AUTH_TOKEN = "oculus.api.auth.token";
-    
     
     private static ExperiorConfig _instance = null;
 

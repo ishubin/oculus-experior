@@ -15,7 +15,6 @@
 ******************************************************************************/
 package net.mindengine.oculus.experior.framework.test;
 
-import java.sql.SQLException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,17 +31,16 @@ import net.mindengine.oculus.experior.annotations.events.BeforeErrorHandler;
 import net.mindengine.oculus.experior.annotations.events.BeforeRollback;
 import net.mindengine.oculus.experior.annotations.events.BeforeTest;
 import net.mindengine.oculus.experior.annotations.events.OnTestFailure;
-import net.mindengine.oculus.experior.db.OculusSimpleJdbcDaoSupport;
-import net.mindengine.oculus.experior.db.ProjectBean;
-import net.mindengine.oculus.experior.db.TestBean;
-import net.mindengine.oculus.experior.db.TestRunBean;
 import net.mindengine.oculus.experior.exception.TestConfigurationException;
 import net.mindengine.oculus.experior.framework.report.DefaultReport;
 import net.mindengine.oculus.experior.reporter.Report;
 import net.mindengine.oculus.experior.reporter.ReportIcon;
-import net.mindengine.oculus.experior.reporter.ReportReason;
 import net.mindengine.oculus.experior.reporter.nodes.BranchReportNode;
 import net.mindengine.oculus.experior.reporter.nodes.ReportNode;
+import net.mindengine.oculus.experior.reporter.remote.ReportClient;
+import net.mindengine.oculus.experior.reporter.remote.wrappers.TestRun;
+import net.mindengine.oculus.experior.reporter.remote.wrappers.TestRunParameter;
+import net.mindengine.oculus.experior.reporter.remote.wrappers.TestRunStatus;
 import net.mindengine.oculus.experior.reporter.render.ReportRender;
 import net.mindengine.oculus.experior.reporter.render.XmlReportRender;
 import net.mindengine.oculus.experior.suite.Suite;
@@ -52,7 +50,6 @@ import net.mindengine.oculus.experior.test.descriptors.ActionInformation;
 import net.mindengine.oculus.experior.test.descriptors.ErrorInformation;
 import net.mindengine.oculus.experior.test.descriptors.FieldDescriptor;
 import net.mindengine.oculus.experior.test.descriptors.RollbackInformation;
-import net.mindengine.oculus.experior.test.descriptors.TestDefinition;
 import net.mindengine.oculus.experior.test.descriptors.TestDescriptor;
 import net.mindengine.oculus.experior.test.descriptors.TestInformation;
 
@@ -104,146 +101,133 @@ public class OculusTest {
 
     @AfterTest
     public void onAfterTest(TestInformation testInformation) throws Exception {
-        
         if (testInformation.getTestRunner().getParent()==null) {
-            OculusSimpleJdbcDaoSupport daoSupport = OculusSimpleJdbcDaoSupport.getInstance();
-            TestDefinition testDefinition = testInformation.getTestRunner().getTestDefinition();
-
+            
+            Long suiteRunId = getSuiteIdForTest(testInformation);
             /*
              * Collecting test run data
              */
-            TestRunBean testRunBean = new TestRunBean();
-            testRunBean.setSuiteRunId(0L);
-
             
-            SuiteRunner suiteRunner = testInformation.getTestRunner().getSuiteRunner();
             
-            if (suiteRunner != null) {
-                suite = suiteRunner.getSuite();
-                if (suite != null) {
-                    testRunBean.setSuiteRunId(suite.getId());
-                }
-            }
+            TestRun testRun = new TestRun();
+            testRun.setSuiteRunId(suiteRunId);
+            testRun.setName(testInformation.getTestName());
+            testRun.setDescription(testInformation.getTestRunner().getTestDefinition().getDescription());
+            testRun.setStartTime(startTime.getTime());
+            testRun.setEndTime(new Date().getTime());
+            testRun.setReport(encodeReport());
+            testRun.setParameters(collectTestRunParameters(testInformation.getTestRunner().getTestDescriptor()));
+            resolveTestRunStatus(testInformation, testRun);
+            
+            ReportClient reportClient = getReportClient();
+            
+            Long testRunId = reportClient.createTestRun(suiteRunId, testRun);
+            testInformation.setTestRunId(testRunId);
 
-            testRunBean.setName(testInformation.getTestName());
-            testRunBean.setDescription(testInformation.getTestRunner().getTestDefinition().getDescription());
-
-            /*
-             * Getting test from DB by its name and projectId
-             */
-            TestBean test = daoSupport.getTestDAO().getTestByNameProject(testRunBean.getName(), testDefinition.getProject());
-            if (test != null) {
-                testRunBean.setTestId(test.getId());
-            } else {
-                testRunBean.setTestId(0L);
-            }
-            testRunBean.setStartTime(startTime);
-            testRunBean.setEndTime(new Date());
-
-            ReportNode reportNode = report.getMainBranch();
-
-            ReportRender reportRender = new XmlReportRender();
-            String reportData = reportRender.render(reportNode);
-
-            testRunBean.setReport(reportData);
-
-            if (testInformation.getFailureCause() != null || reportNode.hasLevel(ReportNode.ERROR)) {
-                testRunBean.setStatus("FAILED");
-                /*
-                 * Fetching reasons and translating them to the needed format
-                 */
-                List<ReportReason> reasons = report.getMainBranch().collectReasons(ReportNode.ERROR);
-                testRunBean.setReasons(reportRender.renderReasons(reasons));
-
-                // Setting test status to testInformation so it could be fetched
-                // by test-run-manager system
-                testInformation.setStatus(TestInformation.STATUS_FAILED);
-            } else if (reportNode.hasLevel(ReportNode.WARN)) {
-                testRunBean.setStatus("WARNING");
-                
-                // Setting test status to testInformation so it could be fetched
-                // by test-run-manager system
-                testInformation.setStatus(TestInformation.STATUS_WARNING);
-            } else {
-                testRunBean.setStatus("PASSED");
-
-                // Setting test status to testInformation so it could be fetched
-                // by test-run-manager system
-                testInformation.setStatus(TestInformation.STATUS_PASSED);
-            }
-
-            // Obtaining the projects id
-            ProjectBean projectBean = daoSupport.getProjectDAO().getProjectByPath(testDefinition.getProject());
-            Long projectId = 0L;
-            if (projectBean != null) {
-                projectId = projectBean.getId();
-            }
-            testRunBean.setProjectId(projectId);
-            testRunBean.setId(daoSupport.getTestRunDAO().create(testRunBean));
-            testInformation.setTestRunId(testRunBean.getId());
-
-            /*
-             * Exporting test run parameters to database for this specific test
-             * run
-             */
-            exportTestRunParameters(daoSupport, testRunBean.getId(), testInformation.getTestRunner().getTestDescriptor());
-
+            testRun.setId(testRunId);
             /*
              * Adding just created test run to the suite
              */
             if (suite.getTestRuns() == null) {
-                suite.setTestRuns(new LinkedList<TestRunBean>());
+                suite.setTestRuns(new LinkedList<TestRun>());
             }
-            suite.getTestRuns().add(testRunBean);
+            suite.getTestRuns().add(testRun);
         }
     }
 
-    private void exportTestRunParameters(OculusSimpleJdbcDaoSupport daoSupport, Long testRunId, TestDescriptor testDescriptor) throws SQLException {
+    private ReportClient getReportClient() {
+        ExperiorConfig cfg = ExperiorConfig.getInstance();
+        return new ReportClient(cfg.getMandatoryField(ExperiorConfig.OCULUS_URL), cfg.get(ExperiorConfig.OCULUS_API_AUTH_TOKEN));
+    }
+
+    private void resolveTestRunStatus(TestInformation testInformation, TestRun testRun) {
+        ReportNode reportNode = report.getMainBranch();
+        
+        if (testInformation.getFailureCause() != null || reportNode.hasLevel(ReportNode.ERROR)) {
+            testRun.setStatus(TestRunStatus.FAILED);
+            /*
+             * Fetching reasons and translating them to the needed format
+             */
+            testRun.setReasons(report.getMainBranch().collectReasons(ReportNode.ERROR));
+
+            // Setting test status to testInformation so it could be fetched
+            // by test-run-manager system
+            testInformation.setStatus(TestInformation.STATUS_FAILED);
+        } else if (reportNode.hasLevel(ReportNode.WARN)) {
+            testRun.setStatus(TestRunStatus.WARNING);
+                
+            testRun.setReasons(report.getMainBranch().collectReasons(ReportNode.WARN));
+            
+            // Setting test status to testInformation so it could be fetched
+            // by test-run-manager system
+            testInformation.setStatus(TestInformation.STATUS_WARNING);
+        } else {
+            testRun.setStatus(TestRunStatus.PASSED);
+
+            // Setting test status to testInformation so it could be fetched
+            // by test-run-manager system
+            testInformation.setStatus(TestInformation.STATUS_PASSED);
+        }
+        
+    }
+
+    private String encodeReport() {
+        ReportNode reportNode = report.getMainBranch();
+        ReportRender reportRender = new XmlReportRender();
+        return reportRender.render(reportNode);
+    }
+
+    private Long getSuiteIdForTest(TestInformation testInformation) {
+        SuiteRunner suiteRunner = testInformation.getTestRunner().getSuiteRunner();
+        if (suiteRunner != null) {
+            suite = suiteRunner.getSuite();
+            if (suite != null) {
+                return suite.getId();
+            }
+        }
+        return 0L;
+    }
+
+    private List<TestRunParameter> collectTestRunParameters(TestDescriptor testDescriptor) {
         /*
          * Saving input parameter values
          */
+        List<TestRunParameter> parameters = new LinkedList<TestRunParameter>();
         Map<String, FieldDescriptor> inputParametersMap = testDescriptor.getFieldDescriptors(InputParameter.class);
+        
         if(inputParametersMap!=null) {
-            for (Map.Entry<String, FieldDescriptor> parameter : inputParametersMap.entrySet()) {
-                Object value = null;
-                try {
-                    value = ClassUtils.getFieldValue(parameter.getValue().getField(), this);
-                }
-                catch (Exception e) {
-                    
-                }
-                String name = parameter.getKey();
-                String strValue;
-    
-                if (value != null) {
-                    strValue = ClassUtils.convertParameterToString(value.getClass(), value);
-                } else
-                    strValue = "null";
-                daoSupport.getTestRunDAO().createTestRunParameters(testRunId, name, strValue, true);
-            }
+            addAllParameters(parameters, inputParametersMap, true);
         }
         /*
          * Saving output parameter values
          */
         Map<String, FieldDescriptor> outputParametersMap = testDescriptor.getFieldDescriptors(OutputParameter.class);
         if(outputParametersMap!=null){
-            for (Map.Entry<String, FieldDescriptor> parameter : outputParametersMap.entrySet()) {
-                Object value = null;
-                try {
-                    value = ClassUtils.getFieldValue(parameter.getValue().getField(), this);
-                }
-                catch (Exception e) {
-                    
-                }
-                String name = parameter.getKey();
-                String strValue = null;
-                if (value != null) {
-                    strValue = ClassUtils.convertParameterToString(value.getClass(), value);
-                }
-                daoSupport.getTestRunDAO().createTestRunParameters(testRunId, name, strValue, false);
-            }
+            addAllParameters(parameters, outputParametersMap, false);
         }
 
+        return parameters;
+    }
+
+    private void addAllParameters(List<TestRunParameter> parameters, Map<String, FieldDescriptor> inputParametersMap,
+            boolean isInput) {
+        for (Map.Entry<String, FieldDescriptor> parameter : inputParametersMap.entrySet()) {
+            Object value = null;
+            try {
+                value = ClassUtils.getFieldValue(parameter.getValue().getField(), this);
+            }
+            catch (Exception e) {
+                
+            }
+            String name = parameter.getKey();
+            String strValue;
+   
+            if (value != null) {
+                strValue = ClassUtils.convertParameterToString(value.getClass(), value);
+            } else
+                strValue = "null";
+            parameters.add(new TestRunParameter(name, strValue, isInput));
+        }
     }
 
     @BeforeAction

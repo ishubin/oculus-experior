@@ -21,9 +21,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import net.mindengine.oculus.experior.db.TestRunBean;
 import net.mindengine.oculus.experior.exception.TestIsNotDefinedException;
 import net.mindengine.oculus.experior.reporter.remote.wrappers.SuiteRun;
+import net.mindengine.oculus.experior.reporter.remote.wrappers.TestRun;
 import net.mindengine.oculus.experior.test.descriptors.TestDefinition;
 
 /**
@@ -63,7 +63,7 @@ public class Suite extends SuiteRun {
      * A list of test runs. Will be filled with latest test run at the end of
      * each test.
      */
-    private List<TestRunBean> testRuns;
+    private List<TestRun> testRuns = new LinkedList<TestRun>();
 
     /**
      * Adding test to suite tests list and collecting all the needed information
@@ -127,11 +127,11 @@ public class Suite extends SuiteRun {
         return tests;
     }
 
-    public void setTestRuns(List<TestRunBean> testRuns) {
+    public void setTestRuns(List<TestRun> testRuns) {
         this.testRuns = testRuns;
     }
 
-    public List<TestRunBean> getTestRuns() {
+    public List<TestRun> getTestRuns() {
         return testRuns;
     }
 

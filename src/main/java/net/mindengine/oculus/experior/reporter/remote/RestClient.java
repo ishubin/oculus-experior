@@ -20,7 +20,8 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 public class RestClient {
 
-    private static final int CONN_TIMEOUT_DEFAULT = 5000;
+    private static final int MAX_PER_ROUTE_DEFAULT = 100;
+    private static final int CONN_TIMEOUT_DEFAULT = 10000;
     private static final String PREFIX = "oculus.experior.report.client.";
     private static final int MAX_TOTAL_CONNECTION_DEFAULT = 1000;
     private static final PoolingClientConnectionManager _connectionManager = new PoolingClientConnectionManager();
@@ -28,7 +29,7 @@ public class RestClient {
     
     static {
         _connectionManager.setMaxTotal(getIntParameterFromEnv(PREFIX + "max.connection", MAX_TOTAL_CONNECTION_DEFAULT));
-        _connectionManager.setDefaultMaxPerRoute(100);
+        _connectionManager.setDefaultMaxPerRoute(MAX_PER_ROUTE_DEFAULT);
         HttpParams params = new BasicHttpParams();
         HttpConnectionParams.setConnectionTimeout(params, getIntParameterFromEnv(PREFIX + "connection.timeout", CONN_TIMEOUT_DEFAULT));
         HttpConnectionParams.setSoTimeout(params, getIntParameterFromEnv(PREFIX + "connection.timeout", CONN_TIMEOUT_DEFAULT));

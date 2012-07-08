@@ -1,6 +1,7 @@
 package net.mindengine.oculus.experior.reporter.remote;
 
 import net.mindengine.oculus.experior.reporter.remote.wrappers.SuiteRun;
+import net.mindengine.oculus.experior.reporter.remote.wrappers.TestRun;
 
 public class ReportClient {
     private String oculusServerUrl;
@@ -37,6 +38,10 @@ public class ReportClient {
 
     public void setAuthToken(String authToken) {
         this.authToken = authToken;
+    }
+
+    public Long createTestRun(Long suiteId, TestRun testRun) {
+        return restClient.post(oculusServerUrl + "/api/report/suite/" + suiteId + "/test", authToken, testRun).asLong();
     }
 
 }
