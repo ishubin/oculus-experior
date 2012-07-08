@@ -102,10 +102,6 @@ public class OculusSimpleJdbcDaoSupport extends SimpleJdbcDaoSupport {
         return new ProjectDAO(this);
     }
 
-    public SuiteRunDAO getSuiteRunDAO() {
-        return new SuiteRunDAO(this);
-    }
-
     public TestDAO getTestDAO() {
         return new TestDAO(this);
     }

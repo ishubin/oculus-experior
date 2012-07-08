@@ -15,16 +15,13 @@
 ******************************************************************************/
 package net.mindengine.oculus.experior.framework.suite;
 
-import java.util.Date;
-import java.util.Map;
-
-import net.mindengine.oculus.experior.db.OculusSimpleJdbcDaoSupport;
+import net.mindengine.oculus.experior.ExperiorConfig;
 import net.mindengine.oculus.experior.db.TestRunBean;
+import net.mindengine.oculus.experior.reporter.remote.ReportClient;
+import net.mindengine.oculus.experior.reporter.remote.wrappers.SuiteRun;
 import net.mindengine.oculus.experior.suite.Suite;
 import net.mindengine.oculus.experior.suite.SuiteListener;
 import net.mindengine.oculus.experior.suite.SuiteRunner;
-
-import org.apache.commons.lang3.StringEscapeUtils;
 
 /**
  * This class handles the suite data and writes it to Oculus Database
@@ -34,43 +31,39 @@ import org.apache.commons.lang3.StringEscapeUtils;
  */
 public class DefaultSuiteListener implements SuiteListener {
 
+    private ReportClient reportClient;
+    
+    public DefaultSuiteListener(){
+        ExperiorConfig cfg = ExperiorConfig.getInstance();
+        reportClient = new ReportClient(cfg.getMandatoryField(ExperiorConfig.OCULUS_URL), cfg.get(ExperiorConfig.OCULUS_API_AUTH_TOKEN));
+    }
+    
     public void onSuiteStarted(SuiteRunner suiteRunner) {
         Suite suite = suiteRunner.getSuite();
-        OculusSimpleJdbcDaoSupport daoSupport = OculusSimpleJdbcDaoSupport.getInstance();
+        long suiteId = reportClient.createSuite(detachSuiteRunInfo(suite));
+        suite.setId(suiteId);
+    }
 
-        /*
-         * Converting suite parameters to string with the following
-         * template: <p><n>parameterName<v>parameterValue
-         */
-        Map<String, String> parameters = suite.getParameters();
-
-        StringBuffer serializedParameters = new StringBuffer();
-        for (Map.Entry<String, String> parameter : parameters.entrySet()) {
-            serializedParameters.append("<p>");
-            serializedParameters.append(StringEscapeUtils.escapeXml(parameter.getKey()));
-            serializedParameters.append("<v>");
-            serializedParameters.append(StringEscapeUtils.escapeXml(parameter.getValue()));
-            serializedParameters.append("<p>");
-        }
-        suite.setSerializedParameters(serializedParameters.toString());
-        try {
-            Long id = daoSupport.getSuiteRunDAO().create(suite);
-            suite.setId(id);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
+    private SuiteRun detachSuiteRunInfo(Suite suite) {
+        SuiteRun sr = new SuiteRun();
+        sr.setAgentName(suite.getAgentName());
+        sr.setName(suite.getName());
+        sr.setParameters(suite.getParameters());
+        sr.setStartTime(suite.getStartTime());
+        sr.setEndTime(suite.getEndTime());
+        sr.setId(suite.getId());
+        return sr;
     }
 
     public void onSuiteFinished(SuiteRunner suiteRunner) {
         Suite suite = suiteRunner.getSuite();
-        OculusSimpleJdbcDaoSupport daoSupport = OculusSimpleJdbcDaoSupport.getInstance();
-        try {
-            daoSupport.getSuiteRunDAO().updateSuiteEndTime(suite.getId(), new Date());
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        
+        reportClient.finishSuite(suite.getId());
+        
+        printSuiteStatistic(suite);
+    }
 
+    private void printSuiteStatistic(Suite suite) {
         if (suite.getTestRuns() != null) {
             System.out.println("\n\n============================================================");
             System.out.println("Total test runs: " + suite.getTestRuns().size());

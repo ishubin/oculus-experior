@@ -49,17 +49,27 @@ public class SuiteRunner {
          * Creating new SuiteSession instance this session will live until all
          * tests are completed
          */
-        suite.setStartTime(new Date());
+        suite.setStartTime(new Date().getTime());
         setSuiteSession(new SuiteSession());
         
         if (suiteListener != null) {
-            suiteListener.onSuiteStarted(this);
+            try {
+                suiteListener.onSuiteStarted(this);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         runAllTests();
 
         if (suiteListener != null) {
-            suiteListener.onSuiteFinished(this);
+            try {
+                suiteListener.onSuiteFinished(this);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 

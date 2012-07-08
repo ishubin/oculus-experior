@@ -59,6 +59,7 @@ public class ExperiorConfig {
     public static final String TESTRUNNER_DUMMY_TEST = "testrunner.dummy.test";
     public static final String TESTRUNNER_SUPPOERTEDANNOTATIONS_FIELDS = "testrunner.supportedAnnotations.fields";
     public static final String TESTRUNNER_SUPPORTEDANNOTATIONS_EVENTS = "testrunner.supportedAnnotations.events";
+    public static final String OCULUS_API_AUTH_TOKEN = "oculus.api.auth.token";
     
     
     private static ExperiorConfig _instance = null;

@@ -21,9 +21,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import net.mindengine.oculus.experior.db.SuiteRunBean;
 import net.mindengine.oculus.experior.db.TestRunBean;
 import net.mindengine.oculus.experior.exception.TestIsNotDefinedException;
+import net.mindengine.oculus.experior.reporter.remote.wrappers.SuiteRun;
 import net.mindengine.oculus.experior.test.descriptors.TestDefinition;
 
 /**
@@ -33,7 +33,7 @@ import net.mindengine.oculus.experior.test.descriptors.TestDefinition;
  * @author Ivan Shubin
  * 
  */
-public class Suite extends SuiteRunBean {
+public class Suite extends SuiteRun {
     /**
      * 
      */
