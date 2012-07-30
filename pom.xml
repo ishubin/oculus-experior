@@ -56,6 +56,12 @@
       </plugin>
     </plugins>
   </build>
+  <distributionManagement>
+    <repository>
+      <id>gh-pages</id>
+      <url>file:///${basedir}/../maven-repo/repository</url>
+    </repository>
+  </distributionManagement>
   <licenses>
     <license>
       <name>Apache 2</name>
