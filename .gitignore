@@ -1,4 +1,5 @@
 target/
+dist/
 *.class
 .settings
 .project
