@@ -18,6 +18,10 @@ cp target/oculus-experior-jar-with-dependencies.jar dist/bin/oculus-experior-$ve
 cp experior.properties dist/bin/.
 cp defaultMessages.properties dist/bin/.
 cp experior.test-loaders.xml dist/bin/.
+cp LICENSE-2.0.txt dist/bin/.
+cp README dist/bin/.
+cp LICENSE-2.0.txt dist/sources/.
+cp README dist/sources/.
 
 
 cd dist/bin
