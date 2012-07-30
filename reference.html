@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Oculus Experior - Reference</title>
+        <link href="./main.css" rel="stylesheet" type="text/css"/>
+    </head>
+    
+    <body>
+        <div id="header-container">
+            <header>
+                <div id="oculus-logo"></div>
+                <a id="github-header-link" href="https://github.com/ishubin/oculus-experior"></a>
+
+                <h1>Oculus Experior</h1>
+                <h2>Flexible test framework</h2>
+            </header>
+        </div>
+        <navigation>
+            <ul id="menu">
+                <li><a id="menu-intro" class="" href="./index.html"><span>Welcome</span></a></li>
+                <li><a id="menu-reference" class="selected" href="./reference.html"><span>Reference</span></a></li>
+                <li><a id="menu-download" class="" href="./download.html"><span>Download</span></a></li>
+                <li><a id="menu-github" class="" href="https://github.com/ishubin/oculus-experior"><span>On Github</span></a></li>
+                <li><a id="menu-contact" class="" href="./contact.html"><span>Contact</span></a></li>
+            </ul>
+        </navigation>
+        <div id="content-container">
+            <article>
+                <h2><span class="header-first">Reference</span> <span class="header-second">Table of Contents</span></h2>
+                <ul class="table-of-contents">
+                    <li><a href="#_a_configuration">Configuration</a></li>
+                    <li><a href="#_a_test_implementation">Test Implementation</a></li>
+                    <li><a href="#_a_suite_configuration">Suite Configuration</a></li>
+                    <li><a href="#_a_events">Events</a></li>
+                    <li><a href="#_a_data_providers">Data Providers</a></li>
+                    <li><a href="#_a_errors">Action Errors</a></li>
+                    <li><a href="#_a_rollbacks">Rollbacks</a></li>
+                    <li><a href="#_a_frontend">Oculus Frontend Integration</a></li>
+                </uL>
+
+
+                <h2 id="_a_configuration"><span class="header-first">Basic</span> <span class="header-second">Configuration</span></h2>
+                <p>
+                    For proper Oculus Experior configuration you need to put <b>experior.properties</b> file in the root directory of your project.
+                    Just copy it from original package and change it for your own needs. 
+                </p>
+                <h2 id="_a_test_implementation"><span class="header-first">Test</span> <span class="header-second">Implementation</span></h2>
+                <p>
+                    A test in Oculus Experior is represented as a Java class which consists of consequent actions represented as class methods.
+                    Each test can have its input and output parameters which are represented as fields of test class marked with corresponding annotation.
+                </p>
+                <p>
+                This is how a basic test class look like:
+                </p>
+                <div class="source"> 
+<pre>
+<op>import</op> net.mindengine.oculus.experior.annotations.*;
+
+<com>/* 
+   Using @Test annotation you can specify a better readable name for your test
+   and also define to which project it belongs 
+ */</com>
+<an>@Test</an>(name=<str>"Test 1"</str>, project=<str>"MY-TEST-PROJECT"</str>)
+<op>public class</op> MySampleTest {
+
+    <com>/* 
+       Every input parameter must have its default value specified from the test 
+    */</com>
+    <an>@InputParameter</an>(defaultValue=<str>"defstr"</str>)
+    <op>public</op> String paramString;
+
+    <com>/* 
+       Parameters may not be just string but also: 
+       Integer, Long, Boolean, Float, Double
+    */</com>
+    <an>@InputParameter</an>(defaultValue=<str>"1234"</str>)
+    <op>public</op> Long paramLong;
+
+    <com>/* 
+       You don't have to specify getters and setters for your test parameters. 
+       Experior can also handle all private and protected fields.
+    */</com>
+    <an>@InputParameter</an>(defaultValue=<str>"true"</str>)
+    <op>private</op> Boolean paramBoolean;
+
+    <com>/*
+       Test actions should be defined with @Action annotation.
+       You can define a better name for it and also specify 
+       which action should be run next.
+       If you don't specify next action then Experior will 
+       go through all of them without any specific order
+
+    */</com>
+    <an>@Action</an>(name=<str>"Action 1"</str>, next=<str>"action2"</str>)
+    <op>public void</op> action1(){
+        <com>...</com>
+    }
+
+    <com>/*
+        In this case we don't set a name for action 
+        so Experior will use a method name instead
+    */</com>
+    <an>@Action</an>
+    <op>protected void</op> action2(){
+        <com>...</com>
+    }
+}
+
+</pre>
+                </div> 
+                <p>
+                    To run the test you can simply use this code
+                </p>
+                <div class="source">
+<pre>
+<op>import</op> net.mindengine.oculus.experior.test.TestRunner;
+
+<com>...</com>
+TestRunner.runTest( MyTestClass.class );
+</pre>
+                </div>
+
+                <h2 id="_a_suite_configuration"><span class="header-first">Test Suite</span> <span class="header-second">Configuration</span></h2>
+                <p>
+                    Test suite can be defined in xml like this:
+                </p>
+                <div class="source">
+<pre>
+<tag>&lt;suite</tag> name=<str>"Sample test suite"</str><tag>&gt;</tag>
+
+    <com>&lt;--
+       Each test has its own id so it can be used in other
+       test in parameter dependency.
+       Mapping in a test by default means the classpath of a test. 
+       But you can always change its behavior for your own test loader.
+    --&gt;</com>
+    <tag>&lt;test</tag> id=<str>"test1"</str> mapping=<str>"com.myapp.MyTest1"</str><tag>&gt;</tag>
+        <tag>&lt;parameter</tag> name=<str>"paramInput"</str><tag>&gt;</tag>some value<tag>&lt;/parameter&gt;</tag>
+    <tag>&lt;/test&gt;</tag>
+
+    <com>&lt;--
+       In this case test parameter depends on other test parameter.
+       refId - is the id of the referenced test.
+       refName - is the name of parameter of referenced test
+    --&gt;</com>
+    <tag>&lt;test</tag> id=<str>"test2"</str> mapping=<str>"com.myapp.MyTest2"</str><tag>&gt;</tag>
+        <tag>&lt;parameter</tag> name=<str>"someParam"</str> refId=<str>"test1"</str> refName=<str>"paramOutput"</str>/<tag>&gt;</tag>
+    <tag>&lt;/test&gt;</tag>
+
+    <com>&lt;--
+       Test can also have its name defined from suite.
+    --&gt;</com>
+    <tag>&lt;test</tag> id=<str>"test3"</str> name=<str>"Custom test name"</str> mapping=<str>"com.myapp.MyTest3"</str><tag>&gt;</tag>
+        <com>&lt;--
+           Test may also depend on other tests. 
+           In this case if some of referenced tests failed during suite execution
+           a dependent test will be skiped. 
+        --&gt;</com>
+        <tag>&lt;depends&gt;</tag>
+            <tag>&lt;test&gt;</tag>test1<tag>&lt;/test&gt;</tag>
+        <tag>&lt;/depends&gt;</tag>
+    <tag>&lt;/test&gt;</tag>
+
+
+    <com>&lt;--
+       Within a test you can also define a set of other tests.
+       This way you can treat a test as a sub-suite
+    --&gt;</com>
+    <tag>&lt;test</tag> id=<str>"test4"</str> name=<str>"Many small tests"</str> mapping=<str>"com.myapp.SubSuite"</str><tag>&gt;</tag>
+        <tag>&lt;tests&gt;</tag>
+            <tag>&lt;test</tag> id=<str>"test4_1"</str> name=<str>"Sub-test1"</str> mapping=<str>"com.myapp.SubTest1"</str><tag>&gt;</tag>
+            <tag>&lt;/test&gt;</tag>
+            <tag>&lt;test</tag> id=<str>"test4_2"</str> name=<str>"Sub-test2"</str> mapping=<str>"com.myapp.SubTest2"</str><tag>&gt;</tag>
+            <tag>&lt;/test&gt;</tag>
+        <tag>&lt;/tests&gt;</tag>
+    <tag>&lt;/test&gt;</tag>
+
+<tag>&lt;/suite&gt;
+</pre>
+                </div>
+
+                <p>
+                    You can run whole suite from command line like this (make sure that you embed Oculus Experior library in your jar):
+                </p>
+                <div class="source">
+<pre>
+java -jar mylib.jar net.mindengine.oculus.experior.test.TestLauncher suite suite.xml 
+</pre>
+                </div>
+                
+                <p>
+                    Or you may want to run all suites from a specific directory in one go. Oculus Experior can search for all suites recursively and run them just by using this command: 
+                </p>
+                <div class="source">
+<pre>
+java -jar mylib.jar net.mindengine.oculus.experior.test.TestLauncher runall ./mydir 
+</pre>
+                </div>
+
+                <h2 id="_a_events"><span class="header-first">Handling</span> <span class="header-second">Events</span></h2>
+                For a more complex test logic you can assign listeners to various test events.
+                Event annotations are located in <b>net.mindengine.oculus.experior.annotations.events</b> package.
+                Most annotated methods are required to have some specific arguments from <b>net.mindengine.oculus.experior.test.descriptors</b> package.
+                Take a look at the following list of events:
+                <table class="bordered" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Event Annotation</th>
+                            <th>Explanation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>@BeforeTest</td>
+                            <td>Annotated method will be run before all test actions. Important to notice that it will be invoked after all parameters and data-providers are instantiated.
+                                Method should be declared with <b>TestInformation</b> argument
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>@AfterTest</td>
+                            <td>Annotated method will be run after all test actions.
+                                Method should be declared with <b>TestInformation</b> argument
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>@BeforeChildTest</td>
+                            <td>Annotated method will be run before all child test.
+                                Method should be declared with <b>TestInformation</b> argument
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>@AfterChildTest</td>
+                            <td>Annotated method will be run after all child test.
+                                Method should be declared with <b>TestInformation</b> argument
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>@BeforeAction</td>
+                            <td>Annotated method will be invoked before every action of a test.
+                                Method should be declared with <b>ActionInformation</b> argument
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>@AfterAction</td>
+                            <td>Annotated method will be run after every action of a test.
+                                Method should be declared with <b>ActionInformation</b> argument
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>@BeforeErrorHandler</td>
+                            <td>Annotated method will be run before error handler of a specific action.
+                                Method should be declared with <b>ErrorInformation</b> argument
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>@AfterErrorHandler</td>
+                            <td>Annotated method will be run after error handler of a specific action.
+                                Method should be declared with <b>ErrorInformation</b> argument
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>@BeforeRollback</td>
+                            <td>Annotated method will be run before the rollback method of a specific action.
+                                Method should be declared with <b>RollbackInformation</b> argument
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>@AfterRollback</td>
+                            <td>Annotated method will be run after the rollback method of a specific action.
+                                Method should be declared with <b>RollbackInformation</b> argument
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>@OnException(NullPointerException.class)</td>
+                            <td>Annotated method will be run if a test was interrupted with a specific exception. Method should be declared with <b>java.lang.Throwable</b> argument</td>
+                        </tr>
+                        <tr>
+                            <td>@OnTestFailure</td>
+                            <td>Annotated method will be run in case if test failed during execution.
+                                Method should be declared with <b>TestInformation</b> argument.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>@OnTestPostponed</td>
+                            <td>Annotated method will be run in case if test was skiped. 
+                                Method should be declared with <b>TestInformation</b> argument.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="source">
+<pre>
+<op>public class</op> MyTest {
+
+    <an>@Action</an>
+    <op>public void</op> action1() {
+        <com>...</com>
+    }
+
+    <an>@BeforeTest</an>
+    <op>public void</op> beforeTest(TestInformation action) {
+        <com>...</com>
+    }
+    
+    <an>@BeforeAction</an>
+    <op>public void</op> beforeAction(ActionInformation action) {
+        <com>...</com>
+    }
+    
+    <an>@AfterAction</an>
+    <op>public void</op> afterAction(ActionInformation action) {
+        <com>...</com>
+    }
+}
+</pre>
+                </div>
+
+                <h2 id="_a_data_providers"><span class="header-first">Using</span> <span class="header-second">Data Providers</span></h2>
+                <p>
+                    <b>Data Providers</b> allow you to implement data dependency within tests. It comes very handy when you need to move some components initialization away from the test.
+                    There are two annotations used for that: 
+                </p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Annotation</th>
+                            <th>Explanation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>@DataProvider</td>
+                            <td>Annotated method should return value and be declared with <b>DataSourceInformation</b> argument</td>
+                        </tr>
+                        <tr>
+                            <td>@DataSource</td>
+                            <td>This annotation can be used in many places. It can be used fields of test class and also on method arguments of all test actions and all event listeners</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p>
+                    There are various ways you can use data-providers. 
+                    <br/>
+                    Here is how to refer to data-providers by name.
+                </p>
+                <div class="source">
+<pre>
+<op>public class</op> MyTest {
+
+    <an>@DataSource</an>(provider=<str>"someProvider"</str>)
+    <op>private</op> String someParameter;
+
+
+    <com>/*
+        Data-source arguments can be specified in any event listeners
+    */</com>
+    <an>@BeforeAction</an>
+    <op>public void</op> BeforeAction(
+                    ActionInformation action, 
+                    <an>@DataSource</an>(provider=<str>"someProvider"</str>) String argument) {
+        <com>...</com>
+    }
+
+    <com>...</com>
+
+    <an>@DataProvider</an>
+    <op>private</op> String someProvider() {
+        <op>return</op> <str>"Some value"</str>;
+    }
+}
+</pre>
+                </div>
+
+                <p>
+                    You don't even need to specify provider from data-source. Experior will find and use the first data-provider that matches the type of the data-source parameter 
+                </p>
+                <div class="source">
+<pre>
+<op>public class</op> MyTest {
+
+    <an>@DataSource</an>
+    <op>private</op> MyCustomTypeA someParameter;
+
+
+    <com>...</com>
+
+    <an>@DataProvider</an>
+    <op>private</op> MyCustomTypeA someProvider() {
+        <com>...</com>
+    }
+    
+    <com>/*
+       In this example this data-provider will not be used
+       as it doesn't match the type of data-source parameter
+    */</com>
+    <an>@DataProvider</an>
+    <op>private</op> MyCustomTypeB someProvider2() {
+        <com>...</com>
+    }
+}
+</pre>
+                </div>
+
+                <h2 id="_a_data_providers"><span class="header-first">Dependency in</span> <span class="header-second">Data Providers</span></h2>
+                <p>
+                    Data-providers also may help you resolve data-dependency within data-source parameters. 
+                    You can use <b>dependencies</b> parameter in <b>@DataSource</b> annotation and specify dependencies between objects within data-source parameters.
+                    Experior has a dependency resolving mechanism for two data-source objects. If one has a dependency to other Experior will first initialize the referenced data-source object and then the dependent.
+                </p>
+                <div class="source">
+<pre>
+<op>public class</op> MyTest {
+    <com>/*
+        In this case "field" of "componentA" will be
+        initialized with "field" from "componentB".
+    */</com>
+    <an>@DataSource</an>(provider=<str>"someProviderA"</str>, dependencies={<str>"field&lt;componentB.field"</str>})
+    <op>public</op> ComponentA componentA;
+
+    <an>@DataSource</an>(provider=<str>"someProviderB"</str>)
+    <op>public</op> ComponentB componentB;
+
+    <com>/*
+        In this example "&gt;" symbol is used so 
+        the dependency is handled the other way around.
+        Here the "field" of "componentC" will be
+        initialized with "field" from "componentA".
+    */</com>
+    <an>@DataSource</an>(provider=<str>"someProviderC"</str>, dependencies={<str>"componentA.field&gt;field"</str>})
+    <op>public</op> ComponentC componentC;
+
+
+    <an>@DataSource</an>(provider=<str>"someProvider"</str>)
+    <op>public</op> String browser;
+
+    <com>/*
+        You don't have to specify the full dependency text.
+        In case if the field of component is the same as the referenced data-source
+        you can just simply type its name.
+    */</com>
+    <an>@DataSource</an>(provider=<str>"someProviderD"</str>, dependencies={<str>"browser"</str>})
+    <op>public</op> ComponentD componentD;
+
+    <com>...</com>
+
+}
+</pre>
+                </div>
+
+
+                <h2 id="_a_errors"><span class="header-first">Handling</span> <span class="header-second">Action Errors</span></h2>
+                <p>
+                    Experior gives you a nice mechanism for handling errors for specific actions.
+                    Just define an <b>@ErrorHandler</b> annotated method in your test and link some actions to it.
+                </p>
+                <div class="source">
+<pre>
+<op>public class</op> MyTest {
+    
+    <an>@Action</an>(onerror=<str>"errorHandler"</str>)
+    <op>public void</op> action() {
+        <com>...</com>
+    }
+
+    <an>@ErrorHandler</an>(name=<str>"Error handler"</str>)
+    <op>public void</op> errorHandler(Throwable error) {
+        <com>...</com>
+    }
+
+}
+</pre>
+                </div>
+
+
+                <h2 id="_a_rollbacks"><span class="header-first">Using</span> <span class="header-second">Rollbacks</span></h2>
+                <p>
+                    Rollbacks are used in case you want to go backwards through all your test actions and make some cleanups.
+                </p>
+
+                <div class="source">
+<pre>
+<op>public class</op> MyTest {
+    
+    <an>@Action</an>(rollback=<str>"undo1"</str>)
+    <op>public void</op> action1() {
+        <com>...</com>
+    }
+    
+    <an>@Action</an>(rollback=<str>"undo2"</str>)
+    <op>public void</op> action2() {
+        <com>...</com>
+    }
+    
+    <an>@Action</an>(rollback=<str>"undo3"</str>)
+    <op>public void</op> action3() {
+        <com>...</com>
+    }
+    
+    <an>@RollbackHandler</an>(name=<str>"Undo for action 1"</str>)
+    <op>public void</op> undo1() {
+        <com>...</com>
+    }
+    
+    <an>@RollbackHandler</an>(name=<str>"Undo for action 2"</str>)
+    <op>public void</op> undo2() {
+        <com>...</com>
+    }
+    
+    <an>@RollbackHandler</an>(name=<str>"Undo for action 3"</str>)
+    <op>public void</op> undo3() {
+        <com>...</com>
+    }
+    
+}
+</pre>
+                </div>
+                <p>
+                In the example above Experior will first go through all actions and then at the end of the test it will go backwards through all "undo" methods.
+                </p>
+                <div class="scheme">
+                    <div class="block blue">action1</div>
+                    <div class="right-arrow"></div>
+                    <div class="block blue">action2</div>
+                    <div class="right-arrow"></div>
+                    <div class="block blue">action3</div>
+                    <div class="right-arrow"></div>
+                    <div class="block orange">rollback3</div>
+                    <div class="right-arrow"></div>
+                    <div class="scheme-end"></div>
+                    <div class="block orange">rollback2</div>
+                    <div class="right-arrow"></div>
+                    <div class="block orange">rollback1</div>
+
+                    <div class="scheme-end"></div>
+                </div>
+
+                <p>
+                Experior will only invoke rollback methods for executed action. If a test was interrupted with some error and some of its actions were skipped - then it will invoke rollbacks for those skipped actions
+                </p>
+
+
+                <h2 id="_a_frontend"><span class="header-first">Integration with</span> <span class="header-second">Oculus Frontend</span></h2>
+                <p>Oculus Experior was developed with also easily integrates with <a href="http://ishubin.github.com/oculus-frontend">Oculus Frontend</a>. This feature is extremely useful when it comes to a review of test reports.
+                </p>
+                <p>
+                Here how it looks like on Oculus Frontend:
+                </p>
+                <img class="example" src="./report-example.png"/>
+
+                <h2 id="_a_frontend"><span class="header-first">Testing with</span> <span class="header-second">Frontend Integration</span></h2>
+                <p>
+                For easier integration with frontend there was design a class <b>OculusTest</b>. It has a built-in report which logs all actions, errors, rollbacks, exceptions. It also sends the test run information to Oculus Frontend so after your run the test you will be able to see results in your browser. 
+                </p>
+                <p> Here is how to use it:</p>
+
+                <div class="source">
+<pre>
+<op>import</op> net.mindengine.oculus.experior.annotations.Action;
+<op>import</op> net.mindengine.oculus.experior.annotations.Test;
+<op>import</op> net.mindengine.oculus.experior.framework.test.OculusTest;
+
+<an>@Test</an>(name=<str>"Some Test"</str>, project=<str>"MY-TEST-PROJECT"</str>)
+<op>public class</op> MyTest <op>extends</op> OculusTest {
+
+    <an>@Action</an>(name=<str>"Action 1"</str>, next=<str>"action2"</str>)
+    <op>public void</op> action1() {
+        report.info(<str>"Some test info inside action 1"</str>);
+    }
+
+    <op>@Action</op>(name=<str>"Action 2"</str>, next=<str>"action3"</str>)
+    <op>public void</op> action2() {
+        <com>/*
+            This is an example of structuring your test reports.
+            You can create branches and Experior will automatically
+            attach them to the right place. 
+            Branches can be configured in "experior.properties"
+        */</com>
+        report.branch(<str>"validation"</str>).title(<str>"Some validations"</str>);
+        report.info(<str>"Some check was passed"</str>);
+        report.error(<str>"Some check was failed"</str>);
+        <com>...</com>
+    }
+    
+    <op>@Action</op>(name=<str>"Action 3"</str>)
+    <an>public void</an> action3() {
+        report.error(<str>"Oh no, it's an error!"</str>)
+            .details(<str>"Here I will explain more details about error"</str>);
+    }
+}
+
+</pre>
+                </div>
+                
+                <h2 id="_a_frontend"><span class="header-first">Configure</span> <span class="header-second">Frontend Integration</span></h2>
+                <p>
+                For integration with Oculus Frontend you only need to specify two properties if <b>experior.properties</b> file
+                <div class="source">
+<pre>
+oculus.url = http://some_oculus_frontend_host:8080
+oculus.api.auth.token = 
+</pre>
+                </div>
+                </p>
+                <p><b>oculus.url</b> should point to Oculus Frontend webapp and <b>oculus.api.auth.token</b> should be same as it is defined in config file of Oculus Frontend.
+            </article>
+        </div>
+        <div id="footer-container">
+            <footer>
+                <span id="footer-author">Developed by <a href="./contact.html">Ivan Shubin</a></span> 
+            </footer>
+        </div>
+    </body>
+</html>
