@@ -52,7 +52,7 @@ public class TestLoaderFactory {
     private TestLoaderFactory() throws ParserConfigurationException, SAXException, IOException, ClassNotFoundException, IllegalArgumentException, SecurityException, InstantiationException,
             IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 
-        File file = new File("test-loaders.xml");
+        File file = new File("experior.test-loaders.xml");
         if (file.exists()) {
             loadFromFile(file);
         } else {

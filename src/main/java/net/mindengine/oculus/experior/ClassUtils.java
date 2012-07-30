@@ -58,7 +58,25 @@ public class ClassUtils {
         } else if (clazz == Float.class) {
             return Float.parseFloat(value);
         }
-        throw new RuntimeException("Could create the parameter with type " + clazz.getName());
+        else {
+            return createParameterForCustomClass(clazz, value); 
+        }
+    }
+
+    private static Object createParameterForCustomClass(Class<?> clazz, String value) {
+        try {
+            Method method = clazz.getMethod("parseFromString", String.class);
+            if ( Modifier.isStatic(method.getModifiers()) ) {
+                if ( method.getReturnType().equals(clazz) ) {
+                    return method.invoke(null, value);
+                }
+                else throw new Exception("Return type of method parseFormString is not " + clazz.getName());
+            }
+            else throw new Exception("Method parseFromString is not static");
+        }
+        catch(Exception ex ) {
+            throw new RuntimeException("Could create the parameter with type " + clazz.getName(), ex);
+        }
     }
 
     public static String convertParameterToString(Class<?> clazz, Object value) {

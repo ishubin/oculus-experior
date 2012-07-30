@@ -18,6 +18,7 @@ package net.mindengine.oculus.experior.reporter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.OutputStream;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -60,8 +61,20 @@ public class ReportConfiguration {
 				
 				for ( int i=0; i<paths.length; i++) {
 					Properties messageProperties = new Properties();
-					messageProperties.load(new FileReader(new File(paths[i].trim())));
-					reportConfiguration.getMessageContainer().loadMessages(messageProperties);
+					
+					String filePath = paths[i].trim();
+					File file = new File(filePath);
+					if ( !file.exists() ) {
+					    URL resource = ReportConfiguration.class.getClassLoader().getResource("/" + filePath);
+			            if ( resource != null ) {
+			                file = new File(resource.toURI());
+			            }
+			            else file = null;
+					}
+					if ( file != null ) {
+                        messageProperties.load(new FileReader(file));
+    					reportConfiguration.getMessageContainer().loadMessages(messageProperties);
+					}
 				}
 			}
 		}

@@ -39,7 +39,7 @@ public @interface DataSource {
     String provider() default "";
     
     /**
-     * Array of dependencies. This will processed picked up by a {@link DataDependencyResolver}
+     * Array of dependencies. This will be picked up by a {@link DataDependencyResolver}
      * @return
      */
     String[] dependencies() default {};
@@ -56,6 +56,10 @@ public @interface DataSource {
      */
     String source() default "";
     
+    /**
+     * There is no logic for this field in oculus-experior. It is used in order to provide more configuration options for the users in their tests. 
+     * @return
+     */
     String[] tags() default {};
 
 }

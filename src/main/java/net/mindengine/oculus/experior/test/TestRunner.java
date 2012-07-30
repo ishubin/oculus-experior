@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
+import net.mindengine.oculus.experior.ExperiorConfig;
 import net.mindengine.oculus.experior.TestRunListener;
 import net.mindengine.oculus.experior.exception.TestConfigurationException;
 import net.mindengine.oculus.experior.exception.TestInterruptedException;
@@ -52,6 +53,23 @@ public class TestRunner {
     // Used to store events which should be invoked when the test is finished
     private Stack<EventDescriptor> rollbackSequence;
     private TestInformation testInformation;
+
+    public static void runTest(Class<?> testClass) throws TestConfigurationException, TestInterruptedException {
+        runTest("classpath:" + testClass.getName());
+    }
+    
+    public static void runTest(String mapping) throws TestConfigurationException, TestInterruptedException {
+        TestDefinition testDefinition = new TestDefinition();
+        testDefinition.setCustomId("1");
+        testDefinition.setMapping(mapping);
+        
+        TestRunner testRunner = new TestRunner();
+        testRunner.setTestDescriptor(TestDescriptor.create(testDefinition, ExperiorConfig.getInstance().getTestRunnerConfiguration()));
+        testRunner.setTestDefinition(testDefinition);
+        testRunner.setConfiguration(ExperiorConfig.getInstance().getTestRunnerConfiguration());
+        
+        testRunner.runTest();
+    }
 
     /**
      * Runs the test. In order to launch this method the test runner should

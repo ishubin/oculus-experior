@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<suite name="Dependency suite" runnerId="1">
+<suite name="Dependency suite">
 
 	<test id="sample1" mapping="net.mindengine.oculus.experior.samples.Sample2_B">
         <parameter name="parameterInput">some value</parameter>

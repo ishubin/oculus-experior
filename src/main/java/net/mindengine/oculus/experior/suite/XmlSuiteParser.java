@@ -42,7 +42,9 @@ public class XmlSuiteParser {
 
         Node suiteNode = d.getFirstChild();
         suite.setName(XmlUtils.getNodeAttribute(suiteNode, "name"));
-        suite.setRunnerId(Long.parseLong(XmlUtils.getNodeAttribute(suiteNode, "runnerId")));
+        
+        
+        suite.setRunnerId(parseLong(XmlUtils.getNodeAttribute(suiteNode, "runnerId")));
 
         NodeList testList = suiteNode.getChildNodes();
 
@@ -68,6 +70,13 @@ public class XmlSuiteParser {
         return suite;
     }
 
+    public static Long parseLong(String text) {
+        if ( text == null ) {
+            return null;
+        }
+        else return Long.parseLong(text);
+    }
+    
     public static void saveSuite(Suite suite, File file) throws IOException {
         file.createNewFile();
         FileWriter fw = new FileWriter(file);
