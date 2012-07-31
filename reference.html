@@ -39,11 +39,32 @@
                 </uL>
 
 
-                <h2 id="_a_configuration"><span class="header-first">Basic</span> <span class="header-second">Configuration</span></h2>
+                <h2 id="_a_configuration"><span class="header-first">Project</span> <span class="header-second">Configuration</span></h2>
                 <p>
                     For proper Oculus Experior configuration you need to put <b>experior.properties</b> file in the root directory of your project.
                     Just copy it from original package and change it for your own needs. 
                 </p>
+                <p>
+                    For using as maven dependency you need to add mindengine.net maven repo to your <b>pom.xml</b>
+                </p>
+                <div class="source">
+<pre>
+<tag>&lt;dependencies&gt;</tag>
+    <tag>&lt;dependency&gt;</tag>
+        <tag>&lt;groupId&gt;</tag>net.mindengine<tag>&lt;/groupId&gt;</tag>
+        <tag>&lt;artifactId&gt;</tag>oculus-experior<tag>&lt;/artifactId&gt;</tag>
+        <tag>&lt;version&gt;</tag>1.0.1<tag>&lt;/version&gt;</tag>
+    <tag>&lt;/dependency&gt;</tag>
+<tag>&lt;/dependencies&gt;</tag>
+<tag>&lt;repositories&gt;</tag>
+    <tag>&lt;repository&gt;</tag>
+        <tag>&lt;id&gt;</tag>mindengine.net<tag>&lt;/id&gt;</tag>
+        <tag>&lt;name&gt;</tag>mindengine.net repo<tag>&lt;/name&gt;</tag>
+        <tag>&lt;url&gt;</tag>http://mvnrepo.mindengine.net/repository<tag>&lt;/url&gt;</tag>
+    <tag>&lt;/repository&gt;</tag>
+<tag>&lt;/repositories&gt;</tag>
+</pre>
+                </div>
                 <h2 id="_a_test_implementation"><span class="header-first">Test</span> <span class="header-second">Implementation</span></h2>
                 <p>
                     A test in Oculus Experior is represented as a Java class which consists of consequent actions represented as class methods.
