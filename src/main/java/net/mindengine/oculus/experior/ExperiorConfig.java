@@ -70,7 +70,7 @@ public class ExperiorConfig {
         File file = new File("experior.properties");
         if ( !file.exists() ) {
             file = null;
-            URL resource = getClass().getClassLoader().getResource("/experior.properties");
+            URL resource = getClass().getClassLoader().getResource("experior.properties");
             if ( resource != null ) {
                 file = new File(resource.toURI());
             }

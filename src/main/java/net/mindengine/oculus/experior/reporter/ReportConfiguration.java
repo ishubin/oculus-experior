@@ -57,7 +57,7 @@ public class ReportConfiguration {
 			String messagesPropertiesPath = properties.getProperty(MESSAGES_PATH);
 			
 			if ( messagesPropertiesPath != null ) {
-				String paths[] = messagesPropertiesPath.split(";");
+				String paths[] = messagesPropertiesPath.split(",");
 				
 				for ( int i=0; i<paths.length; i++) {
 					Properties messageProperties = new Properties();
@@ -65,7 +65,7 @@ public class ReportConfiguration {
 					String filePath = paths[i].trim();
 					File file = new File(filePath);
 					if ( !file.exists() ) {
-					    URL resource = ReportConfiguration.class.getClassLoader().getResource("/" + filePath);
+					    URL resource = ReportConfiguration.class.getClassLoader().getResource(filePath);
 			            if ( resource != null ) {
 			                file = new File(resource.toURI());
 			            }
