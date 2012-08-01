@@ -125,13 +125,16 @@ public class OculusTest {
             testInformation.setTestRunId(testRunId);
 
             testRun.setId(testRunId);
-            /*
-             * Adding just created test run to the suite
-             */
-            if (suite.getTestRuns() == null) {
-                suite.setTestRuns(new LinkedList<TestRun>());
+            
+            if ( suite != null ) {
+                /*
+                 * Adding just created test run to the suite
+                 */
+                if (suite.getTestRuns() == null) {
+                    suite.setTestRuns(new LinkedList<TestRun>());
+                }
+                suite.getTestRuns().add(testRun);
             }
-            suite.getTestRuns().add(testRun);
         }
     }
 

@@ -86,7 +86,8 @@ public class RestClient {
     private ResponseReader request(HttpEntityEnclosingRequestBase requestBase, String authToken, Object requestObject) {
         HttpResponse response;
         try {
-            StringEntity request = new StringEntity(convertRequestObjectToJson(requestObject));
+            String strRequestBody = convertRequestObjectToJson(requestObject);
+            StringEntity request = new StringEntity(strRequestBody);
             request.setContentType("application/json");
             request.setContentEncoding("UTF-8");
             requestBase.setEntity(request);
