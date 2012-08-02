@@ -16,7 +16,6 @@ mvn assembly:assembly -DskipTests=true
 cp target/oculus-experior-$versionInPom.jar dist/bin/oculus-experior-$version.jar 
 cp target/oculus-experior-jar-with-dependencies.jar dist/bin/oculus-experior-$version-all-dep.jar 
 cp experior.properties dist/bin/.
-cp defaultMessages.properties dist/bin/.
 cp experior.test-loaders.xml dist/bin/.
 cp LICENSE-2.0.txt dist/bin/.
 cp README dist/bin/.
@@ -30,7 +29,6 @@ zip -r -9 ../oculus-experior-$version-bin.zip *
 cd ../..
 cp -r src/ dist/sources/src 
 cp experior.properties dist/sources/.
-cp defaultMessages.properties dist/sources/.
 cp experior.test-loaders.xml dist/sources/.
 cp pom.xml dist/sources/.
 
