@@ -113,12 +113,12 @@ header h2 {
     margin:0px;
     padding:0px;
     font-weight: normal;
-    font-size:2.5em;
+    font-size:1.9em;
 }
 header h1 {
     margin-top:10px;
-    margin-bottom:0px;
-    font-size:2.0em;
+    margin-bottom:5px;
+    font-size:2.5em;
     text-transform:uppercase;
 }
 header h1 span {
@@ -134,7 +134,7 @@ header h1, header h2 {
     position: absolute;
     margin:0px;
     padding:0px;
-    right:10px;
+    right:-5px;
     top:-8px;
     width:195px;
     height:130px;
@@ -167,18 +167,27 @@ footer {
     text-align: left;
     vertical-align: bottom;
 }
-#footer-author {
-    position:relative;
+#footer-block {
     display:block;
-    top:40px;
-    left:20px;
+    
 }
-#footer-author a, #footer-author a:visited, #footer-author a:active {
+footer a, footer a:visited, footera:active {
     color:#FA8A11;
 }
-#footer-author a:hover  {
+footer a:hover  {
     color:#96C5FA;
 }
+footer .block {
+    display: block;
+    float:left;
+    width:200px;
+    min-height:70px;
+}
+footer .block a {
+    display:block;
+    margin-top:5px;
+}
+
 h1, h2 { 
     font-family:helvetica;
     font-weight:bold;
@@ -226,6 +235,11 @@ article h1, article h2 {
     border-radius:8px;
     box-shadow:inset 1px 1px 0px #fff;
 }
+#features-list li i {
+    font-weight:bold;
+}
+
+
 span.header-first {
     color: #3C94FA;
     text-shadow:-1px -1px 0px #0074FA;
@@ -266,48 +280,54 @@ span.header-second {
     border: 1px solid #CF6932;
     box-shadow: inset 1px 1px 0px #FACA87;
 }
-ul.table-of-contents {
+ul.table-of-contents, ul.table-of-contents ul {
     list-style: square;
 }
 ul.table-of-contents li {
     color: #509FFA;
 }
 .source {
-    background: #333;
+    background: url('./source-back.png') #243040;
     display: block;
     margin-bottom: 20px;
     margin-top: 5px;
-    padding: 10px;
     width: auto;
+    overflow-x:auto;
     border-radius: 10px;
-    box-shadow: 2px 2px 10px #000 inset;
+    box-shadow: 2px 2px 10px #0B1C33 inset;
 }
 .source pre{
-    color: #ccc;
+    width: auto;
+    overflow-x:auto;
+    margin:10px;
+    color: #CDE0FA;
     line-height:20px;
     font-family: Consolas,Monaco,"Lucida Console",monospace;
     font-size: 0.8em;
-    font-weight: bold;
-    text-shadow: 1px 1px 0px #111;
+    font-weight: normal;
+    text-shadow: 1px 1px 2px #000;
 }
 .source pre op {
-    color:#5c5;
+    color:#62A0F5;
+    font-weight:bold;
 }
 .source pre str {
-    color:#DB7209;
+    color:#3FF2A2;
 }
 .source pre num{
     color:#f0f;
 }
 .source pre com{
-    color:#777;
-    text-shadow: 1px 1px 0px #222;
+    color:#5B6D87;
+    text-shadow: 1px 1px 0px #000;
 }
 .source pre an{
     color:#FAB9F6;
+    font-weight:bold;
 }
 .source pre tag {
     color:#99d;
+    font-weight:bold;
 }
 
 .scheme {
